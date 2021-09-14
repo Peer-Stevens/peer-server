@@ -6,5 +6,5 @@ const port = 3030;
 app.get("/example", example);
 
 app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+	console.log(`App listening at http://localhost:${port}`);
 });
