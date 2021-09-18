@@ -1,8 +1,9 @@
 {
 	"compilerOptions": {
 		"esModuleInterop": true,
+		"module": "commonjs",
 		"moduleResolution": "node",
-		"jsx": "react",
+		"pretty": true,
 		"strict": true,
 		"target": "ES6",
 		"outDir": "./dist",
