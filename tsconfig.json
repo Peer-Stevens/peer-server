@@ -1,7 +1,12 @@
 {
 	"compilerOptions": {
 		"esModuleInterop": true,
+		"moduleResolution": "node",
 		"jsx": "react",
-		"strict": true
-	}
+		"strict": true,
+		"target": "ES6",
+		"outDir": "./dist",
+		"baseUrl": "./src"
+	},
+	"exclude": ["node_modules"]
 }
