@@ -6,7 +6,7 @@ Node server for Peer
 
 > yarn run build
 
-Compiles all the typescript files down to javascript. Typescript is supposed to compile down to javascript, and the application is supposed to take those js files and run them. Run this command if you've made changes to any ts files and need to recompile the project.
+Compiles all the typescript files down to javascript. Typescript is supposed to compile down to javascript, and the application is supposed to take those js files and run them. Run this command if you've made changes to any ts files and need to recompile the project so `dist` has the latest changes. (The compiled ts files will be in a folder called `dist` and it will automatically be created for you if you're running this command for the first time.)
 
 > yarn run watch
 
