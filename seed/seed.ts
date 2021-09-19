@@ -1,5 +1,5 @@
 import { dbConnection } from "../mongoConnection";
-import { addPlace, getAllPlaces } from "../data/places";
+import { addPlace, getAllPlaces } from "../db/places";
 
 async function main() {
 	const db = await dbConnection();
