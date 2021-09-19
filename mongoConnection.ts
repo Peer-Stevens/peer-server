@@ -1,9 +1,8 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 import * as dotenv from "dotenv";
 
-// was having an issue with the types, we can fix this later...
-let _connection: any = undefined;
-let _db: any = undefined;
+let _connection: MongoClient;
+let _db: Db;
 
 export async function dbConnection() {
 	dotenv.config();
