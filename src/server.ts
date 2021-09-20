@@ -1,6 +1,6 @@
 import { example } from "./rest/example";
 import express from "express";
-import * as dotenv from "dotenv";
+import dotenv from "dotenv";
 const app = express();
 const port = 3030;
 
