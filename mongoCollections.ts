@@ -1,7 +1,10 @@
 import { dbConnection } from "./mongoConnection";
 
 // This will allow you to have one reference to each collection per app
-function getCollectionFn(collection: any) {
+// TODO: Change the string literal union types later once we create actual db functions.
+// These are just examples, for now, to demonstrate how this should be used later.
+
+export function getCollectionFn(collection: "places" | "users") {
 	let _col: any = undefined;
 
 	return async () => {
@@ -13,6 +16,3 @@ function getCollectionFn(collection: any) {
 		return _col;
 	};
 }
-
-// List collections here in the mongoCollections object
-export const mongoCollections = { places: getCollectionFn("places") };

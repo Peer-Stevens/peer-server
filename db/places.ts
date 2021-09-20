@@ -2,8 +2,8 @@
 The content of this file should be changed later when we start writing database functions
 */
 
-import { mongoCollections } from "../mongoCollections";
-const { places } = mongoCollections;
+import { getCollectionFn } from "../mongoCollections";
+const places = getCollectionFn("places");
 import { ObjectId } from "mongodb";
 
 export async function getAllPlaces() {
