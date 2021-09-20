@@ -1,5 +1,7 @@
 import { dbConnection } from "../mongoConnection";
 import { addPlace, getAllPlaces } from "../db/places";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 async function main() {
 	const db = await dbConnection();
