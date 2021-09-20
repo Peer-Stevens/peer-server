@@ -5,6 +5,7 @@ The content of this file should be changed later when we start writing database 
 import { getCollectionFn } from "../mongoCollections";
 const places = getCollectionFn("places");
 import { ObjectId } from "mongodb";
+import { Place } from "./Types/place";
 
 export async function getAllPlaces() {
 	const placesCollection = await places();
@@ -20,15 +21,10 @@ export async function getPlaceByID(id: ObjectId) {
 	return place;
 }
 
-export async function addPlace(name: string, establishmentType: string) {
+export async function addPlace(place: Place) {
 	const placesCollection = await places();
 
-	const newPlace = {
-		name: name,
-		establishmentType: establishmentType,
-	};
-
-	const insertInfo = await placesCollection.insertOne(newPlace);
+	const insertInfo = await placesCollection.insertOne(place);
 	if (insertInfo.insertedCount === 0) throw "Error adding place";
 
 	const newID = insertInfo.insertedId;

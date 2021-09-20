@@ -13,19 +13,19 @@ async function main() {
 	console.log("Now attempting to seed the database...");
 
 	try {
-		await addPlace("Chipotle", "Restaurant");
+		await addPlace({ name: "Chipotle", establishmentType: "Restaurant" });
 	} catch (e) {
 		console.log(e);
 	}
 
 	try {
-		await addPlace("Wash n Dry", "Laundrymat");
+		await addPlace({ name: "Wash n Dry", establishmentType: "Laundrymat" });
 	} catch (e) {
 		console.log(e);
 	}
 
 	try {
-		await addPlace("Stevens", "School");
+		await addPlace({ name: "Stevens", establishmentType: "School" });
 	} catch (e) {
 		console.log(e);
 	}
