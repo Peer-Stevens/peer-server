@@ -1,7 +1,13 @@
 {
 	"compilerOptions": {
 		"esModuleInterop": true,
-		"jsx": "react",
-		"strict": true
-	}
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"pretty": true,
+		"strict": true,
+		"target": "ES6",
+		"outDir": "./dist",
+		"baseUrl": "./src"
+	},
+	"exclude": ["node_modules"]
 }
