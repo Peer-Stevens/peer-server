@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
+import StatusCode from "utils/status_code";
 
 export const example = (req: Request, res: Response) => {
-	res.status(200).json({ exampleResponse: "helloworld" });
+	res.status(StatusCode.OK).json({ exampleResponse: "helloworld" });
 };
