@@ -6,6 +6,17 @@ Node server for Peer
 
 **Make sure to follow these instructions before trying to interact with the application since you won't be able to access any data until you do!**
 
+### Setup Modules
+
+Run
+
+```
+npm i ts-node -g
+yarn
+```
+
+### Setup Database
+
 Please make sure you have the latest version of `main` before proceeding since there are some important dependancies you'll need in order to get this to work!
 
 In order to be able to connect to the mongo cluster, you need to create a `.env` file at the root of the peer-server directory with the following variables:
@@ -40,6 +51,28 @@ This will help mongo identify who you are when you try to access the database. I
 After you've done all the required steps above, you can now test the connection! Run `yarn seed` to wipe the your database and load it in with new data. Feel free to play around with this file to test, if you'd like.
 
 _Another note:_ The db functions I've written are obviously only relevant right now for testing purposes; this will change once we start building up the backend architecture!
+
+### Setup Maps API
+
+1. Navigate to (Google Cloud Platform)[https://console.cloud.google.com] and sign in with your school email.
+
+2. Select the "Peer" project.
+
+3. Click on the navigation menu at the top left. Click on the menu entry "APIs and Services".
+
+4. Click on "Credentials" on the left-hand menu.
+
+5. Find the API key called "Maps". Under the column "Key", you will find the API key. Copy it.
+
+6. In your `.env` file, add:
+
+```
+MAPS_API=[api_key]
+```
+
+where `[api_key]` is the API key that you copied prior.
+
+Now the server will be able to provide the API key while we develop.
 
 ## Scripts
 
