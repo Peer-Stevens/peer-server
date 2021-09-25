@@ -7,7 +7,6 @@ const port = 3030;
 
 dotenv.config();
 
-app.get("/example", example);
 app.get("/api/maps", maps_api);
 
 app.listen(port, () => {
