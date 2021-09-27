@@ -17,7 +17,7 @@ export interface Review {
 	fontSizeRating: number | null;
 	staffHelpfulnessRating: number | null;
 	openessOfSpaceRating: number | null;
-	comment: string;
+	comment: string | null;
 	dateCreated: Date;
 }
 
