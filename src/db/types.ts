@@ -28,5 +28,5 @@ export interface Place {
 	avgFontSizeRating: number | "No ratings have been submitted yet.";
 	avgStaffHelpfulnessRating: number | "No ratings have been submitted yet.";
 	avgOpenessOfSpaceRating: number | "No ratings have been submitted yet.";
-	comments: Array<string>;
+	comments: Array<string> | Array<null>;
 }
