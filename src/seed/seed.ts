@@ -21,10 +21,10 @@ async function main() {
 
 	try {
 		await addPlace({
-			avgBrailleRating: 4,
-			avgFontSizeRating: 5,
-			avgOpenessOfSpaceRating: 2,
-			avgStaffHelpfulnessRating: 1,
+			avgBraille: 4,
+			avgFontReadability: 5,
+			avgOpenessOfSpace: 2,
+			avgStaffHelpfulness: 1,
 			comments: [
 				"wow this place sucks",
 				"the people are not very nice",
@@ -37,10 +37,10 @@ async function main() {
 
 	try {
 		await addPlace({
-			avgBrailleRating: 5,
-			avgFontSizeRating: 5,
-			avgOpenessOfSpaceRating: 5,
-			avgStaffHelpfulnessRating: 4,
+			avgBraille: 5,
+			avgFontReadability: 5,
+			avgOpenessOfSpace: 5,
+			avgStaffHelpfulness: 4,
 			comments: ["very good", "love this place", "def go here"],
 		});
 	} catch (e) {
@@ -49,10 +49,10 @@ async function main() {
 
 	try {
 		await addPlace({
-			avgBrailleRating: 3,
-			avgFontSizeRating: 4.5,
-			avgOpenessOfSpaceRating: 5,
-			avgStaffHelpfulnessRating: 5,
+			avgBraille: 3,
+			avgFontReadability: 4.5,
+			avgOpenessOfSpace: 5,
+			avgStaffHelpfulness: 5,
 			comments: ["Not bad", "I come here every saturday", "nice"],
 		});
 	} catch (e) {
