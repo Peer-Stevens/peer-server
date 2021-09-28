@@ -18,6 +18,7 @@
 		"seed": "ts-node ./src/seed/seed.ts"
 	},
 	"dependencies": {
+		"@googlemaps/google-maps-services-js": "^3.2.2",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
 		"mongodb": "^4.1.2",
