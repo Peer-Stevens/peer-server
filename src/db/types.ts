@@ -28,5 +28,5 @@ export interface Place {
 	avgFontReadability: number;
 	avgStaffHelpfulness: number;
 	avgOpenessOfSpace: number;
-	comments: Review;
+	comments: Array<Review>;
 }
