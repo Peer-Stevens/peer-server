@@ -25,11 +25,7 @@ async function main() {
 			avgFontReadability: 5,
 			avgOpenessOfSpace: 2,
 			avgStaffHelpfulness: 1,
-			comments: [
-				"wow this place sucks",
-				"the people are not very nice",
-				"the menu had large font which was so nice!",
-			],
+			comments: [],
 		});
 	} catch (e) {
 		console.log(e);
@@ -41,7 +37,7 @@ async function main() {
 			avgFontReadability: 5,
 			avgOpenessOfSpace: 5,
 			avgStaffHelpfulness: 4,
-			comments: ["very good", "love this place", "def go here"],
+			comments: [],
 		});
 	} catch (e) {
 		console.log(e);
@@ -53,7 +49,7 @@ async function main() {
 			avgFontReadability: 4.5,
 			avgOpenessOfSpace: 5,
 			avgStaffHelpfulness: 5,
-			comments: ["Not bad", "I come here every saturday", "nice"],
+			comments: [],
 		});
 	} catch (e) {
 		console.log(e);
