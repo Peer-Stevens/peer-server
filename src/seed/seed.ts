@@ -20,19 +20,37 @@ async function main() {
 	console.log("Now attempting to seed the database...");
 
 	try {
-		await addPlace({ name: "Chipotle", establishmentType: "Restaurant" });
+		await addPlace({
+			avgBraille: 4,
+			avgFontReadability: 5,
+			avgOpenessOfSpace: 2,
+			avgStaffHelpfulness: 1,
+			comments: [],
+		});
 	} catch (e) {
 		console.log(e);
 	}
 
 	try {
-		await addPlace({ name: "Wash n Dry", establishmentType: "Laundrymat" });
+		await addPlace({
+			avgBraille: 5,
+			avgFontReadability: 5,
+			avgOpenessOfSpace: 5,
+			avgStaffHelpfulness: 4,
+			comments: [],
+		});
 	} catch (e) {
 		console.log(e);
 	}
 
 	try {
-		await addPlace({ name: "Stevens", establishmentType: "School" });
+		await addPlace({
+			avgBraille: 3,
+			avgFontReadability: 4.5,
+			avgOpenessOfSpace: 5,
+			avgStaffHelpfulness: 5,
+			comments: [],
+		});
 	} catch (e) {
 		console.log(e);
 	}
