@@ -27,11 +27,23 @@ module.exports = {
 			},
 			rules: {
 				"@typescript-eslint/switch-exhaustiveness-check": "error",
+				"@typescript-eslint/no-misused-promises": [
+					"error",
+					{
+						checksVoidReturn: false,
+					},
+				],
 			},
 		},
 	],
 	// Do NOT use any eslint ruels that affect code formatting because prettier handles that.
 	rules: {
+		"prettier/prettier": [
+			"error",
+			{
+				endOfLine: "auto",
+			},
+		],
 		"no-debugger": "error",
 		"no-var": "error",
 		"eqeqeq": "error",
