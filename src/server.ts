@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
 
 const app = express();
-const port = 3030;
+const port = process.env.PORT || 3030;
 
 dotenv.config();
 
