@@ -5,10 +5,10 @@ export interface User {
 	firstName: string;
 	lastName: string;
 	email: string;
-	reviews: Array<ObjectId>;
+	ratings: Array<ObjectId>;
 }
 
-export interface Review {
+export interface Rating {
 	_id?: ObjectId;
 	userID: ObjectId;
 	// made placeID an ObjectID for now until we figure out what type this will end up being
@@ -28,5 +28,5 @@ export interface Place {
 	avgFontReadability: number;
 	avgStaffHelpfulness: number;
 	avgOpenessOfSpace: number;
-	comments: Array<Review>;
+	comments: Array<Rating>;
 }
