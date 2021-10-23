@@ -4,6 +4,7 @@ import { addUserToDb } from "../db/User/user";
 import dotenv from "dotenv";
 import { addRating } from "../db/Rating/rating";
 import { ObjectId } from "bson";
+import { DbData } from "db/types";
 dotenv.config();
 
 async function main() {
@@ -26,7 +27,7 @@ async function main() {
 
 	console.log("Adding users to database...");
 
-	let user1;
+	let user1: DbData;
 	try {
 		user1 = await addUserToDb({
 			firstName: "Eleni",
@@ -40,7 +41,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user2;
+	let user2: DbData;
 	try {
 		user2 = await addUserToDb({
 			firstName: "Andrew",
@@ -54,7 +55,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user3;
+	let user3: DbData;
 	try {
 		user3 = await addUserToDb({
 			firstName: "David",
