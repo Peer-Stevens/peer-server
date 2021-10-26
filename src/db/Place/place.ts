@@ -8,6 +8,7 @@ const place = getCollection<Place>("place");
 const rating = getCollection<Rating>("rating");
 
 // idk if we need this, but here it is in case we do
+// did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
 export async function getAllPlaces(): Promise<Array<Place>> {
 	const placesCollection: Collection<Place> = await place;
 
@@ -23,8 +24,6 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 	return placeReturned;
 }
 
-// should be called when the api displays a place that has never been accessed before by any user
-//Note to self: might not be necessary?? I'll fix this later
 export async function addPlace(placeToAdd: Place): Promise<Place> {
 	const placesCollection: Collection<Place> = await place;
 
@@ -38,17 +37,12 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
 
 /**
  * An aggregate function that utilizes the Mongo aggregate framework
- * This function's purpose is to calculate the average ratings per metric that we
- * want to collect and display data on.
+ * This function's purpose is to calculate the average ratings per metric that we want to collect.
  * This is more efficient that doing the calculations ourselves.
- * Returns the place after its been updated
- *
- * TODO currently doesn't work with guideDogFriendly because this field is a boolean;
- * I need to figure out how to calculate the 'average' or majority of 'True' values with mongo aggregation
+ * Returns the place after its been updated in the database with the averages
  * */
 
 export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
-	//this is type any because I can't figure out how to get it to work without it, SOS
 	const ratingCollection: Collection<Rating> = await rating;
 	const placesCollection: Collection<Place> = await place;
 
