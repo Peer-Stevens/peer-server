@@ -35,11 +35,11 @@ export interface Comment {
 
 export interface Place {
 	_id: GooglePlaceID["place_id"];
-	avgBraille: number;
-	avgFontReadability: number;
-	avgStaffHelpfulness: number;
-	avgNavigability: number;
-	avgGuideDogFriendly: number;
+	avgBraille: number | null;
+	avgFontReadability: number | null;
+	avgStaffHelpfulness: number | null;
+	avgNavigability: number | null;
+	avgGuideDogFriendly: boolean | null;
 }
 
 export type DbData = Rating | Place | User;
