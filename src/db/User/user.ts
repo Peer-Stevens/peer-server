@@ -24,14 +24,3 @@ export async function getUserById(id: ObjectId): Promise<User> {
 	if (userReturned === null) throw "Sorry, no rating exists with that ID";
 	return userReturned;
 }
-
-// should be called if user needs to update their info for whatever reason
-// NOTE: THIS IS NOT RELEVANT IN THIS PR, I WILL NEED THIS LATER THOUGH! PLEASE IGNORE THIS FOR RIGHT NOW
-export async function editUserDetails(id: ObjectId, updatedUser: User): Promise<UpdateResult> {
-	const userCollection: Collection<User> = await user;
-
-	const editedUserDetails = await userCollection.updateOne({ _id: id }, { $set: updatedUser });
-	if (editedUserDetails.modifiedCount === 0) throw "Could not update User";
-
-	return editedUserDetails;
-}
