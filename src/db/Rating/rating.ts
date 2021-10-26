@@ -3,6 +3,7 @@ import { InsertOneResult, ObjectId } from "mongodb";
 import type { DbData, Rating } from "../types";
 import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
+import { updatePlace } from "../Place/place";
 
 const rating = getCollection("rating");
 
@@ -14,7 +15,13 @@ export async function addRating(ratingToAdd: Rating): Promise<DbData> {
 
 	const newID = insertInfo.insertedId;
 
-	return await getRatingById(newID);
+	// Every time an insertion is succesfful, we need to update the averages for the place in the Place collection
+	// this is type any for now because I can't figure out how to get it to work, sos
+	const insertedRating: any = await getRatingById(newID);
+
+	await updatePlace(insertedRating.placeID);
+
+	return insertedRating;
 }
 
 export async function getRatingById(id: ObjectId): Promise<DbData> {
