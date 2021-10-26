@@ -23,7 +23,7 @@ export interface Rating {
 	fontReadability: number | null;
 	staffHelpfulness: number | null;
 	navigability: number | null;
-	guideDogFriendly: boolean | null;
+	guideDogFriendly: number | null;
 	comment: Comment | null;
 	dateCreated: Date;
 }
@@ -39,5 +39,5 @@ export interface Place {
 	avgFontReadability: number | null;
 	avgStaffHelpfulness: number | null;
 	avgNavigability: number | null;
-	avgGuideDogFriendly: boolean | null;
+	avgGuideDogFriendly: number | null;
 }
