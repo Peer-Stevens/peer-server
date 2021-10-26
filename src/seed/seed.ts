@@ -73,11 +73,11 @@ async function main() {
 	try {
 		await addPlace({
 			_id: "fakeid1",
-			avgBraille: 0,
-			avgFontReadability: 0,
-			avgNavigability: 0,
-			avgStaffHelpfulness: 0,
-			avgGuideDogFriendly: 0,
+			avgBraille: null,
+			avgFontReadability: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+			avgGuideDogFriendly: null,
 		});
 	} catch (e) {
 		console.log(e);
@@ -86,11 +86,11 @@ async function main() {
 	try {
 		await addPlace({
 			_id: "fakeid2",
-			avgBraille: 0,
-			avgFontReadability: 0,
-			avgNavigability: 0,
-			avgStaffHelpfulness: 0,
-			avgGuideDogFriendly: 0,
+			avgBraille: null,
+			avgFontReadability: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+			avgGuideDogFriendly: null,
 		});
 	} catch (e) {
 		console.log(e);
@@ -99,11 +99,11 @@ async function main() {
 	try {
 		await addPlace({
 			_id: "fakeid3",
-			avgBraille: 0,
-			avgFontReadability: 0,
-			avgNavigability: 0,
-			avgStaffHelpfulness: 0,
-			avgGuideDogFriendly: 0,
+			avgBraille: null,
+			avgFontReadability: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+			avgGuideDogFriendly: null,
 		});
 	} catch (e) {
 		console.log(e);
