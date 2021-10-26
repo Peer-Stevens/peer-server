@@ -4,7 +4,8 @@ import { addUserToDb } from "../db/User/user";
 import dotenv from "dotenv";
 import { addRating } from "../db/Rating/rating";
 import { ObjectId } from "bson";
-import { DbData } from "db/types";
+import { User } from "../db/types";
+
 dotenv.config();
 
 async function main() {
@@ -27,7 +28,7 @@ async function main() {
 
 	console.log("Adding users to database...");
 
-	let user1: DbData;
+	let user1: User;
 	try {
 		user1 = await addUserToDb({
 			firstName: "Eleni",
@@ -41,7 +42,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user2: DbData;
+	let user2: User;
 	try {
 		user2 = await addUserToDb({
 			firstName: "Andrew",
@@ -55,7 +56,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user3: DbData;
+	let user3: User;
 	try {
 		user3 = await addUserToDb({
 			firstName: "David",
@@ -138,7 +139,7 @@ async function main() {
 			fontReadability: 1,
 			staffHelpfulness: 3,
 			navigability: 4,
-			guideDogFriendly: true,
+			guideDogFriendly: 3,
 			comment: {
 				_id: new ObjectId(),
 				comment: "Great",
@@ -158,7 +159,7 @@ async function main() {
 			fontReadability: 5,
 			staffHelpfulness: 5,
 			navigability: 5,
-			guideDogFriendly: true,
+			guideDogFriendly: 5,
 			comment: {
 				_id: new ObjectId(),
 				comment: "Best place I've ever been too wow",
