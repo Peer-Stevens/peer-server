@@ -89,7 +89,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<DbData
 					$avg: "$staffHelpfulness",
 				},
 				guideDogAvg: {
-					$avg: "clear$guideDogFriendly",
+					$avg: "$guideDogFriendly",
 				},
 			},
 		},
