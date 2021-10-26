@@ -57,14 +57,14 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@googlemaps/google-maps-services-js@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@googlemaps/google-maps-services-js/-/google-maps-services-js-3.2.2.tgz#7f650fedf3e627111c26fa220612bb6bbd8c1a4b"
-  integrity sha512-lzaKdtOlyBZwP53VSB7LCB9oMvOe8N/6RuyMJMlb3pZge8TghwmEB1Y3JF0ZFvHyV45i2qR9iqxj8q3jsJX+aw==
+"@googlemaps/google-maps-services-js@^3.2.6":
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/@googlemaps/google-maps-services-js/-/google-maps-services-js-3.2.6.tgz#62aa1c54170b77a9162f3493c14d049eeecbbba2"
+  integrity sha512-W7Ik6kG0qua/d3Irwqh1GobZmgCOcuO2Se6iF+uThdQwhXtgYCig592/TDtJvUQ0LKcF9T2oEn4L9xl+WTqSww==
   dependencies:
     agentkeepalive "^4.1.0"
     axios "^0.21.1"
-    crypto "^1.0.1"
+    crypto-js "4.1.1"
     query-string "^7.0.1"
     retry-axios "^2.2.1"
 
@@ -770,15 +770,15 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
+crypto-js@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
+
 crypto-random-string@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
-
-crypto@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
-  integrity sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.6.9:
   version "2.6.9"

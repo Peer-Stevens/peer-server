@@ -1,6 +1,11 @@
 import { dbConnection } from "../db/mongoConnection";
-import { addPlace, getAllPlaces } from "../db/Places/places";
+import { addPlace, getAllPlaces } from "../db/Place/place";
+import { addUserToDb } from "../db/User/user";
 import dotenv from "dotenv";
+import { addRating } from "../db/Rating/rating";
+import { ObjectId } from "bson";
+import { User } from "../db/types";
+
 dotenv.config();
 
 async function main() {
@@ -19,13 +24,61 @@ async function main() {
 
 	console.log("Now attempting to seed the database...");
 
+	console.log();
+
+	console.log("Adding users to database...");
+
+	let user1: User;
+	try {
+		user1 = await addUserToDb({
+			firstName: "Eleni",
+			lastName: "Rotsides",
+			email: "e@e.com",
+			isBlindMode: false,
+			readsBraille: false,
+			doesNotPreferHelp: true,
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	let user2: User;
+	try {
+		user2 = await addUserToDb({
+			firstName: "Andrew",
+			lastName: "Jones",
+			email: "a@a.com",
+			isBlindMode: false,
+			readsBraille: true,
+			doesNotPreferHelp: false,
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	let user3: User;
+	try {
+		user3 = await addUserToDb({
+			firstName: "David",
+			lastName: "Carpenter",
+			email: "d@d.com",
+			isBlindMode: false,
+			readsBraille: false,
+			doesNotPreferHelp: false,
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	// when a place is first added, the averages should default to zero since there are no ratings yet
 	try {
 		await addPlace({
-			avgBraille: 4,
-			avgFontReadability: 5,
-			avgOpenessOfSpace: 2,
-			avgStaffHelpfulness: 1,
-			comments: [],
+			_id: "fakeid1",
+			avgBraille: null,
+			avgFontReadability: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+			avgGuideDogFriendly: null,
 		});
 	} catch (e) {
 		console.log(e);
@@ -33,11 +86,12 @@ async function main() {
 
 	try {
 		await addPlace({
-			avgBraille: 5,
-			avgFontReadability: 5,
-			avgOpenessOfSpace: 5,
-			avgStaffHelpfulness: 4,
-			comments: [],
+			_id: "fakeid2",
+			avgBraille: null,
+			avgFontReadability: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+			avgGuideDogFriendly: null,
 		});
 	} catch (e) {
 		console.log(e);
@@ -45,11 +99,112 @@ async function main() {
 
 	try {
 		await addPlace({
-			avgBraille: 3,
-			avgFontReadability: 4.5,
-			avgOpenessOfSpace: 5,
-			avgStaffHelpfulness: 5,
-			comments: [],
+			_id: "fakeid3",
+			avgBraille: null,
+			avgFontReadability: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+			avgGuideDogFriendly: null,
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	try {
+		await addRating({
+			// @ts-ignore
+			userID: user1._id,
+			placeID: "fakeid1",
+			braille: 3,
+			fontReadability: 5,
+			staffHelpfulness: 5,
+			navigability: 2,
+			guideDogFriendly: null,
+			comment: {
+				_id: new ObjectId(),
+				comment: "Not too shabby",
+			},
+			dateCreated: new Date(),
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	try {
+		await addRating({
+			// @ts-ignore
+			userID: user2._id,
+			placeID: "fakeid2",
+			braille: 5,
+			fontReadability: 1,
+			staffHelpfulness: 3,
+			navigability: 4,
+			guideDogFriendly: 3,
+			comment: {
+				_id: new ObjectId(),
+				comment: "Great",
+			},
+			dateCreated: new Date(),
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	try {
+		await addRating({
+			// @ts-ignore
+			userID: user3._id,
+			placeID: "fakeid3",
+			braille: 5,
+			fontReadability: 5,
+			staffHelpfulness: 5,
+			navigability: 5,
+			guideDogFriendly: 5,
+			comment: {
+				_id: new ObjectId(),
+				comment: "Best place I've ever been too wow",
+			},
+			dateCreated: new Date(),
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	try {
+		await addRating({
+			// @ts-ignore
+			userID: user1._id,
+			placeID: "fakeid2",
+			braille: 1,
+			fontReadability: 1,
+			staffHelpfulness: 1,
+			navigability: 1,
+			guideDogFriendly: null,
+			comment: {
+				_id: new ObjectId(),
+				comment: "Idk dude, kinda sketch",
+			},
+			dateCreated: new Date(),
+		});
+	} catch (e) {
+		console.log(e);
+	}
+
+	try {
+		await addRating({
+			// @ts-ignore
+			userID: user2._id,
+			placeID: "fakeid3",
+			braille: 1,
+			fontReadability: 3,
+			staffHelpfulness: 1,
+			navigability: 3,
+			guideDogFriendly: null,
+			comment: {
+				_id: new ObjectId(),
+				comment: "eh, its okay",
+			},
+			dateCreated: new Date(),
 		});
 	} catch (e) {
 		console.log(e);
