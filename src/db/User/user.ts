@@ -1,5 +1,5 @@
 import { getCollection } from "../mongoCollections";
-import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
+import { InsertOneResult, ObjectId } from "mongodb";
 import type { User } from "../types";
 import type { Collection } from "mongodb";
 
