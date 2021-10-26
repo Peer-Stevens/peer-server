@@ -41,5 +41,3 @@ export interface Place {
 	avgNavigability: number | null;
 	avgGuideDogFriendly: boolean | null;
 }
-
-export type DbData = Rating | Place | User;

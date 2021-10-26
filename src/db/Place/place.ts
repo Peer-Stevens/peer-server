@@ -1,21 +1,21 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult } from "mongodb";
-import { DbData, Place } from "../types";
+import { Place, Rating } from "../types";
 import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 
-const place = getCollection("place");
-const rating = getCollection("rating");
+const place = getCollection<Place>("place");
+const rating = getCollection<Rating>("rating");
 
 // idk if we need this, but here it is in case we do
-export async function getAllPlaces(): Promise<Array<DbData>> {
-	const placesCollection: Collection<DbData> = await place;
+export async function getAllPlaces(): Promise<Array<Place>> {
+	const placesCollection: Collection<Place> = await place;
 
 	return await placesCollection.find({}).toArray();
 }
 
-export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<DbData> {
-	const placesCollection: Collection<DbData> = await place;
+export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
+	const placesCollection: Collection<Place> = await place;
 
 	const placeReturned = await placesCollection.findOne({ _id: id });
 	if (placeReturned === null) throw "Sorry, no place exists with that ID";
@@ -25,8 +25,8 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<DbDat
 
 // should be called when the api displays a place that has never been accessed before by any user
 //Note to self: might not be necessary?? I'll fix this later
-export async function addPlace(placeToAdd: Place): Promise<DbData> {
-	const placesCollection: Collection<DbData> = await place;
+export async function addPlace(placeToAdd: Place): Promise<Place> {
+	const placesCollection: Collection<Place> = await place;
 
 	const insertInfo: InsertOneResult<Place> = await placesCollection.insertOne(placeToAdd);
 	if (insertInfo.acknowledged === false) throw "Error adding place";
@@ -47,10 +47,10 @@ export async function addPlace(placeToAdd: Place): Promise<DbData> {
  * I need to figure out how to calculate the 'average' or majority of 'True' values with mongo aggregation
  * */
 
-export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<DbData> {
+export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
 	//this is type any because I can't figure out how to get it to work without it, SOS
-	const ratingCollection: Collection<any> = await rating;
-	const placesCollection: Collection<DbData> = await place;
+	const ratingCollection: Collection<Rating> = await rating;
+	const placesCollection: Collection<Place> = await place;
 
 	const pipeline = [
 		{
@@ -95,9 +95,17 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<DbData
 		},
 	];
 
-	const aggCursor = ratingCollection.aggregate(pipeline);
+	const aggCursor = ratingCollection.aggregate<
+		Rating & {
+			brailleAvg: number;
+			navigAvg: number;
+			fontAvg: number;
+			staffAvg: number;
+			guideDogAvg: number;
+		}
+	>(pipeline);
 
-	let avgsObj: Place = {
+	const avgsObj: Place = {
 		_id: id,
 		avgBraille: null,
 		avgFontReadability: null,
@@ -106,7 +114,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<DbData
 		avgGuideDogFriendly: null,
 	};
 
-	await aggCursor.forEach(elem => {
+	(await aggCursor.toArray()).forEach(elem => {
 		avgsObj["avgBraille"] = elem.brailleAvg;
 		avgsObj["avgNavigability"] = elem.navigAvg;
 		avgsObj["avgFontReadability"] = elem.fontAvg;

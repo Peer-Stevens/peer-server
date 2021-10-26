@@ -1,11 +1,10 @@
 import { dbConnection } from "./mongoConnection";
 import type { Collection } from "mongodb";
-import type { DbData } from "./types";
 
-export async function getCollection(
+export async function getCollection<T>(
 	collection: "rating" | "user" | "place"
-): Promise<Collection<DbData>> {
-	const _col: Promise<Collection<DbData>> | undefined = undefined;
+): Promise<Collection<T>> {
+	const _col: Promise<Collection<T>> | undefined = undefined;
 
 	if (!_col) {
 		const db = await dbConnection();
