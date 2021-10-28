@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
+import { getPlacePhoto } from "./rest/getPlacePhoto";
 import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
 import { getPlace } from "./rest/Places/getPlaces";
 import { getUser } from "./rest/Users/getUsers";
@@ -12,6 +13,7 @@ const port = process.env.PORT || 3030;
 dotenv.config();
 
 app.get("/getNearbyPlaces", getNearbyPlaces);
+app.get("/getPlacePhoto/:ref", getPlacePhoto);
 
 // get all ratings for certain place
 app.get("/getAllPlaceRatings/:id", getAllPlaceRatings);
