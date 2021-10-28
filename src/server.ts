@@ -7,6 +7,7 @@ import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Rating
 import { getPlace } from "./rest/Places/getPlaces";
 import { getUser } from "./rest/Users/getUsers";
 import { addRatingToPlace } from "./rest/Ratings/addRating";
+import { addUser } from "./rest/Users/addUser";
 
 const app = express();
 const port = process.env.PORT || 3030;
@@ -37,6 +38,9 @@ app.get("/getUser/:id", getUser);
 
 // add rating
 app.post("/addRating", addRatingToPlace);
+
+// add user
+app.post("/addUser", addUser);
 
 app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);
