@@ -1,17 +1,28 @@
 import type { Request, Response } from "express";
 import { addRating } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
+import type { Rating } from "../../db/types";
 
-export const addRatingToPlace = async (req: Request, res: Response): Promise<void> => {
+export const addRatingToPlace = async (
+	req: Request<unknown, unknown, Partial<Rating>>,
+	res: Response
+): Promise<void> => {
 	const rating = req.body;
 
-	if (!rating.userId) {
+	// userId and placeId are mandatory fields
+	if (!rating.userID) {
 		res.status(400).json({ error: "You must provide a userId" });
 		return;
 	}
 
-	if (!rating.placeId) {
+	if (!rating.placeID) {
 		res.status(400).json({ error: "You must provide a placeId" });
+		return;
+	}
+
+	// need to check that comment is a string otherwise the linter yells at me
+	if (typeof rating.comment !== "string") {
+		res.status(400).json({ error: "comment must be a string" });
 		return;
 	}
 
@@ -21,13 +32,13 @@ export const addRatingToPlace = async (req: Request, res: Response): Promise<voi
 
 	try {
 		const newRating = await addRating({
-			userID: new ObjectId(rating.userId),
-			placeID: rating.placeId,
+			userID: new ObjectId(rating.userID),
+			placeID: rating.placeID,
 			braille: rating.braille ? rating.braille : null,
-			fontReadability: rating.fontRead ? rating.fontRead : null,
-			staffHelpfulness: rating.staffHelpful ? rating.staffHelpful : null,
-			navigability: rating.navig ? rating.navig : null,
-			guideDogFriendly: rating.guideDog ? rating.guideDog : null,
+			fontReadability: rating.fontReadability ? rating.fontReadability : null,
+			staffHelpfulness: rating.staffHelpfulness ? rating.staffHelpfulness : null,
+			navigability: rating.navigability ? rating.navigability : null,
+			guideDogFriendly: rating.guideDogFriendly ? rating.guideDogFriendly : null,
 			comment: rating.comment ? rating.comment : null,
 			dateCreated: new Date(),
 		});
