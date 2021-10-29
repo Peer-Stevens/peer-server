@@ -6,8 +6,6 @@ export const addUser = async (
 	req: Request<unknown, unknown, Partial<User>>,
 	res: Response
 ): Promise<void> => {
-	//This line will be necessary once authentication is implemented and we are actually sending data through the request body
-	//const user = req.body;
 
 	try {
 		const newUser = await addUserToDb({
