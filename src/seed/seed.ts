@@ -31,9 +31,7 @@ async function main() {
 	let user1: User;
 	try {
 		user1 = await addUserToDb({
-			firstName: "Eleni",
-			lastName: "Rotsides",
-			email: "e@e.com",
+			username: "julioisfred",
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: true,
@@ -45,9 +43,7 @@ async function main() {
 	let user2: User;
 	try {
 		user2 = await addUserToDb({
-			firstName: "Andrew",
-			lastName: "Jones",
-			email: "a@a.com",
+			username: "davidscookies",
 			isBlindMode: false,
 			readsBraille: true,
 			doesNotPreferHelp: false,
@@ -59,9 +55,7 @@ async function main() {
 	let user3: User;
 	try {
 		user3 = await addUserToDb({
-			firstName: "David",
-			lastName: "Carpenter",
-			email: "d@d.com",
+			username: "andrewsteashop",
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: false,
