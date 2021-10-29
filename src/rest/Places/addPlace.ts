@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { addPlace } from "../../db/Place/place";
+import { addPlace, isPlaceInDb } from "../../db/Place/place";
 import type { Place } from "../../db/types";
 
 export const addPlaceToDb = async (
@@ -10,6 +10,20 @@ export const addPlaceToDb = async (
 
 	if (!place._id) {
 		res.status(400).json({ error: "You must provide a placeId" });
+		return;
+	}
+
+	// check to see if the place already exists
+	try {
+		const doesExist = await isPlaceInDb(place._id);
+		if (doesExist) {
+			res.status(400).json({
+				error: "That place already exists in the database and cannot be added again.",
+			});
+			return;
+		}
+	} catch (e) {
+		res.status(400).json({ error: "Something went wrong while trying to fetch the place" });
 		return;
 	}
 

@@ -24,6 +24,14 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 	return placeReturned;
 }
 
+export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
+	const placesCollection: Collection<Place> = await place;
+
+	const placeReturned = await placesCollection.findOne({ _id: id });
+	if (placeReturned === null) return false;
+	return true;
+}
+
 export async function addPlace(placeToAdd: Place): Promise<Place> {
 	const placesCollection: Collection<Place> = await place;
 
