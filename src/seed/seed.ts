@@ -3,7 +3,6 @@ import { addPlace, getAllPlaces } from "../db/Place/place";
 import { addUserToDb } from "../db/User/user";
 import dotenv from "dotenv";
 import { addRating } from "../db/Rating/rating";
-import { ObjectId } from "bson";
 import { User } from "../db/types";
 
 dotenv.config();
@@ -114,10 +113,7 @@ async function main() {
 			staffHelpfulness: 5,
 			navigability: 2,
 			guideDogFriendly: null,
-			comment: {
-				_id: new ObjectId(),
-				comment: "Not too shabby",
-			},
+			comment: "Not too shabby",
 			dateCreated: new Date(),
 		});
 	} catch (e) {
@@ -134,10 +130,7 @@ async function main() {
 			staffHelpfulness: 3,
 			navigability: 4,
 			guideDogFriendly: 3,
-			comment: {
-				_id: new ObjectId(),
-				comment: "Great",
-			},
+			comment: "Great",
 			dateCreated: new Date(),
 		});
 	} catch (e) {
@@ -154,10 +147,7 @@ async function main() {
 			staffHelpfulness: 5,
 			navigability: 5,
 			guideDogFriendly: 5,
-			comment: {
-				_id: new ObjectId(),
-				comment: "Best place I've ever been too wow",
-			},
+			comment: "Best place I've ever been too wow",
 			dateCreated: new Date(),
 		});
 	} catch (e) {
@@ -174,10 +164,7 @@ async function main() {
 			staffHelpfulness: 1,
 			navigability: 1,
 			guideDogFriendly: null,
-			comment: {
-				_id: new ObjectId(),
-				comment: "Idk dude, kinda sketch",
-			},
+			comment: "Idk dude, kinda sketch",
 			dateCreated: new Date(),
 		});
 	} catch (e) {
@@ -194,10 +181,7 @@ async function main() {
 			staffHelpfulness: 1,
 			navigability: 3,
 			guideDogFriendly: null,
-			comment: {
-				_id: new ObjectId(),
-				comment: "eh, its okay",
-			},
+			comment: "eh, its okay",
 			dateCreated: new Date(),
 		});
 	} catch (e) {
