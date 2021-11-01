@@ -24,6 +24,7 @@ export interface Rating {
 	guideDogFriendly: number | null;
 	comment: string | null;
 	dateCreated: Date;
+	dateEdited?: Date;
 }
 
 export interface Place {

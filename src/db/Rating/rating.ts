@@ -1,5 +1,5 @@
 import { getCollection } from "../mongoCollections";
-import { InsertOneResult, ObjectId } from "mongodb";
+import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { Rating } from "../types";
 import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
@@ -17,6 +17,44 @@ export async function addRating(ratingToAdd: Rating): Promise<Rating> {
 
 	// Every time an insertion is succesfful, we need to update the averages for the place in the Place collection
 	const insertedRating: Rating = await getRatingById(newID);
+
+	await updatePlace(insertedRating.placeID);
+
+	return insertedRating;
+}
+
+export async function editRating(ratingId: ObjectId, newRating: Partial<Rating>): Promise<Rating> {
+	const ratingCollection: Collection<Rating> = await rating;
+
+	// need to retain values if there isn't an update to supply
+	const ratingBeforeUpdate: Rating = await getRatingById(ratingId);
+
+	const ratingToUpdate: UpdateResult = await ratingCollection.updateOne(
+		{ _id: ratingId },
+		{
+			$set: {
+				braille: newRating.braille ? newRating.braille : ratingBeforeUpdate.braille,
+				fontReadability: newRating.fontReadability
+					? newRating.fontReadability
+					: ratingBeforeUpdate.fontReadability,
+				staffHelpfulness: newRating.staffHelpfulness
+					? newRating.staffHelpfulness
+					: ratingBeforeUpdate.staffHelpfulness,
+				navigability: newRating.navigability
+					? newRating.navigability
+					: ratingBeforeUpdate.navigability,
+				guideDogFriendly: newRating.guideDogFriendly
+					? newRating.guideDogFriendly
+					: ratingBeforeUpdate.guideDogFriendly,
+				comment: newRating.comment ? newRating.comment : ratingBeforeUpdate.comment,
+				dateEdited: new Date(),
+			},
+		}
+	);
+	if (ratingToUpdate.acknowledged === false) throw "Could not update Rating";
+
+	// Every time an update is succesfful, we need to update the averages for the place in the Place collection
+	const insertedRating: Rating = await getRatingById(ratingId);
 
 	await updatePlace(insertedRating.placeID);
 
