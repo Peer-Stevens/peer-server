@@ -22,13 +22,8 @@ export interface Rating {
 	staffHelpfulness: number | null;
 	navigability: number | null;
 	guideDogFriendly: number | null;
-	comment: Comment | null;
+	comment: string | null;
 	dateCreated: Date;
-}
-
-export interface Comment {
-	_id?: ObjectId;
-	comment: string;
 }
 
 export interface Place {
