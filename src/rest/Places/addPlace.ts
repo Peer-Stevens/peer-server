@@ -23,7 +23,8 @@ export const addPlaceToDb = async (
 			return;
 		}
 	} catch (e) {
-		res.status(400).json({ error: "Something went wrong while trying to fetch the place" });
+		console.log("Something went wrong while trying to fetch the place");
+		res.status(400);
 		return;
 	}
 
