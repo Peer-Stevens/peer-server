@@ -13,6 +13,12 @@ export const addPlaceToDb = async (
 		return;
 	}
 
+	// Error handling; this is needed because any types can be passed in despite using TypeScript
+	if (typeof place._id !== "string") {
+		res.status(400).json({ error: "_id needs to be a string" });
+		return;
+	}
+
 	// check to see if the place already exists
 	try {
 		const doesExist = await isPlaceInDb(place._id);

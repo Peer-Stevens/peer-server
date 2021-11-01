@@ -20,16 +20,32 @@ export const addRatingToPlace = async (
 		return;
 	}
 
-	// need to check that comment is a string otherwise the linter yells at me
+	// Error handling; this is needed because any types can be passed in despite using TypeScript
+	// userID needs to be a string in order to be converted to type ObjectId
+	if (typeof rating.userID !== "string" || typeof rating.placeID !== "string") {
+		res.status(400).json({ error: "userID and placeID must be strings" });
+		return;
+	}
+
+	if (
+		(rating.braille && typeof rating.braille !== "number") ||
+		(rating.fontReadability && typeof rating.fontReadability !== "number") ||
+		(rating.staffHelpfulness && typeof rating.staffHelpfulness !== "number") ||
+		(rating.navigability && typeof rating.navigability !== "number") ||
+		(rating.guideDogFriendly && typeof rating.guideDogFriendly !== "number")
+	) {
+		res.status(400).json({
+			error: "braille, fontReadability, staffHelpfullness, navigability, and guideDogFriendly must be strings",
+		});
+		return;
+	}
+
 	if (typeof rating.comment !== "string") {
 		res.status(400).json({ error: "comment must be a string" });
 		return;
 	}
 
-	if (rating.comment) {
-		rating.comment = { _id: new ObjectId(), comment: rating.comment };
-	}
-
+	// ready to add to database now
 	try {
 		const newRating = await addRating({
 			userID: new ObjectId(rating.userID),
