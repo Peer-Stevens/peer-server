@@ -23,33 +23,15 @@ export async function addRating(ratingToAdd: Rating): Promise<Rating> {
 	return insertedRating;
 }
 
-export async function editRating(ratingId: ObjectId, newRating: Partial<Rating>): Promise<Rating> {
+export async function editRatingInDb(
+	ratingId: ObjectId,
+	newRatingFields: Partial<Rating>
+): Promise<Rating> {
 	const ratingCollection: Collection<Rating> = await ratingColPromise;
-
-	// need to retain values if there isn't an update to supply
-	const ratingBeforeUpdate: Rating = await getRatingById(ratingId);
 
 	const ratingToUpdate: UpdateResult = await ratingCollection.updateOne(
 		{ _id: ratingId },
-		{
-			$set: {
-				braille: newRating.braille ? newRating.braille : ratingBeforeUpdate.braille,
-				fontReadability: newRating.fontReadability
-					? newRating.fontReadability
-					: ratingBeforeUpdate.fontReadability,
-				staffHelpfulness: newRating.staffHelpfulness
-					? newRating.staffHelpfulness
-					: ratingBeforeUpdate.staffHelpfulness,
-				navigability: newRating.navigability
-					? newRating.navigability
-					: ratingBeforeUpdate.navigability,
-				guideDogFriendly: newRating.guideDogFriendly
-					? newRating.guideDogFriendly
-					: ratingBeforeUpdate.guideDogFriendly,
-				comment: newRating.comment ? newRating.comment : ratingBeforeUpdate.comment,
-				dateEdited: new Date(),
-			},
-		}
+		{ $set: newRatingFields }
 	);
 	if (ratingToUpdate.acknowledged === false) throw "Could not update Rating";
 

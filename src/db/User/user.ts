@@ -25,29 +25,12 @@ export async function getUserById(id: ObjectId): Promise<User> {
 	return userReturned;
 }
 
-export async function editUser(userId: ObjectId, newUserObj: Partial<User>): Promise<User> {
+export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User>): Promise<User> {
 	const userCollection: Collection<User> = await userColPromise;
-
-	// need to retain values if there isn't an update to supply
-	const userBeforeUpdate: User = await getUserById(userId);
 
 	const userToUpdate: UpdateResult = await userCollection.updateOne(
 		{ _id: userId },
-		{
-			$set: {
-				username: newUserObj.username ? newUserObj.username : userBeforeUpdate.username,
-				isBlindMode: newUserObj.isBlindMode
-					? newUserObj.isBlindMode
-					: userBeforeUpdate.isBlindMode,
-				readsBraille: newUserObj.readsBraille
-					? newUserObj.readsBraille
-					: userBeforeUpdate.readsBraille,
-				doesNotPreferHelp: newUserObj.doesNotPreferHelp
-					? newUserObj.doesNotPreferHelp
-					: userBeforeUpdate.doesNotPreferHelp,
-				dateEdited: new Date(),
-			},
-		}
+		{ $set: newUserFields }
 	);
 	if (userToUpdate.acknowledged === false) throw "Could not update User";
 
