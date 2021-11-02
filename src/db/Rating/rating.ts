@@ -1,5 +1,5 @@
 import { getCollection } from "../mongoCollections";
-import { InsertOneResult, ObjectId } from "mongodb";
+import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { Rating } from "../types";
 import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
@@ -17,6 +17,26 @@ export async function addRating(ratingToAdd: Rating): Promise<Rating> {
 
 	// Every time an insertion is succesfful, we need to update the averages for the place in the Place collection
 	const insertedRating: Rating = await getRatingById(newID);
+
+	await updatePlace(insertedRating.placeID);
+
+	return insertedRating;
+}
+
+export async function editRatingInDb(
+	ratingId: ObjectId,
+	newRatingFields: Partial<Rating>
+): Promise<Rating> {
+	const ratingCollection: Collection<Rating> = await ratingColPromise;
+
+	const ratingToUpdate: UpdateResult = await ratingCollection.updateOne(
+		{ _id: ratingId },
+		{ $set: newRatingFields }
+	);
+	if (ratingToUpdate.acknowledged === false) throw "Could not update Rating";
+
+	// Every time an update is succesfful, we need to update the averages for the place in the Place collection
+	const insertedRating: Rating = await getRatingById(ratingId);
 
 	await updatePlace(insertedRating.placeID);
 
@@ -48,4 +68,12 @@ export async function getAllRatingsFromUser(userId: ObjectId): Promise<Array<Rat
 	if (allRatings === null) throw "Sorry, no ratings exist for that place";
 
 	return allRatings;
+}
+
+export async function deleteRatingFromDb(id: ObjectId): Promise<boolean> {
+	const ratingCollection: Collection<Rating> = await ratingColPromise;
+
+	const rating = await ratingCollection.deleteOne({ _id: id });
+	if (rating.deletedCount === 1) return true;
+	return false;
 }

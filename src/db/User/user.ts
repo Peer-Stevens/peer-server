@@ -1,5 +1,5 @@
 import { getCollection } from "../mongoCollections";
-import { InsertOneResult, ObjectId } from "mongodb";
+import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { User } from "../types";
 import type { Collection } from "mongodb";
 
@@ -23,4 +23,16 @@ export async function getUserById(id: ObjectId): Promise<User> {
 	const userReturned = await userCollection.findOne({ _id: id });
 	if (userReturned === null) throw "Sorry, no rating exists with that ID";
 	return userReturned;
+}
+
+export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User>): Promise<User> {
+	const userCollection: Collection<User> = await userColPromise;
+
+	const userToUpdate: UpdateResult = await userCollection.updateOne(
+		{ _id: userId },
+		{ $set: newUserFields }
+	);
+	if (userToUpdate.acknowledged === false) throw "Could not update User";
+
+	return await getUserById(userId);
 }
