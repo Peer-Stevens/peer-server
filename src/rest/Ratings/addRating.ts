@@ -40,7 +40,7 @@ export const addRatingToPlace = async (
 		return;
 	}
 
-	if (typeof rating.comment !== "string") {
+	if (rating.comment && typeof rating.comment !== "string") {
 		res.status(400).json({ error: "comment must be a string" });
 		return;
 	}
