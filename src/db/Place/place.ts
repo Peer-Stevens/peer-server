@@ -4,19 +4,19 @@ import { Place, Rating } from "../types";
 import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 
-const place = getCollection<Place>("place");
-const rating = getCollection<Rating>("rating");
+const placeColPromise = getCollection<Place>("place");
+const ratingColPromise = getCollection<Rating>("rating");
 
 // idk if we need this, but here it is in case we do
 // did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
 export async function getAllPlaces(): Promise<Array<Place>> {
-	const placesCollection: Collection<Place> = await place;
+	const placesCollection: Collection<Place> = await placeColPromise;
 
 	return await placesCollection.find({}).toArray();
 }
 
 export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const placesCollection: Collection<Place> = await place;
+	const placesCollection: Collection<Place> = await placeColPromise;
 
 	const placeReturned = await placesCollection.findOne({ _id: id });
 	if (placeReturned === null) throw "Sorry, no place exists with that ID";
@@ -25,7 +25,7 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 }
 
 export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
-	const placesCollection: Collection<Place> = await place;
+	const placesCollection: Collection<Place> = await placeColPromise;
 
 	const placeReturned = await placesCollection.findOne({ _id: id });
 	if (placeReturned === null) return false;
@@ -33,7 +33,7 @@ export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolea
 }
 
 export async function addPlace(placeToAdd: Place): Promise<Place> {
-	const placesCollection: Collection<Place> = await place;
+	const placesCollection: Collection<Place> = await placeColPromise;
 
 	const insertInfo: InsertOneResult<Place> = await placesCollection.insertOne(placeToAdd);
 	if (insertInfo.acknowledged === false) throw "Error adding place";
@@ -51,8 +51,8 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
  * */
 
 export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const ratingCollection: Collection<Rating> = await rating;
-	const placesCollection: Collection<Place> = await place;
+	const ratingCollection: Collection<Rating> = await ratingColPromise;
+	const placesCollection: Collection<Place> = await placeColPromise;
 
 	const pipeline = [
 		{
