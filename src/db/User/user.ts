@@ -3,11 +3,11 @@ import { InsertOneResult, ObjectId } from "mongodb";
 import type { User } from "../types";
 import type { Collection } from "mongodb";
 
-const user = getCollection<User>("user");
+const userColPromise = getCollection<User>("user");
 
 // should be called when user creates an account
 export async function addUserToDb(userToAdd: User): Promise<User> {
-	const userCollection: Collection<User> = await user;
+	const userCollection: Collection<User> = await userColPromise;
 
 	const insertInfo: InsertOneResult<User> = await userCollection.insertOne(userToAdd);
 	if (insertInfo.acknowledged === false) throw "Error adding user";
@@ -18,7 +18,7 @@ export async function addUserToDb(userToAdd: User): Promise<User> {
 }
 
 export async function getUserById(id: ObjectId): Promise<User> {
-	const userCollection: Collection<User> = await user;
+	const userCollection: Collection<User> = await userColPromise;
 
 	const userReturned = await userCollection.findOne({ _id: id });
 	if (userReturned === null) throw "Sorry, no rating exists with that ID";
