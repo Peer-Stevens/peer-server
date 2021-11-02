@@ -125,7 +125,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 	});
 
 	const placeToUpdate = await placesCollection.updateOne({ _id: id }, { $set: avgsObj });
-	if (placeToUpdate.modifiedCount === 0) throw "Could not update Place.";
+	if (placeToUpdate.acknowledged === false) throw "Could not update Place.";
 
 	return await getPlaceByID(id);
 }
