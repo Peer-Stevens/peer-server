@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { addRating } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
+import StatusCode from "../status";
 
 export const addRatingToPlace = async (
 	req: Request<unknown, unknown, Partial<Rating>>,
@@ -11,19 +12,19 @@ export const addRatingToPlace = async (
 
 	// userId and placeId are mandatory fields
 	if (!rating.userID) {
-		res.status(400).json({ error: "You must provide a userId" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "You must provide a userId" });
 		return;
 	}
 
 	if (!rating.placeID) {
-		res.status(400).json({ error: "You must provide a placeId" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "You must provide a placeId" });
 		return;
 	}
 
 	// Error handling; this is needed because any types can be passed in despite using TypeScript
 	// userID needs to be a string in order to be converted to type ObjectId
 	if (typeof rating.userID !== "string" || typeof rating.placeID !== "string") {
-		res.status(400).json({ error: "userID and placeID must be strings" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "userID and placeID must be strings" });
 		return;
 	}
 
@@ -34,14 +35,14 @@ export const addRatingToPlace = async (
 		(rating.navigability && typeof rating.navigability !== "number") ||
 		(rating.guideDogFriendly && typeof rating.guideDogFriendly !== "number")
 	) {
-		res.status(400).json({
+		res.status(StatusCode.BAD_REQUEST).json({
 			error: "braille, fontReadability, staffHelpfullness, navigability, and guideDogFriendly must be strings",
 		});
 		return;
 	}
 
 	if (rating.comment && typeof rating.comment !== "string") {
-		res.status(400).json({ error: "comment must be a string" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "comment must be a string" });
 		return;
 	}
 
@@ -58,8 +59,8 @@ export const addRatingToPlace = async (
 			comment: rating.comment ? rating.comment : null,
 			dateCreated: new Date(),
 		});
-		res.status(200).json(newRating);
+		res.status(StatusCode.OK).json(newRating);
 	} catch (e) {
-		res.status(500).json(e);
+		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
 	}
 };

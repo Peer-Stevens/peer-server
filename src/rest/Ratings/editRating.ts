@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { editRatingInDb, getRatingById } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
+import StatusCode from "../status";
 
 export const editRating = async (
 	req: Request<unknown, unknown, Partial<Rating>>,
@@ -13,12 +14,12 @@ export const editRating = async (
 	// _id needs to be a string in order to be converted to type ObjectId
 
 	if (!editedRating._id) {
-		res.status(400).json({ error: "There must be an _id" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "There must be an _id" });
 		return;
 	}
 
 	if (editedRating._id && typeof editedRating._id !== "string") {
-		res.status(400).json({ error: "_id must be a string" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "_id must be a string" });
 		return;
 	}
 
@@ -29,14 +30,14 @@ export const editRating = async (
 		(editedRating.navigability && typeof editedRating.navigability !== "number") ||
 		(editedRating.guideDogFriendly && typeof editedRating.guideDogFriendly !== "number")
 	) {
-		res.status(400).json({
+		res.status(StatusCode.BAD_REQUEST).json({
 			error: "braille, fontReadability, staffHelpfullness, navigability, and guideDogFriendly must be strings",
 		});
 		return;
 	}
 
 	if (editedRating.comment && typeof editedRating.comment !== "string") {
-		res.status(400).json({ error: "comment must be a string" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "comment must be a string" });
 		return;
 	}
 
@@ -81,7 +82,9 @@ export const editRating = async (
 	}
 
 	if (Object.keys(newRatingObj).length === 0) {
-		res.status(400).json({ error: "Cannot edit Rating since there is no change" });
+		res.status(StatusCode.BAD_REQUEST).json({
+			error: "Cannot edit Rating since there is no change",
+		});
 		return;
 	}
 
@@ -90,8 +93,8 @@ export const editRating = async (
 	// ready to edit rating
 	try {
 		const rating = await editRatingInDb(new ObjectId(editedRating._id), newRatingObj);
-		res.status(200).json(rating);
+		res.status(StatusCode.OK).json(rating);
 	} catch (e) {
-		res.status(500).json(e);
+		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
 	}
 };

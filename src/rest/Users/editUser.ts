@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { editUserInDb, getUserById } from "../../db/User/user";
 import { ObjectId } from "mongodb";
 import type { User } from "../../db/types";
+import StatusCode from "../status";
 
 export const editUser = async (
 	req: Request<unknown, unknown, Partial<User>>,
@@ -13,11 +14,11 @@ export const editUser = async (
 	// _id needs to be a string in order to be converted to type ObjectId
 
 	if (!editedUser._id) {
-		res.status(400).json({ error: "There must be an _id" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "There must be an _id" });
 		return;
 	}
 	if (editedUser._id && typeof editedUser._id !== "string") {
-		res.status(400).json({ error: "_id must be a string" });
+		res.status(StatusCode.BAD_REQUEST).json({ error: "_id must be a string" });
 		return;
 	}
 
@@ -27,7 +28,7 @@ export const editUser = async (
 		(editedUser.readsBraille && typeof editedUser.readsBraille !== "boolean") ||
 		(editedUser.doesNotPreferHelp && typeof editedUser.doesNotPreferHelp !== "boolean")
 	) {
-		res.status(400).json({
+		res.status(StatusCode.BAD_REQUEST).json({
 			error: "username must be a string and isBlindMode, readsBraille, and doesNotPreferHelp must be booleans",
 		});
 		return;
@@ -62,7 +63,9 @@ export const editUser = async (
 	}
 
 	if (Object.keys(newUserObj).length === 0) {
-		res.status(400).json({ error: "Cannot edit User since there is no change" });
+		res.status(StatusCode.BAD_REQUEST).json({
+			error: "Cannot edit User since there is no change",
+		});
 		return;
 	}
 
@@ -71,8 +74,8 @@ export const editUser = async (
 	// ready to edit user
 	try {
 		const user = await editUserInDb(new ObjectId(editedUser._id), newUserObj);
-		res.status(200).json(user);
+		res.status(StatusCode.OK).json(user);
 	} catch (e) {
-		res.status(500).json(e);
+		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
 	}
 };

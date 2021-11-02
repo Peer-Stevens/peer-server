@@ -5,6 +5,7 @@ import {
 } from "@googlemaps/google-maps-services-js";
 
 import { Request, Response } from "express";
+import StatusCode from "./status";
 
 export const getNearbyPlaces = async (req: Request, res: Response): Promise<void> => {
 	const client = new Client({});
@@ -23,5 +24,7 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 			console.log(e);
 		});
 
-	res.status(200).json({ places: (placesRes as PlacesNearbyResponse).data.results });
+	res.status(StatusCode.OK).json({
+		places: (placesRes as PlacesNearbyResponse).data.results,
+	});
 };

@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { addUserToDb } from "../../db/User/user";
 import type { User } from "../../db/types";
+import StatusCode from "../status";
 
 export const addUser = async (
 	req: Request<unknown, unknown, Partial<User>>,
@@ -14,8 +15,8 @@ export const addUser = async (
 			readsBraille: true,
 			doesNotPreferHelp: true,
 		});
-		res.status(200).json(newUser);
+		res.status(StatusCode.OK).json(newUser);
 	} catch (e) {
-		res.status(500).json(e);
+		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
 	}
 };
