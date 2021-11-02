@@ -11,6 +11,7 @@ export interface User {
 	isBlindMode: boolean;
 	readsBraille: boolean;
 	doesNotPreferHelp: boolean;
+	dateEdited?: Date;
 }
 
 export interface Rating {

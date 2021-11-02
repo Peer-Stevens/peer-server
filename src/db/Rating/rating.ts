@@ -24,7 +24,7 @@ export async function addRating(ratingToAdd: Rating): Promise<Rating> {
 }
 
 export async function editRating(ratingId: ObjectId, newRating: Partial<Rating>): Promise<Rating> {
-	const ratingCollection: Collection<Rating> = await rating;
+	const ratingCollection: Collection<Rating> = await ratingColPromise;
 
 	// need to retain values if there isn't an update to supply
 	const ratingBeforeUpdate: Rating = await getRatingById(ratingId);
