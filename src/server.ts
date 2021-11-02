@@ -11,6 +11,7 @@ import { addUser } from "./rest/Users/addUser";
 import { addPlaceToDb } from "./rest/Places/addPlace";
 import { editRating } from "./rest/Ratings/editRating";
 import { editUser } from "./rest/Users/editUser";
+import { deleteRating } from "./rest/Ratings/deleteRating";
 
 const app = express();
 const port = process.env.PORT || 3030;
@@ -53,6 +54,9 @@ app.patch("/editRating", editRating);
 
 // edit user
 app.patch("/editUser", editUser);
+
+// delete rating
+app.delete("/deleteRating/:id", deleteRating);
 
 app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);

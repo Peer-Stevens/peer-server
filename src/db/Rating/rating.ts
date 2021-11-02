@@ -69,3 +69,11 @@ export async function getAllRatingsFromUser(userId: ObjectId): Promise<Array<Rat
 
 	return allRatings;
 }
+
+export async function deleteRatingFromDb(id: ObjectId): Promise<boolean> {
+	const ratingCollection: Collection<Rating> = await ratingColPromise;
+
+	const rating = await ratingCollection.deleteOne({ _id: id });
+	if (rating.deletedCount === 1) return true;
+	return false;
+}
