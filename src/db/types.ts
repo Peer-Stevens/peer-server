@@ -7,9 +7,7 @@ import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js
  */
 export interface User {
 	_id?: ObjectId;
-	firstName: string;
-	lastName: string;
-	email: string;
+	username: string;
 	isBlindMode: boolean;
 	readsBraille: boolean;
 	doesNotPreferHelp: boolean;
@@ -24,13 +22,8 @@ export interface Rating {
 	staffHelpfulness: number | null;
 	navigability: number | null;
 	guideDogFriendly: number | null;
-	comment: Comment | null;
+	comment: string | null;
 	dateCreated: Date;
-}
-
-export interface Comment {
-	_id?: ObjectId;
-	comment: string;
 }
 
 export interface Place {
