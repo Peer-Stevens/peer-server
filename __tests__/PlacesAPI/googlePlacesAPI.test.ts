@@ -1,6 +1,6 @@
 import axios from "axios";
 
-describe("Places API", () => {
+describe("Google Places API", () => {
 	it("/getNearbyPlaces returns nearby places", async () => {
 		let nearbyPlaces;
 		try {
@@ -12,14 +12,13 @@ describe("Places API", () => {
 			nearbyPlaces = data;
 		} catch (e) {
 			console.log(e);
-			return;
 		}
 
 		// eslint-disable-next-line
 		expect(nearbyPlaces.places).toHaveLength(20);
 	});
 	it("/getPlacePhoto returns an image", async () => {
-		let imageStatus;
+		let imageStatus!: number;
 		try {
 			// eslint-disable-next-line
 			const { status } = await axios.get(
@@ -29,7 +28,6 @@ describe("Places API", () => {
 			imageStatus = status;
 		} catch (e) {
 			console.log(e);
-			return;
 		}
 		expect(imageStatus).toBeGreaterThanOrEqual(200);
 		expect(imageStatus).toBeLessThanOrEqual(299);
