@@ -2,8 +2,8 @@ import axios from "axios";
 import { Place, Rating } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 
-describe("Place database functions", () => {
-	it("/addPlace adds place", async () => {
+describe("Place REST endpoints", () => {
+	it("/addPlace adds place to database", async () => {
 		const { _db, _connection } = await dbConnection();
 		await _db.dropDatabase();
 		await _connection.close();
@@ -22,9 +22,7 @@ describe("Place database functions", () => {
 			console.log(e);
 		}
 
-		expect(responseStatus).toBeGreaterThanOrEqual(200);
-		expect(responseStatus).toBeLessThanOrEqual(299);
-
+		expect(responseStatus).toEqual(200);
 		expect(place).toMatchObject<Place>({
 			_id: "faketestid1",
 			avgBraille: null,
@@ -53,9 +51,7 @@ describe("Place database functions", () => {
 			console.log(e);
 		}
 
-		expect(responseStatus).toBeGreaterThanOrEqual(200);
-		expect(responseStatus).toBeLessThanOrEqual(299);
-
+		expect(responseStatus).toEqual(200);
 		expect(place).toMatchObject<Place>({
 			_id: "faketestid2",
 			avgBraille: null,
@@ -79,8 +75,7 @@ describe("Place database functions", () => {
 			console.log(e);
 		}
 
-		expect(responseStatus2).toBeGreaterThanOrEqual(200);
-		expect(responseStatus2).toBeLessThanOrEqual(299);
+		expect(responseStatus2).toEqual(200);
 		expect(place2).toMatchObject<Place>({
 			_id: "faketestid3",
 			avgBraille: null,
@@ -117,8 +112,7 @@ describe("Place database functions", () => {
 		} catch (e) {
 			console.log(e);
 		}
-		expect(responseStatus).toBeGreaterThanOrEqual(200);
-		expect(responseStatus).toBeLessThanOrEqual(299);
+		expect(responseStatus).toEqual(200);
 		expect(placeRatings).toHaveLength(0);
 	});
 });
