@@ -1,7 +1,7 @@
 import axios from "axios";
 
 describe("Places API", () => {
-	it("returns nearby places", async () => {
+	it("/getNearbyPlaces returns nearby places", async () => {
 		let nearbyPlaces;
 		try {
 			// eslint-disable-next-line
@@ -18,7 +18,7 @@ describe("Places API", () => {
 		// eslint-disable-next-line
 		expect(nearbyPlaces.places).toHaveLength(20);
 	});
-	it("returns an image", async () => {
+	it("/getPlacePhoto returns an image", async () => {
 		let imageStatus;
 		try {
 			// eslint-disable-next-line

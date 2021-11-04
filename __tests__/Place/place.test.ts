@@ -3,7 +3,7 @@ import { Place } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 
 describe("Place database functions", () => {
-	it("adds place", async () => {
+	it("/addPlace adds place", async () => {
 		const { _db, _connection } = await dbConnection();
 		await _db.dropDatabase();
 		await _connection.close();
