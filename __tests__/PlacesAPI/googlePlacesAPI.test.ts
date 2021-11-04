@@ -19,18 +19,19 @@ describe("Places API", () => {
 		expect(nearbyPlaces.places).toHaveLength(20);
 	});
 	it("returns an image", async () => {
-		let image;
+		let imageStatus;
 		try {
 			// eslint-disable-next-line
-			const { data } = await axios.get(
+			const { status } = await axios.get(
 				"http://localhost:3030/getPlacePhoto/Aap_uEBlESKHx9XSFwCA1Mq9vXzyDYJt746bT6avBZUtHtquMh-U8exyK2bhs8gF7kXMcQIPS0B0c0HwCDhf6Nv22EgcyikJ_XARn6fGBprMHt3c6iJNTEQu0q6avzZuSobflgrWecAB2ayJD1JyMm75nGNqe3XPtayvYkJGxDn1mqvKon-k"
 			);
 			// eslint-disable-next-line
-			image = data;
+			imageStatus = status;
 		} catch (e) {
 			console.log(e);
 			return;
 		}
-		expect(image).toBeDefined();
+		expect(imageStatus).toBeGreaterThanOrEqual(200);
+		expect(imageStatus).toBeLessThanOrEqual(299);
 	});
 });
