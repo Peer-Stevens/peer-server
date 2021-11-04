@@ -1,42 +1,45 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult } from "mongodb";
 import { Place, Rating } from "../types";
-import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
-
-const placeColPromise = getCollection<Place>("place");
-const ratingColPromise = getCollection<Rating>("rating");
 
 // idk if we need this, but here it is in case we do
 // did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
-export async function getAllPlaces(): Promise<Array<Place>> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+export async function getAllPlaces(): Promise<Place[]> {
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	return await placesCollection.find({}).toArray();
+	const getPlaces: Place[] = await _col.find({}).toArray();
+	await _connection.close();
+
+	return getPlaces;
 }
 
 export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	const placeReturned = await placesCollection.findOne({ _id: id });
+	const placeReturned = await _col.findOne({ _id: id });
 	if (placeReturned === null) throw "Sorry, no place exists with that ID";
+	await _connection.close();
 
 	return placeReturned;
 }
 
 export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	const placeReturned = await placesCollection.findOne({ _id: id });
+	const placeReturned = await _col.findOne({ _id: id });
 	if (placeReturned === null) return false;
+	await _connection.close();
+
 	return true;
 }
 
 export async function addPlace(placeToAdd: Place): Promise<Place> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	const insertInfo: InsertOneResult<Place> = await placesCollection.insertOne(placeToAdd);
+	const insertInfo: InsertOneResult<Place> = await _col.insertOne(placeToAdd);
 	if (insertInfo.acknowledged === false) throw "Error adding place";
+	await _connection.close();
 
 	const newID = insertInfo.insertedId;
 
@@ -51,8 +54,9 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
  * */
 
 export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const ratingCollection: Collection<Rating> = await ratingColPromise;
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col: placeCol, _connection: placeConn } = await getCollection<Place>("place");
+
+	const { _col: ratingCol, _connection: ratingConn } = await getCollection<Rating>("rating");
 
 	const pipeline = [
 		{
@@ -97,7 +101,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 		},
 	];
 
-	const aggCursor = ratingCollection.aggregate<
+	const aggCursor = ratingCol.aggregate<
 		Rating & {
 			brailleAvg: number;
 			navigAvg: number;
@@ -123,9 +127,11 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 		avgsObj["avgStaffHelpfulness"] = elem.staffAvg;
 		avgsObj["avgGuideDogFriendly"] = elem.guideDogAvg;
 	});
+	await ratingConn.close();
 
-	const placeToUpdate = await placesCollection.updateOne({ _id: id }, { $set: avgsObj });
+	const placeToUpdate = await placeCol.updateOne({ _id: id }, { $set: avgsObj });
 	if (placeToUpdate.acknowledged === false) throw "Could not update Place.";
+	await placeConn.close();
 
 	return await getPlaceByID(id);
 }

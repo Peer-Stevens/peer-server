@@ -14,12 +14,13 @@ async function main() {
 		process.exit();
 	}
 
-	const db = await dbConnection();
+	const { _db: db, _connection } = await dbConnection();
 
 	// wipes the db so that we can test that things actually work later on in this script
 	console.log("Wiping the database clean...");
 
 	await db.dropDatabase();
+	await _connection.close();
 
 	console.log("Now attempting to seed the database...");
 
@@ -202,8 +203,6 @@ async function main() {
 
 	console.log();
 	console.log("Done seeding the database!");
-
-	process.exit();
 }
 
 void main();
