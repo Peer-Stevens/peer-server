@@ -11,11 +11,9 @@ describe("Place REST endpoints", () => {
 		let place!: Place;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.post("http://localhost:3030/addPlace", {
+			const { data, status } = await axios.post<Place>("http://localhost:3030/addPlace", {
 				_id: "faketestid1",
 			});
-			// eslint-disable-next-line
 			place = data;
 			responseStatus = status;
 		} catch (e) {
@@ -40,11 +38,9 @@ describe("Place REST endpoints", () => {
 		let place!: Place;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.post("http://localhost:3030/addPlace", {
+			const { data, status } = await axios.post<Place>("http://localhost:3030/addPlace", {
 				_id: "faketestid2",
 			});
-			// eslint-disable-next-line
 			place = data;
 			responseStatus = status;
 		} catch (e) {
@@ -64,11 +60,9 @@ describe("Place REST endpoints", () => {
 		let place2!: Place;
 		let responseStatus2!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.post("http://localhost:3030/addPlace", {
+			const { data, status } = await axios.post<Place>("http://localhost:3030/addPlace", {
 				_id: "faketestid3",
 			});
-			// eslint-disable-next-line
 			place2 = data;
 			responseStatus2 = status;
 		} catch (e) {
@@ -88,11 +82,9 @@ describe("Place REST endpoints", () => {
 	it("/addPlace throws error when duplicate place is added", async () => {
 		let place!: Place;
 		try {
-			// eslint-disable-next-line
-			const { data } = await axios.post("http://localhost:3030/addPlace", {
+			const { data } = await axios.post<Place>("http://localhost:3030/addPlace", {
 				_id: "faketestid3",
 			});
-			// eslint-disable-next-line
 			place = data;
 		} catch (e) {
 			expect(place).toBeUndefined();
@@ -102,11 +94,9 @@ describe("Place REST endpoints", () => {
 		let placeRatings!: Array<Rating>;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.get(
+			const { data, status } = await axios.get<Array<Rating>>(
 				"http://localhost:3030/getAllPlaceRatings/faketestid2"
 			);
-			// eslint-disable-next-line
 			placeRatings = data;
 			responseStatus = status;
 		} catch (e) {
