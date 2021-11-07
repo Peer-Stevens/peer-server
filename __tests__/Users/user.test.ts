@@ -35,7 +35,9 @@ describe("User REST endpoints", () => {
 		let responseStatus!: number;
 		try {
 			// eslint-disable-next-line
-			const { data, status } = await axios.get(`http://localhost:3030/getUser/${userId}`);
+			const { data, status } = await axios.get(
+				`http://localhost:3030/getUser/${userId.toString()}`
+			);
 			// eslint-disable-next-line
 			user = data;
 			responseStatus = status;
@@ -52,16 +54,14 @@ describe("User REST endpoints", () => {
 			doesNotPreferHelp: true,
 		});
 	});
-	it.skip("/editUser", async () => {
-		// does not work right now
-		//TODO fix this
+	it("/editUser edits user information", async () => {
 		let user!: User;
 		let responseStatus!: number;
 		try {
 			// eslint-disable-next-line
-			const { data, status } = await axios.patch("/editUser", {
-				_id: userId,
-				readsBraille: false,
+			const { data, status } = await axios.patch("http://localhost:3030/editUser", {
+				_id: userId.toString(),
+				username: "bro12345",
 			});
 			// eslint-disable-next-line
 			user = data;
@@ -72,9 +72,9 @@ describe("User REST endpoints", () => {
 		expect(responseStatus).toEqual(200);
 		expect(user).toMatchObject<User>({
 			_id: userId,
-			username: "bro123",
+			username: "bro12345",
 			isBlindMode: false,
-			readsBraille: false,
+			readsBraille: true,
 			doesNotPreferHelp: true,
 		});
 	});
