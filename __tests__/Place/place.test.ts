@@ -98,7 +98,7 @@ describe("Place REST endpoints", () => {
 			expect(place).toBeUndefined();
 		}
 	});
-	it("/getAllPlaceRatings/:id get place rating", async () => {
+	it("/getAllPlaceRatings/:id get place rating when there are none", async () => {
 		let placeRatings!: Array<Rating>;
 		let responseStatus!: number;
 		try {
