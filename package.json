@@ -16,7 +16,7 @@
 		"prepare": "husky install",
 		"lint": "pretty-quick --staged && lint-staged",
 		"seed": "ts-node ./src/seed/seed.ts",
-		"test": "yarn jest"
+		"test": "yarn jest place.test.ts && yarn jest user.test.ts && yarn jest rating.test.ts && yarn jest googlePlacesAPI.test.ts"
 	},
 	"dependencies": {
 		"@googlemaps/google-maps-services-js": "^3.2.2",
