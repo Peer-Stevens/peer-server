@@ -10,9 +10,7 @@ describe("Rating REST endpoints", () => {
 	it("/addRating adds Rating to a place", async () => {
 		// need the userId in order to add rating, so I'm just adding a user to the db so that I know what the id is
 		try {
-			// eslint-disable-next-line
-			const { data } = await axios.post("http://localhost:3030/addUser");
-			// eslint-disable-next-line
+			const { data } = await axios.post<User>("http://localhost:3030/addUser");
 			user = data;
 			if (user._id) {
 				userId = user._id;
@@ -27,14 +25,12 @@ describe("Rating REST endpoints", () => {
 		let rating!: Rating;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.post("http://localhost:3030/addRating", {
+			const { data, status } = await axios.post<Rating>("http://localhost:3030/addRating", {
 				userID: userId.toString(),
 				placeID: "faketestid3",
 				braille: 4,
 				guideDogFriendly: 3,
 			});
-			// eslint-disable-next-line
 			rating = data;
 			responseStatus = status;
 			if (rating) {
@@ -61,12 +57,10 @@ describe("Rating REST endpoints", () => {
 		let rating!: Rating;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.patch("http://localhost:3030/editRating", {
+			const { data, status } = await axios.patch<Rating>("http://localhost:3030/editRating", {
 				_id: ratingToEdit._id?.toString(),
 				navigability: 3,
 			});
-			// eslint-disable-next-line
 			rating = data;
 			responseStatus = status;
 		} catch (e) {
@@ -90,14 +84,13 @@ describe("Rating REST endpoints", () => {
 		let rating!: Rating;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.get(
-				// eslint-disable-next-line
-				`http://localhost:3030/getRating/${ratingToEdit._id?.toString()}`
-			);
-			// eslint-disable-next-line
-			rating = data;
-			responseStatus = status;
+			if (ratingToEdit._id) {
+				const { data, status } = await axios.get<Rating>(
+					`http://localhost:3030/getRating/${ratingToEdit._id.toString()}`
+				);
+				rating = data;
+				responseStatus = status;
+			}
 		} catch (e) {
 			console.log(e);
 		}
@@ -119,14 +112,13 @@ describe("Rating REST endpoints", () => {
 		let ratings!: Array<Rating>;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.get(
-				// eslint-disable-next-line
-				`http://localhost:3030/getAllPlaceRatings/${ratingToEdit.placeID}`
-			);
-			// eslint-disable-next-line
-			ratings = data;
-			responseStatus = status;
+			if (ratingToEdit.placeID) {
+				const { data, status } = await axios.get<Array<Rating>>(
+					`http://localhost:3030/getAllPlaceRatings/${ratingToEdit.placeID}`
+				);
+				ratings = data;
+				responseStatus = status;
+			}
 		} catch (e) {
 			console.log(e);
 		}
@@ -150,12 +142,9 @@ describe("Rating REST endpoints", () => {
 		let ratings!: Array<Rating>;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.get(
-				// eslint-disable-next-line
+			const { data, status } = await axios.get<Array<Rating>>(
 				`http://localhost:3030/getRatingsFromUser/${userId?.toString()}`
 			);
-			// eslint-disable-next-line
 			ratings = data;
 			responseStatus = status;
 		} catch (e) {
@@ -181,14 +170,13 @@ describe("Rating REST endpoints", () => {
 		let didDelete!: boolean;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.delete(
-				// eslint-disable-next-line
-				`http://localhost:3030/deleteRating/${ratingToEdit._id?.toString()}`
-			);
-			// eslint-disable-next-line
-			didDelete = data;
-			responseStatus = status;
+			if (ratingToEdit._id) {
+				const { data, status } = await axios.delete<boolean>(
+					`http://localhost:3030/deleteRating/${ratingToEdit._id?.toString()}`
+				);
+				didDelete = data;
+				responseStatus = status;
+			}
 		} catch (e) {
 			console.log(e);
 		}
