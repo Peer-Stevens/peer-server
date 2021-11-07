@@ -9,9 +9,7 @@ describe("User REST endpoints", () => {
 		let user!: User;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.post("http://localhost:3030/addUser");
-			// eslint-disable-next-line
+			const { data, status } = await axios.post<User>("http://localhost:3030/addUser");
 			user = data;
 			responseStatus = status;
 			if (user._id) {
@@ -34,11 +32,9 @@ describe("User REST endpoints", () => {
 		let user!: User;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.get(
+			const { data, status } = await axios.get<User>(
 				`http://localhost:3030/getUser/${userId.toString()}`
 			);
-			// eslint-disable-next-line
 			user = data;
 			responseStatus = status;
 		} catch (e) {
@@ -58,12 +54,10 @@ describe("User REST endpoints", () => {
 		let user!: User;
 		let responseStatus!: number;
 		try {
-			// eslint-disable-next-line
-			const { data, status } = await axios.patch("http://localhost:3030/editUser", {
+			const { data, status } = await axios.patch<User>("http://localhost:3030/editUser", {
 				_id: userId.toString(),
 				username: "bro12345",
 			});
-			// eslint-disable-next-line
 			user = data;
 			responseStatus = status;
 		} catch (e) {
