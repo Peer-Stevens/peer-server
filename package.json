@@ -18,7 +18,7 @@
 		"seed": "ts-node ./src/seed/seed.ts"
 	},
 	"dependencies": {
-		"@googlemaps/google-maps-services-js": "^3.2.2",
+		"@googlemaps/google-maps-services-js": "^3.3.1",
 		"axios": "^0.24.0",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
