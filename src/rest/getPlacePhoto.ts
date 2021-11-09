@@ -20,6 +20,6 @@ export const getPlacePhoto = (req: Request, res: Response): void => {
 		})
 		.catch(() => {
 			res.set({ "Content-Type": "text/html" });
-			res.status(StatusCode.BAD_REQUEST).send(`Got bad reference ${ref}`);
+			res.status(StatusCode.BAD_REQUEST).send("Got bad reference");
 		});
 };
