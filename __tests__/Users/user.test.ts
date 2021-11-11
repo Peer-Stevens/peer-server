@@ -11,13 +11,14 @@ beforeEach(async () => {
 	await _connection.close();
 
 	try {
-		await addUserToDb({
+		const user: User = {
 			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
 			username: "ilovecheese",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
-		} as User);
+		};
+		await addUserToDb(user);
 	} catch (e) {
 		console.log(e);
 	}
