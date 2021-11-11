@@ -18,8 +18,8 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 	const { _col, _connection } = await getCollection<Place>("place");
 
 	const placeReturned = await _col.findOne({ _id: id });
-	if (placeReturned === null) throw "Sorry, no place exists with that ID";
 	await _connection.close();
+	if (placeReturned === null) throw "Sorry, no place exists with that ID";
 
 	return placeReturned;
 }
@@ -28,8 +28,8 @@ export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolea
 	const { _col, _connection } = await getCollection<Place>("place");
 
 	const placeReturned = await _col.findOne({ _id: id });
-	if (placeReturned === null) return false;
 	await _connection.close();
+	if (placeReturned === null) return false;
 
 	return true;
 }
@@ -37,9 +37,17 @@ export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolea
 export async function addPlace(placeToAdd: Place): Promise<Place> {
 	const { _col, _connection } = await getCollection<Place>("place");
 
+	// check to see if the place already exists
+	const doesExist = await isPlaceInDb(placeToAdd._id);
+	if (doesExist) {
+		await _connection.close();
+		throw "That place already exists in the database and cannot be added again.";
+	}
+
+	// now its safe to add place to db
 	const insertInfo: InsertOneResult<Place> = await _col.insertOne(placeToAdd);
-	if (insertInfo.acknowledged === false) throw "Error adding place";
 	await _connection.close();
+	if (insertInfo.acknowledged === false) throw "Error adding place";
 
 	const newID = insertInfo.insertedId;
 
@@ -130,8 +138,8 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 	await ratingConn.close();
 
 	const placeToUpdate = await placeCol.updateOne({ _id: id }, { $set: avgsObj });
-	if (placeToUpdate.acknowledged === false) throw "Could not update Place.";
 	await placeConn.close();
+	if (placeToUpdate.acknowledged === false) throw "Could not update Place.";
 
 	return await getPlaceByID(id);
 }
