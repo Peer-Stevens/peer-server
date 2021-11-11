@@ -14,9 +14,9 @@
 		"start": "node ./dist/server.js",
 		"prod": "yarn run build && yarn run start",
 		"prepare": "husky install",
-		"lint": "pretty-quick --staged && lint-staged",
-		"seed": "ts-node ./src/seed/seed.ts",
-		"test": "yarn jest place.test.ts && yarn jest user.test.ts && yarn jest rating.test.ts && yarn jest googlePlacesAPI.test.ts"
+		"lint-staged": "pretty-quick --staged && lint-staged",
+		"lint": "eslint --config .eslintrc.js --fix . && prettier --config prettier.config.js --write \"**/*.{js,jsx,json,ts,tsx,md,mdx,css,html,yml,yaml,scss}\"",
+		"seed": "ts-node ./src/seed/seed.ts"
 	},
 	"dependencies": {
 		"@googlemaps/google-maps-services-js": "^3.3.1",
@@ -36,7 +36,7 @@
 		"@typescript-eslint/parser": "^4.33.0",
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
-		"eslint-plugin-import": "^2.25.2",
+		"eslint-plugin-import": "^2.25.3",
 		"eslint-plugin-prettier": "^4.0.0",
 		"husky": "^7.0.4",
 		"jest": "^27.3.1",
