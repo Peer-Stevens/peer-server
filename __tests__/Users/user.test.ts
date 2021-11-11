@@ -1,75 +1,75 @@
-import axios from "axios";
 import { ObjectId } from "bson";
-import { User } from "../../src/db/types";
+import { User } from "db/types";
+import { dbConnection } from "../../src/db/mongoConnection";
+import { addUserToDb, getUserById, editUserInDb } from "../../src/db/User/User";
+
+let userToGet!: User;
+
+beforeEach(async () => {
+	const { _db, _connection } = await dbConnection();
+	await _db.dropDatabase();
+	await _connection.close();
+
+	try {
+		userToGet = await addUserToDb({
+			username: "ilovecheese",
+			isBlindMode: true,
+			doesNotPreferHelp: false,
+			readsBraille: true,
+		});
+	} catch (e) {
+		console.log(e);
+	}
+});
 
 describe("User REST endpoints", () => {
-	let userId: ObjectId;
-
-	it("/addUser adds user to database", async () => {
+	it("gets user that does not exist", async () => {
+		expect.assertions(1);
+		return await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e =>
+			expect(e).toEqual("Sorry, no user exists with that ID")
+		);
+	});
+	it("gets user", async () => {
 		let user!: User;
-		let responseStatus!: number;
-		try {
-			const { data, status } = await axios.post<User>("http://localhost:3030/addUser");
-			user = data;
-			responseStatus = status;
-			if (user._id) {
-				userId = user._id;
+		if (userToGet._id) {
+			try {
+				user = await getUserById(userToGet._id);
+			} catch (e) {
+				console.log(e);
 			}
-		} catch (e) {
-			console.log(e);
 		}
 
-		expect(responseStatus).toEqual(200);
 		expect(user).toMatchObject<User>({
-			_id: user._id,
-			username: "bro123",
-			isBlindMode: false,
+			username: "ilovecheese",
+			isBlindMode: true,
+			doesNotPreferHelp: false,
 			readsBraille: true,
-			doesNotPreferHelp: true,
 		});
 	});
-	it("/getUser gets user from database", async () => {
+	it("edit user that does not exist", async () => {
+		expect.assertions(1);
+		return await editUserInDb(new ObjectId("618cacca81bc431f3dcde5bd"), {
+			username: "totallyfake",
+		}).catch(e => expect(e).toEqual("Sorry, no user exists with that ID"));
+	});
+	it("edits user", async () => {
 		let user!: User;
-		let responseStatus!: number;
-		try {
-			const { data, status } = await axios.get<User>(
-				`http://localhost:3030/getUser/${userId.toString()}`
-			);
-			user = data;
-			responseStatus = status;
-		} catch (e) {
-			console.log(e);
+		if (userToGet._id) {
+			try {
+				user = await editUserInDb(userToGet._id, {
+					username: "ilovedairy",
+					readsBraille: false,
+				});
+			} catch (e) {
+				console.log(e);
+			}
 		}
 
-		expect(responseStatus).toEqual(200);
 		expect(user).toMatchObject<User>({
-			_id: userId,
-			username: "bro123",
-			isBlindMode: false,
-			readsBraille: true,
-			doesNotPreferHelp: true,
-		});
-	});
-	it("/editUser edits user information", async () => {
-		let user!: User;
-		let responseStatus!: number;
-		try {
-			const { data, status } = await axios.patch<User>("http://localhost:3030/editUser", {
-				_id: userId.toString(),
-				username: "bro12345",
-			});
-			user = data;
-			responseStatus = status;
-		} catch (e) {
-			console.log(e);
-		}
-		expect(responseStatus).toEqual(200);
-		expect(user).toMatchObject<User>({
-			_id: userId,
-			username: "bro12345",
-			isBlindMode: false,
-			readsBraille: true,
-			doesNotPreferHelp: true,
+			username: "ilovedairy",
+			isBlindMode: true,
+			doesNotPreferHelp: false,
+			readsBraille: false,
 		});
 	});
 });
