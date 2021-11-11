@@ -14,7 +14,8 @@
 		"start": "node ./dist/server.js",
 		"prod": "yarn run build && yarn run start",
 		"prepare": "husky install",
-		"lint": "pretty-quick --staged && lint-staged",
+		"lint-staged": "pretty-quick --staged && lint-staged",
+		"lint": "eslint --config .eslintrc.js --fix . && prettier --config prettier.config.js --write \"**/*.{js,jsx,json,ts,tsx,md,mdx,css,html,yml,yaml,scss}\"",
 		"seed": "ts-node ./src/seed/seed.ts"
 	},
 	"dependencies": {
