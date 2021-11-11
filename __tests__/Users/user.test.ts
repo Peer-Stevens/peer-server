@@ -3,7 +3,7 @@ import { User } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { addUserToDb, getUserById, editUserInDb } from "../../src/db/User/User";
 
-let userToGet!: User;
+// let userToGet!: User;
 
 beforeEach(async () => {
 	const { _db, _connection } = await dbConnection();
@@ -11,7 +11,8 @@ beforeEach(async () => {
 	await _connection.close();
 
 	try {
-		userToGet = await addUserToDb({
+		await addUserToDb({
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
 			username: "ilovecheese",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
@@ -31,12 +32,10 @@ describe("User REST endpoints", () => {
 	});
 	it("gets user", async () => {
 		let user!: User;
-		if (userToGet._id) {
-			try {
-				user = await getUserById(userToGet._id);
-			} catch (e) {
-				console.log(e);
-			}
+		try {
+			user = await getUserById(new ObjectId("617cacca81bc431f3dcde5bd"));
+		} catch (e) {
+			console.log(e);
 		}
 
 		expect(user).toMatchObject<User>({
@@ -54,15 +53,13 @@ describe("User REST endpoints", () => {
 	});
 	it("edits user", async () => {
 		let user!: User;
-		if (userToGet._id) {
-			try {
-				user = await editUserInDb(userToGet._id, {
-					username: "ilovedairy",
-					readsBraille: false,
-				});
-			} catch (e) {
-				console.log(e);
-			}
+		try {
+			user = await editUserInDb(new ObjectId("617cacca81bc431f3dcde5bd"), {
+				username: "ilovedairy",
+				readsBraille: false,
+			});
+		} catch (e) {
+			console.log(e);
 		}
 
 		expect(user).toMatchObject<User>({
