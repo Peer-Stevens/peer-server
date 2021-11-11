@@ -17,7 +17,7 @@ beforeEach(async () => {
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
-		});
+		} as User);
 	} catch (e) {
 		console.log(e);
 	}
