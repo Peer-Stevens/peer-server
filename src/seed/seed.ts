@@ -28,7 +28,7 @@ async function main() {
 
 	console.log("Adding users to database...");
 
-	let user1: User;
+	let user1!: User;
 	try {
 		user1 = await addUserToDb({
 			username: "julioisfred",
@@ -40,7 +40,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user2: User;
+	let user2!: User;
 	try {
 		user2 = await addUserToDb({
 			username: "davidscookies",
@@ -52,7 +52,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user3: User;
+	let user3!: User;
 	try {
 		user3 = await addUserToDb({
 			username: "andrewsteashop",
@@ -105,8 +105,8 @@ async function main() {
 	}
 
 	try {
+		if (!user1._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user1._id,
 			placeID: "fakeid1",
 			braille: 3,
@@ -122,8 +122,8 @@ async function main() {
 	}
 
 	try {
+		if (!user2._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user2._id,
 			placeID: "fakeid2",
 			braille: 5,
@@ -139,8 +139,8 @@ async function main() {
 	}
 
 	try {
+		if (!user3._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user3._id,
 			placeID: "fakeid3",
 			braille: 5,
@@ -156,8 +156,8 @@ async function main() {
 	}
 
 	try {
+		if (!user1._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user1._id,
 			placeID: "fakeid2",
 			braille: 1,
@@ -173,8 +173,8 @@ async function main() {
 	}
 
 	try {
+		if (!user2._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user2._id,
 			placeID: "fakeid3",
 			braille: 1,
