@@ -12,7 +12,7 @@ import { getPlaceByID } from "../../src/db/Place/place";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { Rating, Place } from "../../src/db/types";
 import { addPlace } from "../../src/db/Place/place";
-import { addUserToDb } from "../../src/db/User/User";
+import { addUserToDb } from "../../src/db/User/user";
 
 jest.setTimeout(10000);
 
