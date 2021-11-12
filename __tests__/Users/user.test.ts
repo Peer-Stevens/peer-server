@@ -3,7 +3,7 @@ import { User } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { addUserToDb, getUserById, editUserInDb } from "../../src/db/User/User";
 
-// let userToGet!: User;
+jest.setTimeout(15000);
 
 beforeEach(async () => {
 	const { _db, _connection } = await dbConnection();
@@ -25,7 +25,7 @@ beforeEach(async () => {
 });
 
 describe("User REST endpoints", () => {
-	it("gets user that does not exist", async () => {
+	it("throws error when it tries to get nonexistent user", async () => {
 		expect.assertions(1);
 		return await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e =>
 			expect(e).toEqual("Sorry, no user exists with that ID")
@@ -46,7 +46,7 @@ describe("User REST endpoints", () => {
 			readsBraille: true,
 		});
 	});
-	it("edit user that does not exist", async () => {
+	it("throws error when it tries to edit nonexistent user", async () => {
 		expect.assertions(1);
 		return await editUserInDb(new ObjectId("618cacca81bc431f3dcde5bd"), {
 			username: "totallyfake",
