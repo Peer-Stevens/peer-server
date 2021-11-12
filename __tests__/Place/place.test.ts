@@ -2,9 +2,7 @@ import { Place } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { getPlaceByID, addPlace } from "../../src/db/Place/place";
 
-jest.setTimeout(15000);
-
-beforeEach(async () => {
+beforeAll(async () => {
 	const { _db, _connection } = await dbConnection();
 	await _db.dropDatabase();
 	await _connection.close();

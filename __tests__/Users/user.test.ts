@@ -3,9 +3,7 @@ import { User } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { addUserToDb, getUserById, editUserInDb } from "../../src/db/User/user";
 
-jest.setTimeout(15000);
-
-beforeEach(async () => {
+beforeAll(async () => {
 	const { _db, _connection } = await dbConnection();
 	await _db.dropDatabase();
 	await _connection.close();
