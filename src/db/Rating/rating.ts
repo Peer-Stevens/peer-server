@@ -7,11 +7,22 @@ import { updatePlace } from "../Place/place";
 export async function addRating(ratingToAdd: Rating): Promise<Rating> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
+	//check that a user isn't adding a rating to a place they've already reviewed
+	const ratingExists = await _col.findOne({
+		userID: ratingToAdd.userID,
+		placeID: ratingToAdd.placeID,
+	});
+	if (ratingExists) {
+		await _connection.close();
+		throw "User cannot add more than one rating to the same place";
+	}
+
+	// now ready to add rating
 	const insertInfo: InsertOneResult<Rating> = await _col.insertOne(ratingToAdd);
+	await _connection.close();
 	if (insertInfo.acknowledged === false) throw "Error adding rating";
 
 	const newID = insertInfo.insertedId;
-	await _connection.close();
 
 	// Every time an insertion is succesfful, we need to update the averages for the place in the Place collection
 	const insertedRating: Rating = await getRatingById(newID);
@@ -31,8 +42,8 @@ export async function editRatingInDb(
 		{ _id: ratingId },
 		{ $set: newRatingFields }
 	);
-	if (ratingToUpdate.acknowledged === false) throw "Could not update Rating";
 	await _connection.close();
+	if (ratingToUpdate.acknowledged === false) throw "Could not update Rating";
 
 	// Every time an update is succesfful, we need to update the averages for the place in the Place collection
 	const insertedRating: Rating = await getRatingById(ratingId);
@@ -46,8 +57,8 @@ export async function getRatingById(id: ObjectId): Promise<Rating> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
 	const ratingReturned = await _col.findOne({ _id: id });
-	if (ratingReturned === null) throw "Sorry, no rating exists with that ID";
 	await _connection.close();
+	if (ratingReturned === null) throw "Sorry, no rating exists with that ID";
 
 	return ratingReturned;
 }
@@ -56,8 +67,8 @@ export async function getAllRatingsForPlace(id: GooglePlaceID["place_id"]): Prom
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
 	const allRatings = await _col.find({ placeID: id }).toArray();
-	if (allRatings === null) throw "Sorry, no ratings exist for that place";
 	await _connection.close();
+	if (allRatings.length === 0) throw "Sorry, no ratings exist for that place";
 
 	return allRatings;
 }
@@ -66,8 +77,8 @@ export async function getAllRatingsFromUser(userId: ObjectId): Promise<Array<Rat
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
 	const allRatings = await _col.find({ userID: userId }).toArray();
-	if (allRatings === null) throw "Sorry, no ratings exist for that place";
 	await _connection.close();
+	if (allRatings.length === 0) throw "Sorry, no ratings have been given by that user";
 
 	return allRatings;
 }
@@ -76,8 +87,8 @@ export async function deleteRatingFromDb(id: ObjectId): Promise<boolean> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
 	const rating = await _col.deleteOne({ _id: id });
-	if (rating.deletedCount === 1) return true;
 	await _connection.close();
+	if (rating.deletedCount === 1) return true;
 
 	return false;
 }
