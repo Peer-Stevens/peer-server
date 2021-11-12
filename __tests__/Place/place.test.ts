@@ -2,6 +2,8 @@ import { Place } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { getPlaceByID, addPlace } from "../../src/db/Place/place";
 
+jest.setTimeout(15000);
+
 beforeEach(async () => {
 	const { _db, _connection } = await dbConnection();
 	await _db.dropDatabase();
@@ -35,11 +37,28 @@ beforeEach(async () => {
 });
 
 describe("Place REST endpoints", () => {
-	it("get place that doesn't exist", async () => {
+	it("throws error when it tries to get place that doesn't exist in db", async () => {
 		expect.assertions(1);
 		return await getPlaceByID("faketestid2").catch(e =>
 			expect(e).toEqual("Sorry, no place exists with that ID")
 		);
+	});
+	it("gets place", async () => {
+		let place!: Place;
+		try {
+			place = await getPlaceByID("faketestid1");
+		} catch (e) {
+			console.log(e);
+		}
+
+		expect(place).toMatchObject<Place>({
+			_id: "faketestid1",
+			avgBraille: null,
+			avgFontReadability: null,
+			avgGuideDogFriendly: null,
+			avgNavigability: null,
+			avgStaffHelpfulness: null,
+		});
 	});
 	it("adds place to database", async () => {
 		let place!: Place;
@@ -66,7 +85,6 @@ describe("Place REST endpoints", () => {
 			avgStaffHelpfulness: null,
 		});
 	});
-
 	it("throws error when duplicate place is added", async () => {
 		expect.assertions(1);
 		return await addPlace({
