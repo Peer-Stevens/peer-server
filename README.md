@@ -6,9 +6,9 @@ Node server for Peer
 
 ### Environment Variables Needed
 
-DB_USERNAME - your MongoDB username
-DB_PASSWORD - your password for the connected MongoDB database
-DB_NAME - the name of the MongoDB database you are using to run Peer
+DB_USERNAME - your MongoDB username  
+DB_PASSWORD - your password for the connected MongoDB database  
+DB_NAME - the name of the MongoDB database you are using to run Peer  
 PLACES_API_KEY - the Google Places API key
 
 ### Detailed Prerequisite
