@@ -1,6 +1,7 @@
 import { Place } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { getPlaceByID, addPlace } from "../../src/db/Place/place";
+import { MongoServerError } from "mongodb";
 
 beforeAll(async () => {
 	const { _db, _connection } = await dbConnection();
@@ -17,7 +18,9 @@ beforeAll(async () => {
 			avgStaffHelpfulness: null,
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 
 	try {
@@ -30,7 +33,9 @@ beforeAll(async () => {
 			avgStaffHelpfulness: null,
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 });
 
@@ -46,7 +51,9 @@ describe("Place REST endpoints", () => {
 		try {
 			place = await getPlaceByID("faketestid1");
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(place).toMatchObject<Place>({
@@ -71,7 +78,9 @@ describe("Place REST endpoints", () => {
 				avgStaffHelpfulness: null,
 			});
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(place).toMatchObject<Place>({

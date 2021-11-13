@@ -2,6 +2,7 @@ import { ObjectId } from "bson";
 import { User } from "../../src/db/types";
 import { dbConnection } from "../../src/db/mongoConnection";
 import { addUserToDb, getUserById, editUserInDb } from "../../src/db/User/user";
+import { MongoServerError } from "mongodb";
 
 beforeAll(async () => {
 	const { _db, _connection } = await dbConnection();
@@ -9,16 +10,17 @@ beforeAll(async () => {
 	await _connection.close();
 
 	try {
-		const user: User = {
+		await addUserToDb({
 			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
 			username: "ilovecheese",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
-		};
-		await addUserToDb(user);
+		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 });
 
@@ -34,7 +36,9 @@ describe("User REST endpoints", () => {
 		try {
 			user = await getUserById(new ObjectId("617cacca81bc431f3dcde5bd"));
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(user).toMatchObject<User>({
@@ -58,7 +62,9 @@ describe("User REST endpoints", () => {
 				readsBraille: false,
 			});
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(user).toMatchObject<User>({

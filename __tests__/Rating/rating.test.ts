@@ -1,4 +1,3 @@
-// import axios from "axios";
 import { ObjectId } from "bson";
 import {
 	addRating,
@@ -13,6 +12,7 @@ import { dbConnection } from "../../src/db/mongoConnection";
 import { Rating, Place } from "../../src/db/types";
 import { addPlace } from "../../src/db/Place/place";
 import { addUserToDb } from "../../src/db/User/user";
+import { MongoServerError } from "mongodb";
 
 jest.setTimeout(10000);
 
@@ -32,7 +32,9 @@ beforeAll(async () => {
 			avgStaffHelpfulness: null,
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 
 	// add another place to db
@@ -46,7 +48,9 @@ beforeAll(async () => {
 			avgStaffHelpfulness: null,
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 
 	// add user to db
@@ -59,7 +63,9 @@ beforeAll(async () => {
 			doesNotPreferHelp: false,
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 
 	// add another user to db
@@ -72,7 +78,9 @@ beforeAll(async () => {
 			doesNotPreferHelp: false,
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 
 	// add rating to db
@@ -90,7 +98,9 @@ beforeAll(async () => {
 			dateCreated: new Date(),
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 
 	// add another rating to db
@@ -108,7 +118,9 @@ beforeAll(async () => {
 			dateCreated: new Date(),
 		});
 	} catch (e) {
-		console.log(e);
+		if (e instanceof MongoServerError) {
+			console.log(e);
+		}
 	}
 });
 
@@ -124,7 +136,9 @@ describe("Rating REST endpoints", () => {
 		try {
 			rating = await getRatingById(new ObjectId("617cacca81bc431f3dcde5be"));
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(rating).toMatchObject<Partial<Rating>>({
@@ -169,7 +183,9 @@ describe("Rating REST endpoints", () => {
 				dateCreated: new Date(),
 			});
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(rating).toMatchObject<Partial<Rating>>({
@@ -197,7 +213,9 @@ describe("Rating REST endpoints", () => {
 				comment: "Fantastic, just fantastic.",
 			});
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 		expect(rating).toMatchObject<Partial<Rating>>({
 			_id: new ObjectId("617cacca81bc431f3dcde5be"),
@@ -222,7 +240,9 @@ describe("Rating REST endpoints", () => {
 		try {
 			ratings = await getAllRatingsFromUser(new ObjectId("617ccccc81bc431f3dcde5bd"));
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(ratings).toHaveLength(2);
@@ -238,7 +258,9 @@ describe("Rating REST endpoints", () => {
 		try {
 			ratings = await getAllRatingsForPlace("fakeplace456");
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(ratings).toHaveLength(2);
@@ -248,7 +270,9 @@ describe("Rating REST endpoints", () => {
 		try {
 			didDelete = await deleteRatingFromDb(new ObjectId("617cacca81bc431f3dcde5bd"));
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(didDelete).toEqual(false);
@@ -258,7 +282,9 @@ describe("Rating REST endpoints", () => {
 		try {
 			didDelete = await deleteRatingFromDb(new ObjectId("617cacca81bc431f3dcde5be"));
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(didDelete).toEqual(true);
@@ -268,7 +294,9 @@ describe("Rating REST endpoints", () => {
 		try {
 			place = await getPlaceByID("fakeplace456");
 		} catch (e) {
-			console.log(e);
+			if (e instanceof MongoServerError) {
+				console.log(e);
+			}
 		}
 
 		expect(place).toMatchObject<Place>({
