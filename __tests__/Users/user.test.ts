@@ -19,7 +19,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 });
@@ -37,7 +39,11 @@ describe("User REST endpoints", () => {
 			user = await getUserById(new ObjectId("617cacca81bc431f3dcde5bd"));
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -63,7 +69,11 @@ describe("User REST endpoints", () => {
 			});
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 

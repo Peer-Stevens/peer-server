@@ -33,7 +33,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 
@@ -49,7 +51,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 
@@ -64,7 +68,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 
@@ -79,7 +85,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 
@@ -99,7 +107,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 
@@ -119,7 +129,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 });
@@ -137,7 +149,11 @@ describe("Rating REST endpoints", () => {
 			rating = await getRatingById(new ObjectId("617cacca81bc431f3dcde5be"));
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -184,7 +200,11 @@ describe("Rating REST endpoints", () => {
 			});
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -214,7 +234,11 @@ describe("Rating REST endpoints", () => {
 			});
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 		expect(rating).toMatchObject<Partial<Rating>>({
@@ -241,7 +265,11 @@ describe("Rating REST endpoints", () => {
 			ratings = await getAllRatingsFromUser(new ObjectId("617ccccc81bc431f3dcde5bd"));
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -259,7 +287,11 @@ describe("Rating REST endpoints", () => {
 			ratings = await getAllRatingsForPlace("fakeplace456");
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -271,7 +303,11 @@ describe("Rating REST endpoints", () => {
 			didDelete = await deleteRatingFromDb(new ObjectId("617cacca81bc431f3dcde5bd"));
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -283,7 +319,11 @@ describe("Rating REST endpoints", () => {
 			didDelete = await deleteRatingFromDb(new ObjectId("617cacca81bc431f3dcde5be"));
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -295,7 +335,11 @@ describe("Rating REST endpoints", () => {
 			place = await getPlaceByID("fakeplace456");
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 

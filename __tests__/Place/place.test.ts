@@ -19,7 +19,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 
@@ -34,7 +36,9 @@ beforeAll(async () => {
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
-			console.log(e);
+			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
+		} else {
+			throw e;
 		}
 	}
 });
@@ -52,7 +56,11 @@ describe("Place REST endpoints", () => {
 			place = await getPlaceByID("faketestid1");
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
@@ -79,7 +87,11 @@ describe("Place REST endpoints", () => {
 			});
 		} catch (e) {
 			if (e instanceof MongoServerError) {
-				console.log(e);
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				throw e;
 			}
 		}
 
