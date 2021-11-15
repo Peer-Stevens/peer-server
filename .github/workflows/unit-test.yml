@@ -25,4 +25,9 @@ jobs:
       - name: Build backend
         run: yarn build
       - name: Run unit tests
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          PLACES_API_KEY: ${{ secrets.PLACES_API_KEY }}
         run: yarn test
