@@ -6,12 +6,12 @@ import {
 	getAllRatingsForPlace,
 	getAllRatingsFromUser,
 	getRatingById,
-} from "../../src/db/Rating/rating";
-import { getPlaceByID } from "../../src/db/Place/place";
-import { dbConnection } from "../../src/db/mongoConnection";
-import { Rating, Place } from "../../src/db/types";
-import { addPlace } from "../../src/db/Place/place";
-import { addUserToDb } from "../../src/db/User/user";
+} from "../src/db/Rating/rating";
+import { getPlaceByID } from "../src/db/Place/place";
+import { dbConnection } from "../src/db/mongoConnection";
+import { Rating, Place } from "../src/db/types";
+import { addPlace } from "../src/db/Place/place";
+import { addUserToDb } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
 
 beforeAll(async () => {

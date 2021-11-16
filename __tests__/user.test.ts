@@ -1,7 +1,7 @@
 import { ObjectId } from "bson";
-import { User } from "../../src/db/types";
-import { dbConnection } from "../../src/db/mongoConnection";
-import { addUserToDb, getUserById, editUserInDb } from "../../src/db/User/user";
+import { User } from "../src/db/types";
+import { dbConnection } from "../src/db/mongoConnection";
+import { addUserToDb, getUserById, editUserInDb } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
 
 beforeAll(async () => {

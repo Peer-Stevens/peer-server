@@ -1,6 +1,6 @@
-import { Place } from "../../src/db/types";
-import { dbConnection } from "../../src/db/mongoConnection";
-import { getPlaceByID, addPlace } from "../../src/db/Place/place";
+import { Place } from "../src/db/types";
+import { dbConnection } from "../src/db/mongoConnection";
+import { getPlaceByID, addPlace } from "../src/db/Place/place";
 import { MongoServerError } from "mongodb";
 
 beforeAll(async () => {
