@@ -14,8 +14,6 @@ import { addPlace } from "../../src/db/Place/place";
 import { addUserToDb } from "../../src/db/User/user";
 import { MongoServerError } from "mongodb";
 
-jest.setTimeout(10000);
-
 beforeAll(async () => {
 	const { _db, _connection } = await dbConnection();
 	await _db.dropDatabase();
