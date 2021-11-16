@@ -14,7 +14,7 @@ import { editRating } from "./rest/Ratings/editRating";
 import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
 
-const app = express();
+export const app = express();
 const port = Number(process.env.PORT) || 3030;
 const limiter = {
 	windowMs: 15 * 60 * 1000, // 15 min in ms
@@ -66,6 +66,6 @@ app.patch("/editUser", editUser);
 // delete rating
 app.delete("/deleteRating/:id", deleteRating);
 
-app.listen(port, () => {
+export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);
 });

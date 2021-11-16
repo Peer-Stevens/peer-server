@@ -1,41 +1,52 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult } from "mongodb";
 import { Place, Rating } from "../types";
-import type { Collection } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
-
-const placeColPromise = getCollection<Place>("place");
-const ratingColPromise = getCollection<Rating>("rating");
 
 // idk if we need this, but here it is in case we do
 // did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
-export async function getAllPlaces(): Promise<Array<Place>> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+export async function getAllPlaces(): Promise<Place[]> {
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	return await placesCollection.find({}).toArray();
+	const getPlaces: Place[] = await _col.find({}).toArray();
+	await _connection.close();
+
+	return getPlaces;
 }
 
 export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	const placeReturned = await placesCollection.findOne({ _id: id });
+	const placeReturned = await _col.findOne({ _id: id });
+	await _connection.close();
 	if (placeReturned === null) throw `Sorry, no place exists with the ID ${String(id)}`;
 
 	return placeReturned;
 }
 
 export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	const placeReturned = await placesCollection.findOne({ _id: id });
+	const placeReturned = await _col.findOne({ _id: id });
+	await _connection.close();
 	if (placeReturned === null) return false;
+
 	return true;
 }
 
 export async function addPlace(placeToAdd: Place): Promise<Place> {
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col, _connection } = await getCollection<Place>("place");
 
-	const insertInfo: InsertOneResult<Place> = await placesCollection.insertOne(placeToAdd);
+	// check to see if the place already exists
+	const doesExist = await isPlaceInDb(placeToAdd._id);
+	if (doesExist) {
+		await _connection.close();
+		throw "That place already exists in the database and cannot be added again.";
+	}
+
+	// now its safe to add place to db
+	const insertInfo: InsertOneResult<Place> = await _col.insertOne(placeToAdd);
+	await _connection.close();
 	if (insertInfo.acknowledged === false) throw "Error adding place";
 
 	const newID = insertInfo.insertedId;
@@ -51,8 +62,9 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
  * */
 
 export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const ratingCollection: Collection<Rating> = await ratingColPromise;
-	const placesCollection: Collection<Place> = await placeColPromise;
+	const { _col: placeCol, _connection: placeConn } = await getCollection<Place>("place");
+
+	const { _col: ratingCol, _connection: ratingConn } = await getCollection<Rating>("rating");
 
 	const pipeline = [
 		{
@@ -97,7 +109,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 		},
 	];
 
-	const aggCursor = ratingCollection.aggregate<
+	const aggCursor = ratingCol.aggregate<
 		Rating & {
 			brailleAvg: number;
 			navigAvg: number;
@@ -123,8 +135,10 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 		avgsObj["avgStaffHelpfulness"] = elem.staffAvg;
 		avgsObj["avgGuideDogFriendly"] = elem.guideDogAvg;
 	});
+	await ratingConn.close();
 
-	const placeToUpdate = await placesCollection.updateOne({ _id: id }, { $set: avgsObj });
+	const placeToUpdate = await placeCol.updateOne({ _id: id }, { $set: avgsObj });
+	await placeConn.close();
 	if (placeToUpdate.acknowledged === false) throw "Could not update Place.";
 
 	return await getPlaceByID(id);

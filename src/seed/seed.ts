@@ -14,12 +14,13 @@ async function main() {
 		process.exit();
 	}
 
-	const db = await dbConnection();
+	const { _db: db, _connection } = await dbConnection();
 
 	// wipes the db so that we can test that things actually work later on in this script
 	console.log("Wiping the database clean...");
 
 	await db.dropDatabase();
+	await _connection.close();
 
 	console.log("Now attempting to seed the database...");
 
@@ -27,7 +28,7 @@ async function main() {
 
 	console.log("Adding users to database...");
 
-	let user1: User;
+	let user1!: User;
 	try {
 		user1 = await addUserToDb({
 			username: "julioisfred",
@@ -39,7 +40,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user2: User;
+	let user2!: User;
 	try {
 		user2 = await addUserToDb({
 			username: "davidscookies",
@@ -51,7 +52,7 @@ async function main() {
 		console.log(e);
 	}
 
-	let user3: User;
+	let user3!: User;
 	try {
 		user3 = await addUserToDb({
 			username: "andrewsteashop",
@@ -104,8 +105,8 @@ async function main() {
 	}
 
 	try {
+		if (!user1._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user1._id,
 			placeID: "fakeid1",
 			braille: 3,
@@ -121,8 +122,8 @@ async function main() {
 	}
 
 	try {
+		if (!user2._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user2._id,
 			placeID: "fakeid2",
 			braille: 5,
@@ -138,8 +139,8 @@ async function main() {
 	}
 
 	try {
+		if (!user3._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user3._id,
 			placeID: "fakeid3",
 			braille: 5,
@@ -155,8 +156,8 @@ async function main() {
 	}
 
 	try {
+		if (!user1._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user1._id,
 			placeID: "fakeid2",
 			braille: 1,
@@ -172,8 +173,8 @@ async function main() {
 	}
 
 	try {
+		if (!user2._id) return;
 		await addRating({
-			// @ts-ignore
 			userID: user2._id,
 			placeID: "fakeid3",
 			braille: 1,
@@ -202,8 +203,6 @@ async function main() {
 
 	console.log();
 	console.log("Done seeding the database!");
-
-	process.exit();
 }
 
 void main();

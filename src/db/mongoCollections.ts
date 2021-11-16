@@ -1,15 +1,10 @@
 import { dbConnection } from "./mongoConnection";
-import type { Collection } from "mongodb";
+import type { Collection, MongoClient } from "mongodb";
 
 export async function getCollection<T>(
 	collection: "rating" | "user" | "place"
-): Promise<Collection<T>> {
-	const _col: Promise<Collection<T>> | undefined = undefined;
+): Promise<{ _col: Collection<T>; _connection: MongoClient }> {
+	const { _db: db, _connection } = await dbConnection();
 
-	if (!_col) {
-		const db = await dbConnection();
-		return db.collection(collection);
-	}
-
-	return _col;
+	return { _col: db.collection(collection), _connection };
 }

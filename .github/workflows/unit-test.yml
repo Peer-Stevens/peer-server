@@ -1,0 +1,35 @@
+name: CI Unit Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    strategy:
+      matrix:
+        node-version: [12.x]
+        mongodb-version: ["4.1"]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+      - name: Install dependencies
+        run: yarn
+      - name: Run unit tests
+        env:
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_ENV: ${{ secrets.DB_ENV }}
+          PLACES_API_KEY: ${{ secrets.PLACES_API_KEY }}
+        run: yarn test
