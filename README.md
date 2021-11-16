@@ -9,6 +9,7 @@ Node server for Peer
 DB_USERNAME - your MongoDB username  
 DB_PASSWORD - your password for the connected MongoDB database  
 DB_NAME - the name of the MongoDB database you are using to run Peer  
+DB_ENV - the enviorment that MongoDB will connect to (local or atlas)  
 PLACES_API_KEY - the Google Places API key
 
 ### Detailed Prerequisite
@@ -23,6 +24,7 @@ In order to be able to connect to the mongo cluster, you need to create a `.env`
 DB_USERNAME=yourUsername
 DB_PASSWORD=yourPassword
 DB_NAME=yourName-dev
+DB_ENV=atlas
 ```
 
 Once you do this, now you need to create a database user in mongo atlas in order for you to be able to connect to it. Create a user by following this link [here](https://cloud.mongodb.com/v2/61415c0a5421134c56195254#security/database/users).
