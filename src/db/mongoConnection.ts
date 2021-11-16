@@ -9,10 +9,17 @@ let _db: Db;
 dotenv.config();
 
 export async function dbConnection(): Promise<{ _db: Db; _connection: MongoClient }> {
-	_connection = await MongoClient.connect(
-		`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@peer.uiwsq.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
-	);
-	_db = _connection.db(process.env.DB_NAME);
+	if (process.env.DB_ENV === "atlas") {
+		_connection = await MongoClient.connect(
+			`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@peer.uiwsq.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+		);
+		_db = _connection.db(process.env.DB_NAME);
 
-	return { _db, _connection };
+		return { _db, _connection };
+	} else {
+		_connection = await MongoClient.connect("mongodb://localhost:27017/");
+		_db = _connection.db(process.env.DB_NAME);
+
+		return { _db, _connection };
+	}
 }
