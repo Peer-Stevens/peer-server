@@ -19,7 +19,7 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 
 	const placeReturned = await _col.findOne({ _id: id });
 	await _connection.close();
-	if (placeReturned === null) throw "Sorry, no place exists with that ID";
+	if (placeReturned === null) throw `Sorry, no place exists with the ID ${String(id)}`;
 
 	return placeReturned;
 }
