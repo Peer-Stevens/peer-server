@@ -15,7 +15,7 @@ import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
 
 const app = express();
-const port = process.env.PORT || 3030;
+const port = Number(process.env.PORT) || 3030;
 const limiter = {
 	windowMs: 15 * 60 * 1000, // 15 min in ms
 	max: 1000,
