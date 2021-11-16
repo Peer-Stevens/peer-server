@@ -52,7 +52,7 @@ describe("Place REST endpoints", () => {
 					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
 				);
 			} else {
-				expect(e).toEqual("Sorry, no place exists with that ID");
+				expect(e).toEqual("Sorry, no place exists with the ID faketestid2");
 			}
 		});
 	});
