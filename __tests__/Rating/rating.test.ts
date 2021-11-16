@@ -137,9 +137,15 @@ beforeAll(async () => {
 describe("Rating REST endpoints", () => {
 	it("throws error when it tries to get nonexistent rating", async () => {
 		expect.assertions(1);
-		return await getRatingById(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e =>
-			expect(e).toEqual("Sorry, no rating exists with that ID")
-		);
+		return await getRatingById(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e => {
+			if (e instanceof MongoServerError) {
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				expect(e).toEqual("Sorry, no rating exists with that ID");
+			}
+		});
 	});
 	it("gets rating", async () => {
 		let rating!: Rating;
@@ -180,7 +186,15 @@ describe("Rating REST endpoints", () => {
 			staffHelpfulness: 1,
 			comment: "Ok",
 			dateCreated: new Date(),
-		}).catch(e => expect(e).toEqual("User cannot add more than one rating to the same place"));
+		}).catch(e => {
+			if (e instanceof MongoServerError) {
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				expect(e).toEqual("User cannot add more than one rating to the same place");
+			}
+		});
 	});
 	it("adds rating", async () => {
 		let rating!: Rating;
@@ -220,7 +234,15 @@ describe("Rating REST endpoints", () => {
 	it("throws error when it tries to edit nonexistent rating", async () => {
 		expect.assertions(1);
 		return await editRatingInDb(new ObjectId("617cacca81bc431f3dcde5bd"), { braille: 5 }).catch(
-			e => expect(e).toEqual("Sorry, no rating exists with that ID")
+			e => {
+				if (e instanceof MongoServerError) {
+					console.log(
+						"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+					);
+				} else {
+					expect(e).toEqual("Sorry, no rating exists with that ID");
+				}
+			}
 		);
 	});
 	it("edits rating", async () => {
@@ -253,9 +275,15 @@ describe("Rating REST endpoints", () => {
 	});
 	it("throws error when it tries to get all ratings from a nonexistent user", async () => {
 		expect.assertions(1);
-		return await getAllRatingsFromUser(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e =>
-			expect(e).toEqual("Sorry, no ratings have been given by that user")
-		);
+		return await getAllRatingsFromUser(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e => {
+			if (e instanceof MongoServerError) {
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				expect(e).toEqual("Sorry, no ratings have been given by that user");
+			}
+		});
 	});
 	it("gets all ratings added by user", async () => {
 		let ratings!: Array<Rating>;
@@ -275,9 +303,15 @@ describe("Rating REST endpoints", () => {
 	});
 	it("throws error when it tries to get all ratings for a place that is not in the database", async () => {
 		expect.assertions(1);
-		return await getAllRatingsForPlace("placeThatIsNotInDb").catch(e =>
-			expect(e).toEqual("Sorry, no ratings exist for that place")
-		);
+		return await getAllRatingsForPlace("placeThatIsNotInDb").catch(e => {
+			if (e instanceof MongoServerError) {
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				expect(e).toEqual("Sorry, no ratings exist for that place");
+			}
+		});
 	});
 	it("gets all ratings added for a place", async () => {
 		let ratings!: Array<Rating>;

@@ -29,9 +29,15 @@ beforeAll(async () => {
 describe("User REST endpoints", () => {
 	it("throws error when it tries to get nonexistent user", async () => {
 		expect.assertions(1);
-		return await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e =>
-			expect(e).toEqual("Sorry, no user exists with that ID")
-		);
+		return await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
+			if (e instanceof MongoServerError) {
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				expect(e).toEqual("Sorry, no user exists with that ID");
+			}
+		});
 	});
 	it("gets user", async () => {
 		let user!: User;
@@ -58,7 +64,15 @@ describe("User REST endpoints", () => {
 		expect.assertions(1);
 		return await editUserInDb(new ObjectId("618cacca81bc431f3dcde5bd"), {
 			username: "totallyfake",
-		}).catch(e => expect(e).toEqual("Sorry, no user exists with that ID"));
+		}).catch(e => {
+			if (e instanceof MongoServerError) {
+				console.log(
+					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
+				);
+			} else {
+				expect(e).toEqual("Sorry, no user exists with that ID");
+			}
+		});
 	});
 	it("edits user", async () => {
 		let user!: User;
