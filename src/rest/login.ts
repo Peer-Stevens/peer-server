@@ -1,6 +1,6 @@
-import { getUserByUsernameAndHash } from "db/User/user";
+import { getUserByUsernameAndHash } from "../db/User/user";
 import { Request, Response } from "express";
-import { AuthenticationError } from "types";
+import { AuthenticationError } from "../types";
 import { createHash } from "crypto";
 import StatusCode from "./status";
 
@@ -15,6 +15,7 @@ export const login = async (
 	} catch (e) {
 		if (e instanceof AuthenticationError) {
 			res.status(StatusCode.NOT_FOUND).send("Account not found");
+			return;
 		} else {
 			throw e;
 		}
