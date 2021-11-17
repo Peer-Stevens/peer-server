@@ -13,6 +13,7 @@ beforeAll(async () => {
 		await addUserToDb({
 			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
 			username: "ilovecheese",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
@@ -55,6 +56,7 @@ describe("User REST endpoints", () => {
 
 		expect(user).toMatchObject<User>({
 			username: "ilovecheese",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
@@ -93,6 +95,7 @@ describe("User REST endpoints", () => {
 
 		expect(user).toMatchObject<User>({
 			username: "ilovedairy",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: false,

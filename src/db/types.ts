@@ -8,6 +8,7 @@ import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js
 export interface User {
 	_id?: ObjectId;
 	username: string;
+	hash: string;
 	isBlindMode: boolean;
 	readsBraille: boolean;
 	doesNotPreferHelp: boolean;
