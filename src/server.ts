@@ -13,7 +13,7 @@ import { addPlaceToDb } from "./rest/Places/addPlace";
 import { editRating } from "./rest/Ratings/editRating";
 import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
-import { login } from "rest/login";
+import { login } from "./rest/login";
 
 export const app = express();
 const port = Number(process.env.PORT) || 3030;
