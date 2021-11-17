@@ -32,6 +32,7 @@ async function main() {
 	try {
 		user1 = await addUserToDb({
 			username: "julioisfred",
+			hash: "bd160cd097a48e6601402411225cefca8a15ec9ab4f817adf985bee5708a1bdc",
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: true,
@@ -44,6 +45,7 @@ async function main() {
 	try {
 		user2 = await addUserToDb({
 			username: "davidscookies",
+			hash: "c69814fdb253b36420a6f3e55a5a2964079ded32d4801e2c3eeea9ce4bb1ddf4",
 			isBlindMode: false,
 			readsBraille: true,
 			doesNotPreferHelp: false,
@@ -56,6 +58,7 @@ async function main() {
 	try {
 		user3 = await addUserToDb({
 			username: "andrewsteashop",
+			hash: "dbb9b59cfe329fe6bad35f5821adb322007e9c2c7e97241fb5b24fe0fc43ab78",
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: false,
