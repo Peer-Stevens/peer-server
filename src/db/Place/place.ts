@@ -1,7 +1,23 @@
 import { getCollection } from "../mongoCollections";
-import { InsertOneResult } from "mongodb";
+import { InsertOneResult, ObjectId } from "mongodb";
 import { Place, Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
+import { addRating } from "../Rating/rating";
+
+// generate a new rating object with the given id and random ratings from 0 to 5 in increments of 0.5
+export const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
+	return {
+		userID: userId,
+		placeID: placeId,
+		braille: Math.floor(Math.random() * 12) / 2,
+		fontReadability: Math.floor(Math.random() * 12) / 2,
+		staffHelpfulness: Math.floor(Math.random() * 12) / 2,
+		navigability: Math.floor(Math.random() * 12) / 2,
+		guideDogFriendly: Math.floor(Math.random() * 12) / 2,
+		dateCreated: new Date(),
+		comment: null,
+	};
+};
 
 // idk if we need this, but here it is in case we do
 // did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
@@ -15,13 +31,35 @@ export async function getAllPlaces(): Promise<Place[]> {
 }
 
 export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
+	if (!id) throw new Error("No place id provided");
+
 	const { _col, _connection } = await getCollection<Place>("place");
 
 	const placeReturned = await _col.findOne({ _id: id });
-	await _connection.close();
-	if (placeReturned === null) throw `Sorry, no place exists with the ID ${String(id)}`;
+	if (placeReturned === null) {
+		await addPlace({
+			_id: id,
+			avgBraille: null,
+			avgFontReadability: null,
+			avgStaffHelpfulness: null,
+			avgNavigability: null,
+			avgGuideDogFriendly: null,
+		});
 
-	return placeReturned;
+		// this is a dirty typecast, but it's only for a temporary feature
+		const newRating = generateNewRating(id, "6194532e0b57a3c1141982de" as unknown as ObjectId);
+
+		await addRating(newRating);
+
+		const newPlaceWithRatings = (await _col.findOne({ _id: id })) as Place; // this is now guaranteed to return a place
+
+		await _connection.close();
+
+		return newPlaceWithRatings;
+	} else {
+		await _connection.close();
+		return placeReturned;
+	}
 }
 
 export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
