@@ -1,23 +1,32 @@
 import { ObjectId } from "bson";
 import { User } from "../src/db/types";
 import { dbConnection } from "../src/db/mongoConnection";
-import { addUserToDb, getUserById, editUserInDb } from "../src/db/User/user";
+import {
+	addUserToDb,
+	getUserById,
+	editUserInDb,
+	getUserByUsernameAndHash,
+} from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
 
-beforeAll(async () => {
+let mockUser: User;
+
+beforeEach(async () => {
 	const { _db, _connection } = await dbConnection();
 	await _db.dropDatabase();
 	await _connection.close();
 
+	mockUser = {
+		_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+		username: "ilovecheese",
+		hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+		isBlindMode: true,
+		doesNotPreferHelp: false,
+		readsBraille: true,
+	};
+
 	try {
-		await addUserToDb({
-			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
-			username: "ilovecheese",
-			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			isBlindMode: true,
-			doesNotPreferHelp: false,
-			readsBraille: true,
-		});
+		await addUserToDb(mockUser);
 	} catch (e) {
 		if (e instanceof MongoServerError) {
 			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
@@ -27,7 +36,7 @@ beforeAll(async () => {
 	}
 });
 
-describe("User REST endpoints", () => {
+describe("User database functions", () => {
 	it("throws error when it tries to get nonexistent user", async () => {
 		expect.assertions(1);
 		return await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
@@ -100,5 +109,12 @@ describe("User REST endpoints", () => {
 			doesNotPreferHelp: false,
 			readsBraille: false,
 		});
+	});
+	it("gets a user by username and hash", async () => {
+		const user = await getUserByUsernameAndHash(
+			"ilovecheese",
+			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
+		);
+		expect(user).toMatchObject<User>(mockUser);
 	});
 });

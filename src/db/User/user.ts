@@ -25,6 +25,15 @@ export async function getUserById(id: ObjectId): Promise<User> {
 	return userReturned;
 }
 
+export const getUserByUsernameAndHash = async (username: string, hash: string): Promise<User> => {
+	const { _col, _connection } = await getCollection<User>("user");
+	const userReturned = await _col.findOne({ username: username });
+	await _connection.close();
+	if (userReturned === null)
+		throw Error(`No user exists with the username ${username} and hash ${hash}`);
+	return userReturned;
+};
+
 export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User>): Promise<User> {
 	const { _col, _connection } = await getCollection<User>("user");
 
