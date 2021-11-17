@@ -44,18 +44,6 @@ beforeAll(async () => {
 });
 
 describe("Place REST endpoints", () => {
-	it("throws error when it tries to get place that doesn't exist in db", async () => {
-		expect.assertions(1);
-		return await getPlaceByID("faketestid2").catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no place exists with the ID faketestid2");
-			}
-		});
-	});
 	it("gets place", async () => {
 		let place!: Place;
 		try {
