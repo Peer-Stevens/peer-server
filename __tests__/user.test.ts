@@ -8,6 +8,7 @@ import {
 	getUserByUsernameAndHash,
 } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
+import { AuthenticationError } from "../src/types";
 
 let mockUser: User;
 
@@ -39,7 +40,7 @@ beforeEach(async () => {
 describe("User database functions", () => {
 	it("throws error when it tries to get nonexistent user", async () => {
 		expect.assertions(1);
-		return await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
+		await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
 			if (e instanceof MongoServerError) {
 				console.log(
 					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
@@ -110,11 +111,32 @@ describe("User database functions", () => {
 			readsBraille: false,
 		});
 	});
+});
+
+describe("getByUsernameAndHash tests", () => {
 	it("gets a user by username and hash", async () => {
 		const user = await getUserByUsernameAndHash(
 			"ilovecheese",
 			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
 		);
 		expect(user).toMatchObject<User>(mockUser);
+	});
+	it("throws an authentication error if the username is not in the database", async () => {
+		expect.assertions(1);
+		await getUserByUsernameAndHash(
+			"ilovespaghetti",
+			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
+		).catch(e => {
+			expect(e).toBeInstanceOf(AuthenticationError);
+		});
+	});
+	it("throws an authentication error if the hash is not in the database", async () => {
+		expect.assertions(1);
+		await getUserByUsernameAndHash(
+			"ilovecheese",
+			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // totally a valid hash btw
+		).catch(e => {
+			expect(e).toBeInstanceOf(AuthenticationError);
+		});
 	});
 });
