@@ -22,7 +22,7 @@ dotenv.config();
 app.get("/getNearbyPlaces", getNearbyPlaces);
 app.get("/getPlacePhoto/:ref", getPlacePhoto);
 
-app.get("/getPlaceDetails", getPlaceDetails);
+app.get("/getPlaceDetails/:id", getPlaceDetails);
 
 // get all ratings for certain place
 app.get("/getAllPlaceRatings/:id", getAllPlaceRatings);
