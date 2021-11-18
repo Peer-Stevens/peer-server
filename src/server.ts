@@ -4,6 +4,7 @@ import rateLimit from "express-rate-limit";
 
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
 import { getPlacePhoto } from "./rest/getPlacePhoto";
+import { getPlaceDetails } from "./rest/getPlaceDetails";
 import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
 import { getPlace } from "./rest/Places/getPlaces";
 import { getUser } from "./rest/Users/getUsers";
@@ -32,6 +33,8 @@ dotenv.config();
 
 app.get("/getNearbyPlaces", getNearbyPlaces);
 app.get("/getPlacePhoto/:ref", getPlacePhoto);
+
+app.get("/getPlaceDetails/:id", getPlaceDetails);
 
 // get all ratings for certain place
 app.get("/getAllPlaceRatings/:id", getAllPlaceRatings);
