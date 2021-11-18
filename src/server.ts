@@ -28,13 +28,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimit(limiter));
 
-// upon a successful authentication, a token will be granted to the user.
-// this token will need to be passed as part of the body of all requests
-// made to endpoints which require login, and will be checked if it is in here
-//
-// TODO: expire tokens after some amount of time
-app.set("tokenStore", {});
-
 dotenv.config();
 
 app.get("/getNearbyPlaces", getNearbyPlaces);

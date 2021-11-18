@@ -1,17 +1,20 @@
-import { getUserByEmailAndHash } from "../db/User/user";
+import { editUserInDb, getUserByEmailAndHash } from "../db/User/user";
 import { Request, Response } from "express";
 import { AuthenticationError } from "../types";
 import { createHash } from "crypto";
 import StatusCode from "./status";
+import { User } from "../db/types";
+import { ObjectId } from "bson";
 
 export const login = async (
-	req: Request<unknown, unknown, { username: string; hash: string }>,
+	req: Request<unknown, unknown, { email: string; hash: string }>,
 	res: Response
 ): Promise<void> => {
-	const { username, hash } = req.body;
+	const { email, hash } = req.body;
 
+	let user: User;
 	try {
-		await getUserByEmailAndHash(username, hash);
+		user = await getUserByEmailAndHash(email, hash);
 	} catch (e) {
 		if (e instanceof AuthenticationError) {
 			res.status(StatusCode.NOT_FOUND).send("Account not found");
@@ -24,8 +27,6 @@ export const login = async (
 	const token = createHash("sha256")
 		.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
 		.digest("hex");
-	const tokenStore: Record<string, string> = req.app.get("tokenStore") as Record<string, string>;
-	tokenStore[username] = token;
-	req.app.set("tokenStore", tokenStore);
+	await editUserInDb(user._id as ObjectId, { token: token, dateTokenCreated: new Date() });
 	res.status(StatusCode.OK).send(token);
 };
