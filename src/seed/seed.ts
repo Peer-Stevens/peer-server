@@ -31,7 +31,7 @@ async function main() {
 	let user1!: User;
 	try {
 		user1 = await addUserToDb({
-			username: "julioisfred",
+			email: "julioisfred@onedrive.com",
 			hash: "bd160cd097a48e6601402411225cefca8a15ec9ab4f817adf985bee5708a1bdc",
 			isBlindMode: false,
 			readsBraille: false,
@@ -44,7 +44,7 @@ async function main() {
 	let user2!: User;
 	try {
 		user2 = await addUserToDb({
-			username: "davidscookies",
+			email: "davidscookies@sugar.com",
 			hash: "c69814fdb253b36420a6f3e55a5a2964079ded32d4801e2c3eeea9ce4bb1ddf4",
 			isBlindMode: false,
 			readsBraille: true,
@@ -57,7 +57,7 @@ async function main() {
 	let user3!: User;
 	try {
 		user3 = await addUserToDb({
-			username: "andrewsteashop",
+			email: "andrewsteashop@goat.org",
 			hash: "dbb9b59cfe329fe6bad35f5821adb322007e9c2c7e97241fb5b24fe0fc43ab78",
 			isBlindMode: false,
 			readsBraille: false,

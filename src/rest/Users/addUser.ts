@@ -10,7 +10,7 @@ export const addUser = async (
 	try {
 		const newUser = await addUserToDb({
 			// fake data for now until we have authentication implemented
-			username: "bro123",
+			email: "bro123@sweat.gym",
 			hash: "",
 			isBlindMode: false,
 			readsBraille: true,
