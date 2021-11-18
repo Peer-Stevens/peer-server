@@ -11,6 +11,7 @@ export interface User {
 	isBlindMode: boolean;
 	readsBraille: boolean;
 	doesNotPreferHelp: boolean;
+	dateEdited?: Date;
 }
 
 export interface Rating {
@@ -24,6 +25,7 @@ export interface Rating {
 	guideDogFriendly: number | null;
 	comment: string | null;
 	dateCreated: Date;
+	dateEdited?: Date;
 }
 
 export interface Place {

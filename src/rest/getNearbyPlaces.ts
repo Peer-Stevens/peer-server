@@ -3,8 +3,10 @@ import {
 	PlacesNearbyRanking,
 	PlacesNearbyResponse,
 } from "@googlemaps/google-maps-services-js";
+import { getPlaceByID } from "../db/Place/place";
 
 import { Request, Response } from "express";
+import StatusCode from "./status";
 
 export const getNearbyPlaces = async (req: Request, res: Response): Promise<void> => {
 	const client = new Client({});
@@ -16,12 +18,34 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 					longitude: Number(req.query.longitude),
 				},
 				rankby: PlacesNearbyRanking.distance,
-				key: process.env.PLACES_API_KEY || "", //TODO: check ESLint settings, it is disagreeing with the compiler here for some reason
+				key: process.env.PLACES_API_KEY || "",
 			},
 		})
 		.catch(e => {
 			console.log(e);
 		});
 
-	res.status(200).json({ places: (placesRes as PlacesNearbyResponse).data.results });
+	// The response is either an object or void if there is an error, but we catch it anyway, so we can cast to PlacesNearbyResponse safely
+	let placesNearby = (placesRes as PlacesNearbyResponse).data.results;
+
+	// Here we fire parallel requests to get the details of each place by their ids
+	if (req.query.includeRatings) {
+		placesNearby = await Promise.all(
+			placesNearby.map(place =>
+				getPlaceByID(place.place_id)
+					.then(placeDetails => ({
+						...place,
+						accessibilityData: placeDetails,
+					}))
+					.catch(e => {
+						console.log(e);
+						return place;
+					})
+			)
+		);
+	}
+
+	res.status(StatusCode.OK).json({
+		places: placesNearby,
+	});
 };

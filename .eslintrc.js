@@ -58,6 +58,5 @@ module.exports = {
 		"@typescript-eslint/no-var-requires": "error",
 		"@typescript-eslint/adjacent-overload-signatures": "error",
 		"@typescript-eslint/no-extra-semi": "off",
-		"@typescript-eslint/ban-ts-comment": "off", // needed to include this for the seed file...this is temporary
 	},
 };

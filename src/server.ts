@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
 
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
 import { getPlacePhoto } from "./rest/getPlacePhoto";
@@ -10,12 +11,22 @@ import { getUser } from "./rest/Users/getUsers";
 import { addRatingToPlace } from "./rest/Ratings/addRating";
 import { addUser } from "./rest/Users/addUser";
 import { addPlaceToDb } from "./rest/Places/addPlace";
+import { editRating } from "./rest/Ratings/editRating";
+import { editUser } from "./rest/Users/editUser";
+import { deleteRating } from "./rest/Ratings/deleteRating";
 
-const app = express();
-const port = process.env.PORT || 3030;
+export const app = express();
+const port = Number(process.env.PORT) || 3030;
+const limiter = {
+	windowMs: 15 * 60 * 1000, // 15 min in ms
+	max: 1000,
+	message:
+		"The API is rate limited to a maximum of 1000 requests per 15 minutes, please lower your request rate",
+};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(rateLimit(limiter));
 
 dotenv.config();
 
@@ -49,6 +60,15 @@ app.post("/addUser", addUser);
 // add place
 app.post("/addPlace", addPlaceToDb);
 
-app.listen(port, () => {
+// edit rating
+app.patch("/editRating", editRating);
+
+// edit user
+app.patch("/editUser", editUser);
+
+// delete rating
+app.delete("/deleteRating/:id", deleteRating);
+
+export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);
 });
