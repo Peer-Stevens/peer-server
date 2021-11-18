@@ -23,7 +23,7 @@ export const editUser = async (
 	}
 
 	if (
-		(editedUser.username && typeof editedUser.username !== "string") ||
+		(editedUser.email && typeof editedUser.email !== "string") ||
 		(editedUser.isBlindMode && typeof editedUser.isBlindMode !== "boolean") ||
 		(editedUser.readsBraille && typeof editedUser.readsBraille !== "boolean") ||
 		(editedUser.doesNotPreferHelp && typeof editedUser.doesNotPreferHelp !== "boolean")
@@ -46,8 +46,8 @@ export const editUser = async (
 	// new User object; compare with oldUserObj
 	const newUserObj: Partial<User> = {};
 
-	if (editedUser.username && editedUser.username !== oldUserObj.username) {
-		newUserObj.username = editedUser.username;
+	if (editedUser.email && editedUser.email !== oldUserObj.email) {
+		newUserObj.email = editedUser.email;
 	}
 	if (editedUser.isBlindMode && editedUser.isBlindMode !== oldUserObj.isBlindMode) {
 		newUserObj.isBlindMode = editedUser.isBlindMode;
