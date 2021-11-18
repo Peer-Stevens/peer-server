@@ -26,14 +26,12 @@ export async function getUserById(id: ObjectId): Promise<User> {
 	return userReturned;
 }
 
-export const getUserByUsernameAndHash = async (username: string, hash: string): Promise<User> => {
+export const getUserByEmailAndHash = async (email: string, hash: string): Promise<User> => {
 	const { _col, _connection } = await getCollection<User>("user");
-	const userReturned = await _col.findOne({ username: username, hash: hash });
+	const userReturned = await _col.findOne({ username: email, hash: hash });
 	await _connection.close();
 	if (userReturned === null)
-		throw new AuthenticationError(
-			`No user exists with the username ${username} and hash ${hash}`
-		);
+		throw new AuthenticationError(`No user exists with the username ${email} and hash ${hash}`);
 	return userReturned;
 };
 

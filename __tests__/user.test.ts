@@ -1,12 +1,7 @@
 import { ObjectId } from "bson";
 import { User } from "../src/db/types";
 import { dbConnection } from "../src/db/mongoConnection";
-import {
-	addUserToDb,
-	getUserById,
-	editUserInDb,
-	getUserByUsernameAndHash,
-} from "../src/db/User/user";
+import { addUserToDb, getUserById, editUserInDb, getUserByEmailAndHash } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
 import { AuthenticationError } from "../src/types";
 
@@ -19,7 +14,7 @@ beforeEach(async () => {
 
 	mockUser = {
 		_id: new ObjectId("617cacca81bc431f3dcde5bd"),
-		username: "ilovecheese",
+		email: "ilovecheese@hotmail.com",
 		hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 		isBlindMode: true,
 		doesNotPreferHelp: false,
@@ -65,7 +60,7 @@ describe("User database functions", () => {
 		}
 
 		expect(user).toMatchObject<User>({
-			username: "ilovecheese",
+			email: "ilovecheese@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
@@ -75,7 +70,7 @@ describe("User database functions", () => {
 	it("throws error when it tries to edit nonexistent user", async () => {
 		expect.assertions(1);
 		return await editUserInDb(new ObjectId("618cacca81bc431f3dcde5bd"), {
-			username: "totallyfake",
+			email: "totallyfake",
 		}).catch(e => {
 			if (e instanceof MongoServerError) {
 				console.log(
@@ -90,7 +85,7 @@ describe("User database functions", () => {
 		let user!: User;
 		try {
 			user = await editUserInDb(new ObjectId("617cacca81bc431f3dcde5bd"), {
-				username: "ilovedairy",
+				email: "ilovedairy@hotmail.com",
 				readsBraille: false,
 			});
 		} catch (e) {
@@ -104,7 +99,7 @@ describe("User database functions", () => {
 		}
 
 		expect(user).toMatchObject<User>({
-			username: "ilovedairy",
+			email: "ilovedairy@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
@@ -115,16 +110,16 @@ describe("User database functions", () => {
 
 describe("getByUsernameAndHash tests", () => {
 	it("gets a user by username and hash", async () => {
-		const user = await getUserByUsernameAndHash(
-			"ilovecheese",
+		const user = await getUserByEmailAndHash(
+			"ilovecheese@hotmail.com",
 			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
 		);
 		expect(user).toMatchObject<User>(mockUser);
 	});
 	it("throws an authentication error if the username is not in the database", async () => {
 		expect.assertions(1);
-		await getUserByUsernameAndHash(
-			"ilovespaghetti",
+		await getUserByEmailAndHash(
+			"ilovespaghetti@hotmail.com",
 			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
 		).catch(e => {
 			expect(e).toBeInstanceOf(AuthenticationError);
@@ -132,8 +127,8 @@ describe("getByUsernameAndHash tests", () => {
 	});
 	it("throws an authentication error if the hash is not in the database", async () => {
 		expect.assertions(1);
-		await getUserByUsernameAndHash(
-			"ilovecheese",
+		await getUserByEmailAndHash(
+			"ilovecheese@hotmail.com",
 			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // totally a valid hash btw
 		).catch(e => {
 			expect(e).toBeInstanceOf(AuthenticationError);

@@ -1,11 +1,11 @@
-import { getUserByUsernameAndHash } from "../src/db/User/user";
+import { getUserByEmailAndHash } from "../src/db/User/user";
 import { login } from "../src/rest/login";
 import { AuthenticationError } from "../src/types";
 import { Request, Response } from "express";
 import StatusCode from "../src/rest/status";
 
 jest.mock("../src/db/User/user");
-const mockGetBy = getUserByUsernameAndHash as jest.MockedFunction<typeof getUserByUsernameAndHash>;
+const mockGetBy = getUserByEmailAndHash as jest.MockedFunction<typeof getUserByEmailAndHash>;
 
 describe("login endpoint tests", () => {
 	it("returns a 404 status if the account is not found", async () => {
@@ -32,7 +32,7 @@ describe("login endpoint tests", () => {
 	});
 	it("returns a token if the account is found", async () => {
 		mockGetBy.mockResolvedValue({
-			username: "julioisfred",
+			email: "julioisfred@onedrive.com",
 			hash: "bd160cd097a48e6601402411225cefca8a15ec9ab4f817adf985bee5708a1bdc",
 			isBlindMode: false,
 			readsBraille: false,
@@ -49,7 +49,7 @@ describe("login endpoint tests", () => {
 		await login(
 			{
 				body: {
-					username: "julioisfred",
+					email: "julioisfred@hotmail.com",
 					hash: "bd160cd097a48e6601402411225cefca8a15ec9ab4f817adf985bee5708a1bdc",
 				},
 				app: {

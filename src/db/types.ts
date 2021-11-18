@@ -7,12 +7,14 @@ import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js
  */
 export interface User {
 	_id?: ObjectId;
-	username: string;
+	email: string;
 	hash: string;
 	isBlindMode: boolean;
 	readsBraille: boolean;
 	doesNotPreferHelp: boolean;
 	dateEdited?: Date;
+	token?: string;
+	dateTokenCreated?: Date;
 }
 
 export interface Rating {

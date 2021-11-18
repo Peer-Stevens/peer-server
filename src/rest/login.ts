@@ -1,4 +1,4 @@
-import { getUserByUsernameAndHash } from "../db/User/user";
+import { getUserByEmailAndHash } from "../db/User/user";
 import { Request, Response } from "express";
 import { AuthenticationError } from "../types";
 import { createHash } from "crypto";
@@ -11,7 +11,7 @@ export const login = async (
 	const { username, hash } = req.body;
 
 	try {
-		await getUserByUsernameAndHash(username, hash);
+		await getUserByEmailAndHash(username, hash);
 	} catch (e) {
 		if (e instanceof AuthenticationError) {
 			res.status(StatusCode.NOT_FOUND).send("Account not found");
