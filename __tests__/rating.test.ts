@@ -59,7 +59,7 @@ beforeEach(async () => {
 	try {
 		await addUserToDb({
 			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			username: "ausername",
+			email: "ausername@gmail.com",
 			hash: "8a8a10b2cad2303074da59d8bbd767419541ccb9",
 			readsBraille: true,
 			isBlindMode: true,
@@ -77,7 +77,7 @@ beforeEach(async () => {
 	try {
 		await addUserToDb({
 			_id: new ObjectId("617ccccd81bc431f3dcde5bd"),
-			username: "anotherusername",
+			email: "anotherusername@gmail.com",
 			hash: "3a74c46136c344291b4db6fd7d3be7353cdeb941",
 			readsBraille: false,
 			isBlindMode: false,
