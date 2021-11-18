@@ -1,6 +1,7 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { User } from "../types";
+import { AuthenticationError } from "../../types";
 
 // should be called when user creates an account
 export async function addUserToDb(userToAdd: User): Promise<User> {
@@ -24,6 +25,15 @@ export async function getUserById(id: ObjectId): Promise<User> {
 
 	return userReturned;
 }
+
+export const getUserByEmailAndHash = async (email: string, hash: string): Promise<User> => {
+	const { _col, _connection } = await getCollection<User>("user");
+	const userReturned = await _col.findOne({ username: email, hash: hash });
+	await _connection.close();
+	if (userReturned === null)
+		throw new AuthenticationError(`No user exists with the username ${email} and hash ${hash}`);
+	return userReturned;
+};
 
 export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User>): Promise<User> {
 	const { _col, _connection } = await getCollection<User>("user");

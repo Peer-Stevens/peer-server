@@ -14,7 +14,7 @@ import { addPlace } from "../src/db/Place/place";
 import { addUserToDb } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
 
-beforeAll(async () => {
+beforeEach(async () => {
 	const { _db, _connection } = await dbConnection();
 	await _db.dropDatabase();
 	await _connection.close();
@@ -60,6 +60,7 @@ beforeAll(async () => {
 		await addUserToDb({
 			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
 			username: "ausername",
+			hash: "8a8a10b2cad2303074da59d8bbd767419541ccb9",
 			readsBraille: true,
 			isBlindMode: true,
 			doesNotPreferHelp: false,
@@ -77,6 +78,7 @@ beforeAll(async () => {
 		await addUserToDb({
 			_id: new ObjectId("617ccccd81bc431f3dcde5bd"),
 			username: "anotherusername",
+			hash: "3a74c46136c344291b4db6fd7d3be7353cdeb941",
 			readsBraille: false,
 			isBlindMode: false,
 			doesNotPreferHelp: false,
@@ -134,7 +136,7 @@ beforeAll(async () => {
 	}
 });
 
-describe("Rating REST endpoints", () => {
+describe("Rating database functions", () => {
 	it("throws error when it tries to get nonexistent rating", async () => {
 		expect.assertions(1);
 		return await getRatingById(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e => {

@@ -11,6 +11,7 @@ export const addUser = async (
 		const newUser = await addUserToDb({
 			// fake data for now until we have authentication implemented
 			username: "bro123",
+			hash: "",
 			isBlindMode: false,
 			readsBraille: true,
 			doesNotPreferHelp: true,
