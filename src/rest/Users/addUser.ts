@@ -9,9 +9,17 @@ import {
 	UserCreatedJSON,
 } from "../../types";
 
+type AddUserRequestBody = Partial<
+	Omit<User, "isBlindMode" | "readsBraille" | "doesNotPreferHelp"> & {
+		isBlindMode: string;
+		readsBraille: string;
+		doesNotPreferHelp: string;
+	}
+>;
+
 const handleError = (
 	e: Error | unknown,
-	req: Request<unknown, unknown, Partial<User>>,
+	req: Request<unknown, unknown, AddUserRequestBody>,
 	res: Response
 ) => {
 	// do not send error `e` as a response for security reasons
@@ -23,14 +31,13 @@ const handleError = (
 
 const userIsInDb = async (
 	email: string,
-	req: Request<unknown, unknown, Partial<User>>,
+	req: Request<unknown, unknown, AddUserRequestBody>,
 	res: Response
 ) => {
 	try {
 		// check that user not already in db
 		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
 	} catch (e) {
-		// email does not exist if error thrown, nominal case
 		if (!(e instanceof AuthenticationError)) {
 			handleError(e, req, res);
 		} else {
@@ -51,12 +58,13 @@ const userIsInDb = async (
  * @param res HTTP response to be sent back.
  */
 export const addUser = async (
-	req: Request<unknown, unknown, Partial<User>>,
+	req: Request<unknown, unknown, AddUserRequestBody>,
 	res: Response
 ): Promise<void> => {
 	const { email, hash, isBlindMode, readsBraille, doesNotPreferHelp } = req.body;
 
 	if (!email || !hash) {
+		console.warn("addUser: Attempted to make new account without email or hash");
 		res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
 		return;
 	}
@@ -64,9 +72,9 @@ export const addUser = async (
 	const userDetails = {
 		email: email,
 		hash: hash,
-		isBlindMode: isBlindMode || false,
-		readsBraille: readsBraille || false,
-		doesNotPreferHelp: doesNotPreferHelp || false,
+		isBlindMode: isBlindMode === "true",
+		readsBraille: readsBraille === "true",
+		doesNotPreferHelp: doesNotPreferHelp === "true",
 	};
 
 	if (await userIsInDb(email, req, res)) {
