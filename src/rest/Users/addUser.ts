@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { addUserToDb } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
+import { MalformedRequestErrorJSON, ServerErrorJSON, UserCreatedJSON } from "../../types";
 
 /**
  * REST endpoint to add a new user account. Assumes that:
@@ -20,12 +21,13 @@ export const addUser = async (
 	const { email, hash, isBlindMode, readsBraille, doesNotPreferHelp } = req.body;
 
 	if (!email || !hash) {
-		res.status(StatusCode.BAD_REQUEST);
+		res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
+		return;
 	}
 
 	const userDetails = {
-		email: email as string,
-		hash: hash as string,
+		email: email,
+		hash: hash,
 		isBlindMode: isBlindMode || false,
 		readsBraille: readsBraille || false,
 		doesNotPreferHelp: doesNotPreferHelp || false,
@@ -33,8 +35,12 @@ export const addUser = async (
 
 	try {
 		await addUserToDb(userDetails);
-		res.status(StatusCode.OK).json({ status: "User successfully created" });
+		res.status(StatusCode.OK).json(UserCreatedJSON);
 	} catch (e) {
-		res.status(StatusCode.INTERNAL_SERVER_ERROR); // do not send error as a response for security reasons
+		// do not send error `e` as a response for security reasons
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		console.error(`The following error was thrown with the request body: ${req.body}`);
+		console.error(e);
+		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
 	}
 };
