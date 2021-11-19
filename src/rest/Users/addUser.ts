@@ -21,6 +21,25 @@ const handleError = (
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
 };
 
+const userIsInDb = async (
+	email: string,
+	req: Request<unknown, unknown, Partial<User>>,
+	res: Response
+) => {
+	try {
+		// check that user not already in db
+		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
+	} catch (e) {
+		// email does not exist if error thrown, nominal case
+		if (!(e instanceof AuthenticationError)) {
+			handleError(e, req, res);
+		} else {
+			return false;
+		}
+	}
+	return true;
+};
+
 /**
  * REST endpoint to add a new user account. Assumes that:
  * - the email address was validated on the client-side
@@ -50,16 +69,10 @@ export const addUser = async (
 		doesNotPreferHelp: doesNotPreferHelp || false,
 	};
 
-	try {
-		// check that user not already in db
-		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
-	} catch (e) {
-		if (e instanceof AuthenticationError) {
-			console.warn(`addUser: Attempted to make new account with existing email ${email}`);
-			res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
-			return;
-		}
-		handleError(e, req, res);
+	if (await userIsInDb(email, req, res)) {
+		console.warn(`addUser: Attempted to make new account with existing email ${email}`);
+		res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
+		return;
 	}
 
 	try {
