@@ -55,7 +55,7 @@ export const addUser = async (
 		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
 	} catch (e) {
 		if (e instanceof AuthenticationError) {
-			console.log(`addUser: Attempted to make new account with existing email ${email}`);
+			console.warn(`addUser: Attempted to make new account with existing email ${email}`);
 			res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
 			return;
 		}

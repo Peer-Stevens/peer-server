@@ -8,7 +8,7 @@ import { getPlaceDetails } from "./rest/getPlaceDetails";
 import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
 import { getPlace } from "./rest/Places/getPlaces";
 import { getUser } from "./rest/Users/getUsers";
-import { addRatingToPlace } from "./rest/Ratings/addRating";
+import { addRatingToPlace } from "./rest/Ratings/addRatingToPlace";
 import { addUser } from "./rest/Users/addUser";
 import { addPlaceToDb } from "./rest/Places/addPlace";
 import { editRating } from "./rest/Ratings/editRating";
