@@ -16,7 +16,7 @@ const handleError = (
 ) => {
 	// do not send error `e` as a response for security reasons
 	// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-	console.error(`The following error was thrown with the request body: ${req.body}`);
+	console.error(`addUser: The following error was thrown with the request body: ${req.body}`);
 	console.error(e);
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
 };
@@ -55,7 +55,7 @@ export const addUser = async (
 		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
 	} catch (e) {
 		if (e instanceof AuthenticationError) {
-			console.log(`Attempted to make new account with existing email ${email}`);
+			console.log(`addUser: Attempted to make new account with existing email ${email}`);
 			res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
 			return;
 		}
