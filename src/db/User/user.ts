@@ -28,7 +28,7 @@ export async function getUserById(id: ObjectId): Promise<User> {
 
 export const getUserByEmailOnly = async (email: string): Promise<User> => {
 	const { _col, _connection } = await getCollection<User>("user");
-	const userReturned = await _col.findOne({ username: email });
+	const userReturned = await _col.findOne({ email: email });
 	await _connection.close();
 	if (userReturned === null)
 		throw new AuthenticationError(`No user exists with the username ${email}`);
@@ -37,7 +37,7 @@ export const getUserByEmailOnly = async (email: string): Promise<User> => {
 
 export const getUserByEmailAndHash = async (email: string, hash: string): Promise<User> => {
 	const { _col, _connection } = await getCollection<User>("user");
-	const userReturned = await _col.findOne({ username: email, hash: hash });
+	const userReturned = await _col.findOne({ email: email, hash: hash });
 	await _connection.close();
 	if (userReturned === null)
 		throw new AuthenticationError(`No user exists with the username ${email} and hash ${hash}`);
