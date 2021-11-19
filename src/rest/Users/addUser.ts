@@ -1,8 +1,25 @@
 import type { Request, Response } from "express";
-import { addUserToDb } from "../../db/User/user";
+import { addUserToDb, getUserByEmailOnly } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
-import { MalformedRequestErrorJSON, ServerErrorJSON, UserCreatedJSON } from "../../types";
+import {
+	AuthenticationError,
+	MalformedRequestErrorJSON,
+	ServerErrorJSON,
+	UserCreatedJSON,
+} from "../../types";
+
+const handleError = (
+	e: Error | unknown,
+	req: Request<unknown, unknown, Partial<User>>,
+	res: Response
+) => {
+	// do not send error `e` as a response for security reasons
+	// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+	console.error(`The following error was thrown with the request body: ${req.body}`);
+	console.error(e);
+	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
+};
 
 /**
  * REST endpoint to add a new user account. Assumes that:
@@ -34,13 +51,21 @@ export const addUser = async (
 	};
 
 	try {
+		// check that user not already in db
+		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
+	} catch (e) {
+		if (e instanceof AuthenticationError) {
+			console.log(`Attempted to make new account with existing email ${email}`);
+			res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
+			return;
+		}
+		handleError(e, req, res);
+	}
+
+	try {
 		await addUserToDb(userDetails);
 		res.status(StatusCode.OK).json(UserCreatedJSON);
 	} catch (e) {
-		// do not send error `e` as a response for security reasons
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		console.error(`The following error was thrown with the request body: ${req.body}`);
-		console.error(e);
-		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
+		handleError(e, req, res);
 	}
 };
