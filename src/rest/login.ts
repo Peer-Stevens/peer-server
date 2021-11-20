@@ -1,8 +1,7 @@
 import { editUserInDb, getUserByEmailAndHash } from "../db/User/user";
 import { Request, Response } from "express";
-import { AccountNotFoundErrorJSON, ServerErrorJSON } from "../util";
+import { AccountNotFoundErrorJSON, createToken, ServerErrorJSON } from "../util";
 import { AuthenticationError } from "../types";
-import { createHash } from "crypto";
 import StatusCode from "./status";
 import { User } from "../db/types";
 import { ObjectId } from "bson";
@@ -32,9 +31,7 @@ export const login = async (
 		}
 	}
 
-	const token = createHash("sha256")
-		.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
-		.digest("hex");
+	const token = createToken();
 
 	try {
 		await editUserInDb(user._id as ObjectId, { token: token, dateTokenCreated: new Date() });

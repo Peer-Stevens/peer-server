@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import type { Request, Response } from "express";
 import StatusCode from "./rest/status";
 
@@ -23,6 +24,18 @@ export const handleError = <T>(
 	);
 	console.error(e);
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
+};
+
+/**
+ * Create a new token for authentication. Requires the
+ * `AUTH_SEED` environment variable to be set to obfuscate
+ * the values of the tokens generated.
+ * @returns the token.
+ */
+export const createToken = () => {
+	return createHash("sha256")
+		.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
+		.digest("hex");
 };
 
 // Constants
