@@ -6,9 +6,11 @@ import {
 	AccountExistsErrorJSON,
 	AuthenticationError,
 	MissingParametersErrorJSON,
-	ServerErrorJSON,
 	UserCreatedJSON,
 } from "../../types";
+import { handleError } from "../../util";
+
+const endPointName = "addUser";
 
 type AddUserRequestBody = Partial<
 	Omit<User, "isBlindMode" | "readsBraille" | "doesNotPreferHelp"> & {
@@ -17,24 +19,6 @@ type AddUserRequestBody = Partial<
 		doesNotPreferHelp: string;
 	}
 >;
-
-/**
- * Prints an error for the addUser REST endpoint.
- * @param e The error to be printed
- * @param req The request of the addUser endpoint
- * @param res The response of the addUser endpoint
- */
-const handleError = (
-	e: Error | unknown,
-	req: Request<unknown, unknown, AddUserRequestBody>,
-	res: Response
-) => {
-	// do not send error `e` as a response for security reasons
-	// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-	console.error(`addUser: The following error was thrown with the request body: ${req.body}`);
-	console.error(e);
-	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
-};
 
 /**
  * Checks if a user is in the database by their email.
@@ -53,7 +37,7 @@ const userIsInDb = async (
 		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
 	} catch (e) {
 		if (!(e instanceof AuthenticationError)) {
-			handleError(e, req, res);
+			handleError<AddUserRequestBody>(e, endPointName, req, res);
 		} else {
 			return false;
 		}
@@ -101,6 +85,6 @@ export const addUser = async (
 		await addUserToDb(userDetails);
 		res.status(StatusCode.OK).json(UserCreatedJSON);
 	} catch (e) {
-		handleError(e, req, res);
+		handleError<AddUserRequestBody>(e, endPointName, req, res);
 	}
 };
