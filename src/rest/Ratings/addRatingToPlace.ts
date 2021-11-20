@@ -5,6 +5,7 @@ import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
 	AccountNotFoundErrorJSON,
+	isAuthenticated,
 	MissingParametersErrorJSON,
 	PlaceDoesNotExistErrorJSON,
 	RatingAlreadyExistsErrorJSON,
@@ -143,15 +144,9 @@ export const addRatingToPlace = async (
 	}
 
 	try {
-		const userIDBson = new ObjectId(userID);
-
-		// check if user has a valid token
-		const user = await getUserByID(userIDBson);
-		if (token !== user.token) {
+		if (!(await isAuthenticated(userID, token))) {
 			console.warn(
-				`addRatingToPlace: user with token ${
-					user.token as string
-				} did not match provided token of ${token as string} when trying to add rating`
+				`addRatingToPlace: user with stored token did not match provided token of when trying to add rating`
 			);
 			res.status(StatusCode.UNAUTHORIZED).json(UnauthorizedErrorJSON);
 			return;
@@ -159,7 +154,7 @@ export const addRatingToPlace = async (
 
 		// ready to add to database now
 		await addRating({
-			userID: userIDBson,
+			userID: new ObjectId(userID),
 			placeID: placeID,
 			braille: brailleAsNum,
 			fontReadability: fontReadabilityAsNum,

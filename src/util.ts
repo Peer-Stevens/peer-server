@@ -1,5 +1,8 @@
+import { ObjectId } from "bson";
 import { createHash } from "crypto";
+import { getUserByID } from "../src/db/User/user";
 import type { Request, Response } from "express";
+import { MongoServerError } from "mongodb";
 import StatusCode from "./rest/status";
 
 // Functions
@@ -17,7 +20,7 @@ export const handleError = <T>(
 	name: string,
 	req: Request<unknown, unknown, T>,
 	res: Response
-) => {
+): void => {
 	// do not send error `e` as a response for security reasons
 	console.error(
 		`${name}: The following error was thrown with the request body: ${JSON.stringify(req.body)}`
@@ -32,10 +35,37 @@ export const handleError = <T>(
  * the values of the tokens generated.
  * @returns the token.
  */
-export const createToken = () => {
+export const createToken = (): string => {
 	return createHash("sha256")
 		.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
 		.digest("hex");
+};
+
+/**
+ * Returns true if the provided user is authenticated, and false if the
+ * user is not.
+ * @param userID the user's ID as a string.
+ * @param token the string.
+ * @returns a boolean
+ */
+export const isAuthenticated = async (
+	userID: string,
+	token: string | undefined
+): Promise<boolean> => {
+	const userIDBson = new ObjectId(userID);
+
+	try {
+		const user = await getUserByID(userIDBson);
+		if (user.token !== token || !token) {
+			return false;
+		}
+	} catch (e) {
+		if (e instanceof MongoServerError) {
+			console.warn(e);
+		}
+		throw e;
+	}
+	return true;
 };
 
 // Constants
