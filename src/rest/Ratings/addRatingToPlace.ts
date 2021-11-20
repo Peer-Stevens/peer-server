@@ -4,13 +4,13 @@ import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
-	DbOperationError,
 	MissingParametersErrorJSON,
 	RatingAlreadyExistsErrorJSON,
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
 	WrongParamatersErrorJSON,
-} from "../../types";
+} from "../../util";
+import { DbOperationError } from "../../types";
 import { getUserById } from "../../db/User/user";
 import { handleError } from "../../util";
 

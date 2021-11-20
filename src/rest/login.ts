@@ -1,6 +1,7 @@
 import { editUserInDb, getUserByEmailAndHash } from "../db/User/user";
 import { Request, Response } from "express";
-import { AccountNotFoundErrorJSON, AuthenticationError, ServerErrorJSON } from "../types";
+import { AccountNotFoundErrorJSON, ServerErrorJSON } from "../util";
+import { AuthenticationError } from "../types";
 import { createHash } from "crypto";
 import StatusCode from "./status";
 import { User } from "../db/types";
