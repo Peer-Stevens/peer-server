@@ -4,14 +4,33 @@ import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
-	MalformedRequestErrorJSON,
+	MissingParametersErrorJSON,
 	RatingCreatedJSON,
 	ServerErrorJSON,
 	UnauthorizedErrorJSON,
+	WrongParamatersErrorJSON,
 } from "../../types";
 import { getUserById } from "../../db/User/user";
 
-type AddRatingRequestBody = Partial<Omit<Rating, "userID"> & { token: string; userID: string }>;
+type AddRatingRequestBody = Partial<
+	Omit<
+		Rating,
+		| "userID"
+		| "braille"
+		| "fontReadability"
+		| "staffHelpfulness"
+		| "navigability"
+		| "guideDogFriendly"
+	> & {
+		token: string;
+		userID: string;
+		braille: string;
+		fontReadability: string;
+		staffHelpfulness: string;
+		navigability: string;
+		guideDogFriendly: string;
+	}
+>;
 
 /**
  * REST endpoint to add a rating to an existing place.
@@ -38,8 +57,30 @@ export const addRatingToPlace = async (
 	// userId and placeId are mandatory fields
 	if (!userID || !placeID) {
 		console.warn("addRatingToPlace: request made without user id or place id");
-		res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
+		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
+	}
+
+	// request body starts as strings, convert to float if present
+	const brailleAsNum = braille ? parseFloat(braille) : null;
+	const fontReadabilityAsNum = fontReadability ? parseFloat(fontReadability) : null;
+	const staffHelpfulnessAsNum = staffHelpfulness ? parseFloat(staffHelpfulness) : null;
+	const navigabilityAsNum = navigability ? parseFloat(navigability) : null;
+	const guideDogFriendlyAsNum = guideDogFriendly ? parseFloat(guideDogFriendly) : null;
+
+	// if can't convert to float, there is a problem
+	for (const field of [
+		brailleAsNum,
+		fontReadabilityAsNum,
+		staffHelpfulnessAsNum,
+		navigabilityAsNum,
+		guideDogFriendlyAsNum,
+	]) {
+		if (field === NaN) {
+			console.warn("addRatingToPlace: request made with non-numeric field");
+			res.status(StatusCode.BAD_REQUEST).json(WrongParamatersErrorJSON);
+			return;
+		}
 	}
 
 	try {
@@ -61,11 +102,11 @@ export const addRatingToPlace = async (
 		await addRating({
 			userID: userIDBson,
 			placeID: placeID,
-			braille: braille ?? null,
-			fontReadability: fontReadability ?? null,
-			staffHelpfulness: staffHelpfulness ?? null,
-			navigability: navigability ?? null,
-			guideDogFriendly: guideDogFriendly ?? null,
+			braille: brailleAsNum,
+			fontReadability: fontReadabilityAsNum,
+			staffHelpfulness: staffHelpfulnessAsNum,
+			navigability: navigabilityAsNum,
+			guideDogFriendly: guideDogFriendlyAsNum,
 			comment: comment ?? null,
 			dateCreated: new Date(),
 		});
