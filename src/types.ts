@@ -1,4 +1,5 @@
 export class AuthenticationError extends Error {}
+export class DbOperationError extends Error {}
 
 // Constants
 export const UserCreatedJSON = { status: "User successfully created." };
@@ -16,4 +17,7 @@ export const ServerErrorJSON = {
 export const AccountExistsErrorJSON = { error: "An account already exists with this email." };
 export const AccountNotFoundErrorJSON = {
 	error: "Account with that email and password not found.",
+};
+export const RatingAlreadyExistsErrorJSON = {
+	error: "This account has already added a rating to this place.",
 };

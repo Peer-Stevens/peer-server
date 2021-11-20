@@ -3,6 +3,7 @@ import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
+import { DbOperationError } from "../../types";
 
 export async function addRating(ratingToAdd: Rating): Promise<Rating> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
@@ -91,4 +92,14 @@ export async function deleteRatingFromDb(id: ObjectId): Promise<boolean> {
 	if (rating.deletedCount === 1) return true;
 
 	return false;
+}
+
+export async function getRatingForPlaceFromUser(placeID: ObjectId, userID: ObjectId) {
+	const { _col, _connection } = await getCollection<Rating>("rating");
+
+	const rating = await _col.findOne({ placeID: placeID, userID: userID });
+	await _connection.close();
+	if (rating === null)
+		throw new DbOperationError("No rating by this user has been given for place.");
+	return rating;
 }
