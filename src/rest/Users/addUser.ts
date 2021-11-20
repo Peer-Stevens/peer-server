@@ -4,7 +4,7 @@ import type { User } from "../../db/types";
 import StatusCode from "../status";
 import {
 	AuthenticationError,
-	MalformedRequestErrorJSON,
+	MissingParametersErrorJSON,
 	ServerErrorJSON,
 	UserCreatedJSON,
 } from "../../types";
@@ -65,7 +65,7 @@ export const addUser = async (
 
 	if (!email || !hash) {
 		console.warn("addUser: Attempted to make new account without email or hash");
-		res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
+		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
 	}
 
@@ -79,7 +79,7 @@ export const addUser = async (
 
 	if (await userIsInDb(email, req, res)) {
 		console.warn(`addUser: Attempted to make new account with existing email ${email}`);
-		res.status(StatusCode.BAD_REQUEST).json(MalformedRequestErrorJSON);
+		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
 	}
 
