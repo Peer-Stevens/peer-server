@@ -18,8 +18,9 @@ export const handleError = <T>(
 	res: Response
 ) => {
 	// do not send error `e` as a response for security reasons
-	// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-	console.error(`${name}: The following error was thrown with the request body: ${req.body}`);
+	console.error(
+		`${name}: The following error was thrown with the request body: ${JSON.stringify(req.body)}`
+	);
 	console.error(e);
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
 };
