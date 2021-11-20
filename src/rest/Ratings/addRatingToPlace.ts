@@ -111,7 +111,7 @@ export const addRatingToPlace = async (
 	try {
 		if (!(await isAuthenticated(userID, token))) {
 			console.warn(
-				`addRatingToPlace: user with stored token did not match provided token of when trying to add rating`
+				`addRatingToPlace: logged-in user did not match provided token when trying to add rating`
 			);
 			res.status(StatusCode.UNAUTHORIZED).json(UnauthorizedErrorJSON);
 			return;

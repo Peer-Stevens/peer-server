@@ -3,98 +3,114 @@ import { editRatingInDb, getRatingById } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
+import {
+	handleError,
+	isAuthenticated,
+	MissingParametersErrorJSON,
+	RatingUpdatedJSON,
+	ServerErrorJSON,
+	UnauthorizedErrorJSON,
+	WrongParamatersErrorJSON,
+} from "../../util";
+
+type EditRatingRequestBody = Partial<
+	Omit<
+		Rating,
+		| "userID"
+		| "braille"
+		| "fontReadability"
+		| "staffHelpfulness"
+		| "navigability"
+		| "guideDogFriendly"
+	> & {
+		token: string;
+		braille: string;
+		fontReadability: string;
+		staffHelpfulness: string;
+		navigability: string;
+		guideDogFriendly: string;
+	}
+>;
 
 export const editRating = async (
-	req: Request<unknown, unknown, Partial<Rating>>,
+	req: Request<unknown, unknown, EditRatingRequestBody>,
 	res: Response
 ): Promise<void> => {
-	const editedRating = req.body;
+	const {
+		_id,
+		token,
+		braille,
+		fontReadability,
+		staffHelpfulness,
+		navigability,
+		guideDogFriendly,
+		comment,
+	} = req.body;
 
 	// Error handling; this is needed because any types can be passed in despite using TypeScript
 	// _id needs to be a string in order to be converted to type ObjectId
 
-	if (!editedRating._id) {
-		res.status(StatusCode.BAD_REQUEST).json({ error: "There must be an _id" });
+	if (!_id) {
+		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
 	}
 
-	if (editedRating._id && typeof editedRating._id !== "string") {
-		res.status(StatusCode.BAD_REQUEST).json({ error: "_id must be a string" });
-		return;
-	}
+	// request body starts as strings, convert to float if present
+	const brailleAsNum = braille ? parseFloat(braille) : null;
+	const fontReadabilityAsNum = fontReadability ? parseFloat(fontReadability) : null;
+	const staffHelpfulnessAsNum = staffHelpfulness ? parseFloat(staffHelpfulness) : null;
+	const navigabilityAsNum = navigability ? parseFloat(navigability) : null;
+	const guideDogFriendlyAsNum = guideDogFriendly ? parseFloat(guideDogFriendly) : null;
 
-	if (
-		(editedRating.braille && typeof editedRating.braille !== "number") ||
-		(editedRating.fontReadability && typeof editedRating.fontReadability !== "number") ||
-		(editedRating.staffHelpfulness && typeof editedRating.staffHelpfulness !== "number") ||
-		(editedRating.navigability && typeof editedRating.navigability !== "number") ||
-		(editedRating.guideDogFriendly && typeof editedRating.guideDogFriendly !== "number")
-	) {
-		res.status(StatusCode.BAD_REQUEST).json({
-			error: "braille, fontReadability, staffHelpfullness, navigability, and guideDogFriendly must be strings",
-		});
-		return;
-	}
-
-	if (editedRating.comment && typeof editedRating.comment !== "string") {
-		res.status(StatusCode.BAD_REQUEST).json({ error: "comment must be a string" });
-		return;
+	// if can't convert to float, there is a problem
+	for (const field of [
+		brailleAsNum,
+		fontReadabilityAsNum,
+		staffHelpfulnessAsNum,
+		navigabilityAsNum,
+		guideDogFriendlyAsNum,
+	]) {
+		if (field === NaN) {
+			console.warn("editRating: request made with non-numeric field");
+			res.status(StatusCode.BAD_REQUEST).json(WrongParamatersErrorJSON);
+			return;
+		}
 	}
 
 	// get old Rating
 	let oldRatingObj: Rating;
 	try {
-		oldRatingObj = await getRatingById(new ObjectId(editedRating._id));
+		oldRatingObj = await getRatingById(new ObjectId(_id));
 	} catch (e) {
-		console.log(e);
+		handleError<EditRatingRequestBody>(e, "editRating", req, res);
 		return;
 	}
 
-	// new Rating object; compare with oldRatingObj
-	const newRatingObj: Partial<Rating> = {};
-
-	if (editedRating.braille && editedRating.braille !== oldRatingObj.braille) {
-		newRatingObj.braille = editedRating.braille;
-	}
-	if (
-		editedRating.fontReadability &&
-		editedRating.fontReadability !== oldRatingObj.fontReadability
-	) {
-		newRatingObj.fontReadability = editedRating.fontReadability;
-	}
-	if (
-		editedRating.staffHelpfulness &&
-		editedRating.staffHelpfulness !== oldRatingObj.staffHelpfulness
-	) {
-		newRatingObj.staffHelpfulness = editedRating.staffHelpfulness;
-	}
-	if (editedRating.navigability && editedRating.navigability !== oldRatingObj.navigability) {
-		newRatingObj.navigability = editedRating.navigability;
-	}
-	if (
-		editedRating.guideDogFriendly &&
-		editedRating.guideDogFriendly !== oldRatingObj.guideDogFriendly
-	) {
-		newRatingObj.guideDogFriendly = editedRating.guideDogFriendly;
-	}
-	if (editedRating.comment && editedRating.comment !== oldRatingObj.comment) {
-		newRatingObj.comment = editedRating.comment;
-	}
-
-	if (Object.keys(newRatingObj).length === 0) {
-		res.status(StatusCode.BAD_REQUEST).json({
-			error: "Cannot edit Rating since there is no change",
-		});
+	// ensure request made by user associated with rating
+	if (!(await isAuthenticated(oldRatingObj.userID.toString(), token))) {
+		console.warn(
+			`editRating: logged-in user did not match provided token when trying to add rating`
+		);
+		res.status(StatusCode.UNAUTHORIZED).json(UnauthorizedErrorJSON);
 		return;
 	}
 
-	newRatingObj.dateEdited = new Date();
+	const newRatingObj: Partial<Rating> = {
+		braille: brailleAsNum,
+		fontReadability: fontReadabilityAsNum,
+		staffHelpfulness: staffHelpfulnessAsNum,
+		navigability: navigabilityAsNum,
+		guideDogFriendly: guideDogFriendlyAsNum,
+		comment: comment,
+		dateEdited: new Date(),
+	};
 
 	// ready to edit rating
 	try {
-		const rating = await editRatingInDb(new ObjectId(editedRating._id), newRatingObj);
-		res.status(StatusCode.OK).json(rating);
+		await editRatingInDb(new ObjectId(_id), newRatingObj);
+		res.status(StatusCode.OK).json(RatingUpdatedJSON);
 	} catch (e) {
-		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
+		handleError<EditRatingRequestBody>(e, "editRating", req, res);
+		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
 	}
 };

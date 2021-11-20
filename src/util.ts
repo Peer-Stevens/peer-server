@@ -111,6 +111,7 @@ export const placeExists = async <T>(
 // Constants
 export const UserCreatedJSON = { status: "User successfully created." };
 export const RatingCreatedJSON = { status: "Rating successfully created." };
+export const RatingUpdateJSON = { status: "Rating successfully updated." };
 export const MissingParametersErrorJSON = { error: "This request is missing parameters." };
 export const WrongParamatersErrorJSON = {
 	error: "This request has the wrong data type for a provided field in the body.",
