@@ -1,6 +1,6 @@
 import { editUserInDb, getUserByEmailAndHash } from "../db/User/user";
 import { Request, Response } from "express";
-import { AuthenticationError, ServerErrorJSON } from "../types";
+import { AccountNotFoundErrorJSON, AuthenticationError, ServerErrorJSON } from "../types";
 import { createHash } from "crypto";
 import StatusCode from "./status";
 import { User } from "../db/types";
@@ -24,7 +24,7 @@ export const login = async (
 		user = await getUserByEmailAndHash(email, hash);
 	} catch (e) {
 		if (e instanceof AuthenticationError) {
-			res.status(StatusCode.NOT_FOUND).send("Account not found");
+			res.status(StatusCode.NOT_FOUND).json(AccountNotFoundErrorJSON);
 			return;
 		} else {
 			throw e;

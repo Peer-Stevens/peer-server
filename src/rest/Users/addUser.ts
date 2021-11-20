@@ -3,6 +3,7 @@ import { addUserToDb, getUserByEmailOnly } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
 import {
+	AccountExistsErrorJSON,
 	AuthenticationError,
 	MissingParametersErrorJSON,
 	ServerErrorJSON,
@@ -17,6 +18,12 @@ type AddUserRequestBody = Partial<
 	}
 >;
 
+/**
+ * Prints an error for the addUser REST endpoint.
+ * @param e The error to be printed
+ * @param req The request of the addUser endpoint
+ * @param res The response of the addUser endpoint
+ */
 const handleError = (
 	e: Error | unknown,
 	req: Request<unknown, unknown, AddUserRequestBody>,
@@ -29,6 +36,13 @@ const handleError = (
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
 };
 
+/**
+ * Checks if a user is in the database by their email.
+ * @param email the user's email
+ * @param req the request of the addUser endpoint
+ * @param res the response of the addUser endpoint
+ * @returns
+ */
 const userIsInDb = async (
 	email: string,
 	req: Request<unknown, unknown, AddUserRequestBody>,
@@ -54,7 +68,7 @@ const userIsInDb = async (
  *
  * If the request does not provide settings information in the body, defaults are
  * created.
- * @param req HTTP request object containing a user info as the body.
+ * @param req HTTP request object containing user info as the body.
  * @param res HTTP response to be sent back.
  */
 export const addUser = async (
@@ -79,7 +93,7 @@ export const addUser = async (
 
 	if (await userIsInDb(email, req, res)) {
 		console.warn(`addUser: Attempted to make new account with existing email ${email}`);
-		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
+		res.status(StatusCode.BAD_REQUEST).json(AccountExistsErrorJSON);
 		return;
 	}
 

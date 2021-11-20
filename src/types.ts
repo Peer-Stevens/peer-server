@@ -13,3 +13,7 @@ export const UnauthorizedErrorJSON = {
 export const ServerErrorJSON = {
 	error: "Something went wrong on the server. Please try again later.",
 };
+export const AccountExistsErrorJSON = { error: "An account already exists with this email." };
+export const AccountNotFoundErrorJSON = {
+	error: "Account with that email and password not found.",
+};
