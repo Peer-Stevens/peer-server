@@ -1,9 +1,11 @@
-import { ObjectId } from "bson";
 import { createHash } from "crypto";
-import { getUserByID } from "../src/db/User/user";
-import type { Request, Response } from "express";
+import { ObjectId } from "bson";
 import { MongoServerError } from "mongodb";
+import type { Request, Response } from "express";
+import { getPlaceByID } from "./db/Place/place";
+import { getUserByID } from "./db/User/user";
 import StatusCode from "./rest/status";
+import { DbOperationError } from "./types";
 
 // Functions
 
@@ -64,6 +66,44 @@ export const isAuthenticated = async (
 			console.warn(e);
 		}
 		throw e;
+	}
+	return true;
+};
+
+// following two functions are kinda moist, feel free to DRY it out
+
+export const userExists = async <T>(
+	userID: string,
+	endPointName: string,
+	req: Request<unknown, unknown, T>,
+	res: Response
+): Promise<boolean> => {
+	try {
+		await getUserByID(new ObjectId(userID));
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return false;
+		} else {
+			handleError<T>(e, endPointName, req, res);
+		}
+	}
+	return true;
+};
+
+export const placeExists = async <T>(
+	placeID: string,
+	endPointName: string,
+	req: Request<unknown, unknown, T>,
+	res: Response
+): Promise<boolean> => {
+	try {
+		await getPlaceByID(placeID);
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return false;
+		} else {
+			handleError<T>(e, endPointName, req, res);
+		}
 	}
 	return true;
 };

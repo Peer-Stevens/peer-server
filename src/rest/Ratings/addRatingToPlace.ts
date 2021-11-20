@@ -8,14 +8,14 @@ import {
 	isAuthenticated,
 	MissingParametersErrorJSON,
 	PlaceDoesNotExistErrorJSON,
+	placeExists,
 	RatingAlreadyExistsErrorJSON,
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
+	userExists,
 	WrongParamatersErrorJSON,
 } from "../../util";
 import { DbOperationError } from "../../types";
-import { getUserByID } from "../../db/User/user";
-import { getPlaceByID } from "../../db/Place/place";
 import { handleError } from "../../util";
 
 const endPointName = "addRatingToPlace";
@@ -39,41 +39,6 @@ type AddRatingRequestBody = Partial<
 		guideDogFriendly: string;
 	}
 >;
-
-// following three functions are kinda moist, feel free to DRY it out
-const userExists = async (
-	userID: string,
-	req: Request<unknown, unknown, AddRatingRequestBody>,
-	res: Response
-): Promise<boolean> => {
-	try {
-		await getUserByID(new ObjectId(userID));
-	} catch (e) {
-		if (e instanceof DbOperationError) {
-			return false;
-		} else {
-			handleError<AddRatingRequestBody>(e, endPointName, req, res);
-		}
-	}
-	return true;
-};
-
-const placeExists = async (
-	placeID: string,
-	req: Request<unknown, unknown, AddRatingRequestBody>,
-	res: Response
-): Promise<boolean> => {
-	try {
-		await getPlaceByID(placeID);
-	} catch (e) {
-		if (e instanceof DbOperationError) {
-			return false;
-		} else {
-			handleError<AddRatingRequestBody>(e, endPointName, req, res);
-		}
-	}
-	return true;
-};
 
 /**
  * REST endpoint to add a rating to an existing place.
@@ -105,7 +70,7 @@ export const addRatingToPlace = async (
 	}
 
 	// check that user exists
-	if (!(await userExists(userID, req, res))) {
+	if (!(await userExists<AddRatingRequestBody>(userID, endPointName, req, res))) {
 		console.warn(
 			"addRatingToPlace: request made where user ID provided does not match an existing user"
 		);
@@ -114,7 +79,7 @@ export const addRatingToPlace = async (
 	}
 
 	// check that place exists
-	if (!(await placeExists(placeID, req, res))) {
+	if (!(await placeExists<AddRatingRequestBody>(placeID, endPointName, req, res))) {
 		console.warn(
 			"addRatingToPlace: request made where place ID provided does not match a place in the database"
 		);
