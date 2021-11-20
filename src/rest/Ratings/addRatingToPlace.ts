@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { addRating, getRatingForPlaceFromUser } from "../../db/Rating/rating";
+import { addRating } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
@@ -49,12 +49,12 @@ const userExists = async (
 		await getUserByID(new ObjectId(userID));
 	} catch (e) {
 		if (e instanceof DbOperationError) {
-			return true;
+			return false;
 		} else {
 			handleError<AddRatingRequestBody>(e, endPointName, req, res);
 		}
 	}
-	return false;
+	return true;
 };
 
 const placeExists = async (
@@ -66,30 +66,12 @@ const placeExists = async (
 		await getPlaceByID(placeID);
 	} catch (e) {
 		if (e instanceof DbOperationError) {
-			return true;
+			return false;
 		} else {
 			handleError<AddRatingRequestBody>(e, endPointName, req, res);
 		}
 	}
-	return false;
-};
-
-const ratingAlreadyExists = async (
-	userID: string,
-	placeID: string,
-	req: Request<unknown, unknown, AddRatingRequestBody>,
-	res: Response
-): Promise<boolean> => {
-	try {
-		await getRatingForPlaceFromUser(new ObjectId(placeID), new ObjectId(userID));
-	} catch (e) {
-		if (e instanceof DbOperationError) {
-			return true;
-		} else {
-			handleError<AddRatingRequestBody>(e, endPointName, req, res);
-		}
-	}
-	return false;
+	return true;
 };
 
 /**
@@ -136,15 +118,6 @@ export const addRatingToPlace = async (
 			"addRatingToPlace: request made where place ID provided does not match a place in the database"
 		);
 		res.status(StatusCode.BAD_REQUEST).json(PlaceDoesNotExistErrorJSON);
-	}
-
-	// check if user has already rated this place
-	if (await ratingAlreadyExists(userID, placeID, req, res)) {
-		console.warn(
-			"addRatingToPlace: user attempted to add rating to place they have already rated"
-		);
-		res.status(StatusCode.BAD_REQUEST).json(RatingAlreadyExistsErrorJSON);
-		return;
 	}
 
 	// request body starts as strings, convert to float if present
@@ -198,6 +171,11 @@ export const addRatingToPlace = async (
 		});
 		res.status(StatusCode.OK).json(RatingCreatedJSON);
 	} catch (e) {
+		if (e instanceof DbOperationError) {
+			console.warn("addRatingToPlace: user attempted to rate place they have already rated");
+			res.status(StatusCode.BAD_REQUEST).json(RatingAlreadyExistsErrorJSON);
+			return;
+		}
 		handleError<AddRatingRequestBody>(e, endPointName, req, res);
 	}
 };
