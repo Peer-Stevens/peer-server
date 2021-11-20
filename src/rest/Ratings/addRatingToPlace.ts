@@ -1,16 +1,20 @@
 import type { Request, Response } from "express";
-import { addRating } from "../../db/Rating/rating";
+import { addRating, getRatingForPlaceFromUser } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
+	DbOperationError,
 	MissingParametersErrorJSON,
+	RatingAlreadyExistsErrorJSON,
 	RatingCreatedJSON,
-	ServerErrorJSON,
 	UnauthorizedErrorJSON,
 	WrongParamatersErrorJSON,
 } from "../../types";
 import { getUserById } from "../../db/User/user";
+import { handleError } from "../../util";
+
+const endPointName = "addRatingToPlace";
 
 type AddRatingRequestBody = Partial<
 	Omit<
@@ -31,6 +35,24 @@ type AddRatingRequestBody = Partial<
 		guideDogFriendly: string;
 	}
 >;
+
+const ratingAlreadyExists = async (
+	userID: string,
+	placeID: string,
+	req: Request<unknown, unknown, AddRatingRequestBody>,
+	res: Response
+): Promise<boolean> => {
+	try {
+		await getRatingForPlaceFromUser(new ObjectId(placeID), new ObjectId(userID));
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return true;
+		} else {
+			handleError<AddRatingRequestBody>(e, endPointName, req, res);
+		}
+	}
+	return false;
+};
 
 /**
  * REST endpoint to add a rating to an existing place.
@@ -58,6 +80,15 @@ export const addRatingToPlace = async (
 	if (!userID || !placeID) {
 		console.warn("addRatingToPlace: request made without user id or place id");
 		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
+		return;
+	}
+
+	// check if user has already rated this place
+	if (await ratingAlreadyExists(userID, placeID, req, res)) {
+		console.warn(
+			"addRatingToPlace: user attempted to add rating to place they have already rated"
+		);
+		res.status(StatusCode.BAD_REQUEST).json(RatingAlreadyExistsErrorJSON);
 		return;
 	}
 
@@ -112,11 +143,6 @@ export const addRatingToPlace = async (
 		});
 		res.status(StatusCode.OK).json(RatingCreatedJSON);
 	} catch (e) {
-		console.error(
-			//eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			`addRatingtoPlace: Got the following error with the provided request body ${req.body}:`
-		);
-		console.error(e);
-		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
+		handleError<AddRatingRequestBody>(e, endPointName, req, res);
 	}
 };
