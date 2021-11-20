@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { editUserInDb, getUserById } from "../../db/User/user";
+import { editUserInDb, getUserByID } from "../../db/User/user";
 import { ObjectId } from "mongodb";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
@@ -37,7 +37,7 @@ export const editUser = async (
 	// get old User object
 	let oldUserObj: User;
 	try {
-		oldUserObj = await getUserById(new ObjectId(editedUser._id));
+		oldUserObj = await getUserByID(new ObjectId(editedUser._id));
 	} catch (e) {
 		console.log(e);
 		return;
