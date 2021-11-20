@@ -47,9 +47,6 @@ export const editRating = async (
 		comment,
 	} = req.body;
 
-	// Error handling; this is needed because any types can be passed in despite using TypeScript
-	// _id needs to be a string in order to be converted to type ObjectId
-
 	if (!_id) {
 		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
