@@ -53,7 +53,7 @@ app.get("/getPlace/:id", getPlace);
 app.get("/getUser/:id", getUser);
 
 // add rating
-app.post("/addRating", addRatingToPlace);
+app.post("/addRatingToPlace", addRatingToPlace);
 
 // add user
 app.post("/addUser", addUser);
