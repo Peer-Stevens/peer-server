@@ -39,8 +39,11 @@ export const ServerErrorJSON = {
 };
 export const AccountExistsErrorJSON = { error: "An account already exists with this email." };
 export const AccountNotFoundErrorJSON = {
-	error: "Account with that email and password not found.",
+	error: "Account with that email and/or password not found.",
 };
 export const RatingAlreadyExistsErrorJSON = {
 	error: "This account has already added a rating to this place.",
+};
+export const PlaceDoesNotExistErrorJSON = {
+	error: "There is no place with the provided place ID.",
 };

@@ -4,14 +4,17 @@ import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
+	AccountNotFoundErrorJSON,
 	MissingParametersErrorJSON,
+	PlaceDoesNotExistErrorJSON,
 	RatingAlreadyExistsErrorJSON,
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
 	WrongParamatersErrorJSON,
 } from "../../util";
 import { DbOperationError } from "../../types";
-import { getUserById } from "../../db/User/user";
+import { getUserByID } from "../../db/User/user";
+import { getPlaceByID } from "../../db/Place/place";
 import { handleError } from "../../util";
 
 const endPointName = "addRatingToPlace";
@@ -35,6 +38,41 @@ type AddRatingRequestBody = Partial<
 		guideDogFriendly: string;
 	}
 >;
+
+// following three functions are kinda moist, feel free to DRY it out
+const userExists = async (
+	userID: string,
+	req: Request<unknown, unknown, AddRatingRequestBody>,
+	res: Response
+): Promise<boolean> => {
+	try {
+		await getUserByID(new ObjectId(userID));
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return true;
+		} else {
+			handleError<AddRatingRequestBody>(e, endPointName, req, res);
+		}
+	}
+	return false;
+};
+
+const placeExists = async (
+	placeID: string,
+	req: Request<unknown, unknown, AddRatingRequestBody>,
+	res: Response
+): Promise<boolean> => {
+	try {
+		await getPlaceByID(placeID);
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return true;
+		} else {
+			handleError<AddRatingRequestBody>(e, endPointName, req, res);
+		}
+	}
+	return false;
+};
 
 const ratingAlreadyExists = async (
 	userID: string,
@@ -83,6 +121,23 @@ export const addRatingToPlace = async (
 		return;
 	}
 
+	// check that user exists
+	if (!(await userExists(userID, req, res))) {
+		console.warn(
+			"addRatingToPlace: request made where user ID provided does not match an existing user"
+		);
+		res.status(StatusCode.BAD_REQUEST).json(AccountNotFoundErrorJSON);
+		return;
+	}
+
+	// check that place exists
+	if (!(await placeExists(placeID, req, res))) {
+		console.warn(
+			"addRatingToPlace: request made where place ID provided does not match a place in the database"
+		);
+		res.status(StatusCode.BAD_REQUEST).json(PlaceDoesNotExistErrorJSON);
+	}
+
 	// check if user has already rated this place
 	if (await ratingAlreadyExists(userID, placeID, req, res)) {
 		console.warn(
@@ -118,7 +173,7 @@ export const addRatingToPlace = async (
 		const userIDBson = new ObjectId(userID);
 
 		// check if user has a valid token
-		const user = await getUserById(userIDBson);
+		const user = await getUserByID(userIDBson);
 		if (token !== user.token) {
 			console.warn(
 				`addRatingToPlace: user with token ${
