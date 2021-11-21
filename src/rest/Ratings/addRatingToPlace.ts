@@ -14,7 +14,7 @@ import {
 	UnauthorizedErrorJSON,
 	userExists,
 	WrongParamatersErrorJSON,
-	handleError
+	handleError,
 } from "../../util";
 import { DbOperationError } from "../../types";
 
