@@ -14,9 +14,9 @@ import {
 	UnauthorizedErrorJSON,
 	userExists,
 	WrongParamatersErrorJSON,
+	handleError
 } from "../../util";
 import { DbOperationError } from "../../types";
-import { handleError } from "../../util";
 
 const endPointName = "addRatingToPlace";
 
