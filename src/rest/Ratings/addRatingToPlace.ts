@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { addRating } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
+import { addRating } from "../../db/Rating/rating";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
@@ -8,15 +8,15 @@ import {
 	isAuthenticated,
 	MissingParametersErrorJSON,
 	PlaceDoesNotExistErrorJSON,
-	placeExists,
 	RatingAlreadyExistsErrorJSON,
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
-	userExists,
 	WrongParamatersErrorJSON,
 	handleError,
 } from "../util";
 import { DbOperationError } from "../../errorClasses";
+import { userExists } from "../Users/util";
+import { placeExists } from "../Places/util";
 
 const endPointName = "addRatingToPlace";
 
