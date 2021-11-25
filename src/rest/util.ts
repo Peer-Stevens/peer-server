@@ -2,10 +2,10 @@ import { createHash } from "crypto";
 import { ObjectId } from "bson";
 import { MongoServerError } from "mongodb";
 import type { Request, Response } from "express";
-import { getPlaceByID } from "./db/Place/place";
-import { getUserByID } from "./db/User/user";
-import StatusCode from "./rest/status";
-import { DbOperationError } from "./errorClasses";
+import { getPlaceByID } from "../db/Place/place";
+import { getUserByID } from "../db/User/user";
+import StatusCode from "./status";
+import { DbOperationError } from "../errorClasses";
 
 // Functions
 
