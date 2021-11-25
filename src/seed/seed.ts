@@ -4,7 +4,7 @@ import { addUserToDb } from "../db/User/user";
 import dotenv from "dotenv";
 import { addRating } from "../db/Rating/rating";
 import { User } from "../db/types";
-import { createToken } from "../util";
+import { createToken } from "../rest/util";
 
 dotenv.config();
 

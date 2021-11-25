@@ -11,7 +11,7 @@ import {
 	ServerErrorJSON,
 	UnauthorizedErrorJSON,
 	WrongParamatersErrorJSON,
-} from "../../util";
+} from "../util";
 
 type EditRatingRequestBody = Partial<
 	Omit<

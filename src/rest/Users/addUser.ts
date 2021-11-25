@@ -2,9 +2,13 @@ import type { Request, Response } from "express";
 import { addUserToDb, getUserByEmailOnly } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
-import { AccountExistsErrorJSON, MissingParametersErrorJSON, UserCreatedJSON } from "../../util";
-import { AuthenticationError } from "../../types";
-import { handleError } from "../../util";
+import {
+	handleError,
+	AccountExistsErrorJSON,
+	MissingParametersErrorJSON,
+	UserCreatedJSON,
+} from "../util";
+import { AuthenticationError } from "../../errorClasses";
 
 const endPointName = "addUser";
 

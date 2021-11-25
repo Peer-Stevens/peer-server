@@ -3,7 +3,7 @@ import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
-import { DbOperationError } from "../../types";
+import { DbOperationError } from "../../errorClasses";
 
 /**
  * Adds a rating to a place. Checks that the user has not already added
