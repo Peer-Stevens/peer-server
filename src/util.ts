@@ -5,7 +5,7 @@ import type { Request, Response } from "express";
 import { getPlaceByID } from "./db/Place/place";
 import { getUserByID } from "./db/User/user";
 import StatusCode from "./rest/status";
-import { DbOperationError } from "./types";
+import { DbOperationError } from "./errorClasses";
 
 // Functions
 

@@ -3,7 +3,7 @@ import { User } from "../src/db/types";
 import { dbConnection } from "../src/db/mongoConnection";
 import { addUserToDb, getUserByID, editUserInDb, getUserByEmailAndHash } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
-import { AuthenticationError } from "../src/types";
+import { AuthenticationError } from "../src/errorClasses";
 
 let mockUser: User;
 

@@ -16,7 +16,7 @@ import {
 	WrongParamatersErrorJSON,
 	handleError,
 } from "../../util";
-import { DbOperationError } from "../../types";
+import { DbOperationError } from "../../errorClasses";
 
 const endPointName = "addRatingToPlace";
 

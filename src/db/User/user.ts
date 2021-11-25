@@ -1,7 +1,7 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { User } from "../types";
-import { AuthenticationError, DbOperationError } from "../../types";
+import { AuthenticationError, DbOperationError } from "../../errorClasses";
 
 // should be called when user creates an account
 export async function addUserToDb(userToAdd: User): Promise<User> {
