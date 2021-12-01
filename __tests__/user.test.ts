@@ -1,9 +1,9 @@
 import { ObjectId } from "bson";
 import { User } from "../src/db/types";
 import { dbConnection } from "../src/db/mongoConnection";
-import { addUserToDb, getUserById, editUserInDb, getUserByEmailAndHash } from "../src/db/User/user";
+import { addUserToDb, getUserByID, editUserInDb, getUserByEmailAndHash } from "../src/db/User/user";
 import { MongoServerError } from "mongodb";
-import { AuthenticationError } from "../src/types";
+import { AuthenticationError } from "../src/errorClasses";
 
 let mockUser: User;
 
@@ -35,7 +35,7 @@ beforeEach(async () => {
 describe("User database functions", () => {
 	it("throws error when it tries to get nonexistent user", async () => {
 		expect.assertions(1);
-		await getUserById(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
+		await getUserByID(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
 			if (e instanceof MongoServerError) {
 				console.log(
 					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
@@ -48,7 +48,7 @@ describe("User database functions", () => {
 	it("gets user", async () => {
 		let user!: User;
 		try {
-			user = await getUserById(new ObjectId("617cacca81bc431f3dcde5bd"));
+			user = await getUserByID(new ObjectId("617cacca81bc431f3dcde5bd"));
 		} catch (e) {
 			if (e instanceof MongoServerError) {
 				console.log(

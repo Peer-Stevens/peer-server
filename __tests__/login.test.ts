@@ -1,6 +1,6 @@
 import { getUserByEmailAndHash } from "../src/db/User/user";
 import { login } from "../src/rest/login";
-import { AuthenticationError } from "../src/types";
+import { AuthenticationError } from "../src/errorClasses";
 import { Request, Response } from "express";
 import StatusCode from "../src/rest/status";
 

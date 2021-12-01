@@ -4,6 +4,7 @@ import { addUserToDb } from "../db/User/user";
 import dotenv from "dotenv";
 import { addRating } from "../db/Rating/rating";
 import { User } from "../db/types";
+import { createToken } from "../rest/util";
 
 dotenv.config();
 
@@ -36,6 +37,8 @@ async function main() {
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: true,
+			dateTokenCreated: new Date(),
+			token: createToken(),
 		});
 	} catch (e) {
 		console.log(e);
@@ -49,11 +52,14 @@ async function main() {
 			isBlindMode: false,
 			readsBraille: true,
 			doesNotPreferHelp: false,
+			dateTokenCreated: new Date(),
+			token: createToken(),
 		});
 	} catch (e) {
 		console.log(e);
 	}
 
+	// example of created user who has yet to authenticate
 	let user3!: User;
 	try {
 		user3 = await addUserToDb({
