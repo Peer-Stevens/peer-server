@@ -19,6 +19,7 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 				},
 				rankby: PlacesNearbyRanking.distance,
 				key: process.env.PLACES_API_KEY || "",
+				type: req.query.type ? String(req.query.type) : "",
 				keyword: req.query.keyword ? String(req.query.keyword) : "",
 			},
 		})
