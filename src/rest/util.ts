@@ -72,6 +72,7 @@ export const isAuthenticated = async (
 export const UserCreatedJSON = { status: "User successfully created." };
 export const RatingCreatedJSON = { status: "Rating successfully created." };
 export const RatingUpdatedJSON = { status: "Rating successfully updated." };
+export const RatingDeletedJSON = { status: "Rating successfully deleted." };
 export const MissingParametersErrorJSON = { error: "This request is missing parameters." };
 export const WrongParamatersErrorJSON = {
 	error: "This request has the wrong data type for a provided field in the body.",
@@ -85,6 +86,9 @@ export const ServerErrorJSON = {
 export const AccountExistsErrorJSON = { error: "An account already exists with this email." };
 export const AccountNotFoundErrorJSON = {
 	error: "Account with that email and/or password not found.",
+};
+export const RatingDoesNotExistErrorJSON = {
+	error: "There is no rating with the provided ID.",
 };
 export const RatingAlreadyExistsErrorJSON = {
 	error: "This account has already added a rating to this place.",
