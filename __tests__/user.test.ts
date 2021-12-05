@@ -25,7 +25,8 @@ const mockInsertOne = jest.fn().mockImplementation((user: User) => {
 	return { acknowledged: true };
 });
 const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
-	return mockCollection.find(value => id.equals(value._id as ObjectId));
+	const got = mockCollection.find(value => id.equals(value._id as ObjectId));
+	return got ? got : null;
 });
 const mockUpdateOne = jest
 	.fn()
@@ -143,7 +144,8 @@ describe("User-related database function tests", () => {
 
 	it("throws an error when getting a user by email that has not been added", () => {
 		mockFindOne.mockImplementationOnce(({ email: email }: { email: string }) => {
-			return mockCollection.find(value => email === value.email);
+			const got = mockCollection.find(value => email === value.email);
+			return got ? got : null;
 		});
 		// user has not been added!
 
@@ -158,7 +160,10 @@ describe("User-related database function tests", () => {
 		mockCollection.push(mockUser);
 		mockFindOne.mockImplementationOnce(
 			({ email: email, hash: hash }: { email: string; hash: string }) => {
-				return mockCollection.find(value => email === value.email && hash === value.hash);
+				const got = mockCollection.find(
+					value => email === value.email && hash === value.hash
+				);
+				return got ? got : null;
 			}
 		);
 
@@ -171,7 +176,10 @@ describe("User-related database function tests", () => {
 	it("throws an error when getting a user by email that has not been added", () => {
 		mockFindOne.mockImplementationOnce(
 			({ email: email, hash: hash }: { email: string; hash: string }) => {
-				return mockCollection.find(value => email === value.email && hash === value.hash);
+				const got = mockCollection.find(
+					value => email === value.email && hash === value.hash
+				);
+				return got ? got : null;
 			}
 		);
 		// user has not been added!
