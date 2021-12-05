@@ -2,7 +2,7 @@ import { Collection, MongoClient } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { getCollection } from "../src/db/mongoCollections";
 import type { Place } from "../src/db/types";
-import { getAllPlaces, getPlaceByID } from "../src/db/Place/place";
+import { getAllPlaces, getPlaceByID, isPlaceInDb } from "../src/db/Place/place";
 import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
@@ -109,6 +109,24 @@ describe("Place-related database function tests", () => {
 
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundPlaces).toEqual(mockCollection);
+	});
+
+	it("checks if places have been added to the collection", async () => {
+		mockCollection.push(mockPlace1);
+
+		const foundPlace = await isPlaceInDb(mockPlace1._id);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundPlace).toBe(true);
+	});
+
+	it("checks if places have not been added to the collection", async () => {
+		mockFindOne.mockReturnValueOnce(null);
+
+		const foundPlace = await isPlaceInDb("sugar");
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundPlace).toBe(false);
 	});
 
 	// skipping get place by ID tests because the random
