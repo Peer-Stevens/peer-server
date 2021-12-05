@@ -41,6 +41,7 @@ beforeEach(() => {
 	mockCollection = [];
 	mockInsertOne.mockClear();
 	mockFindOne.mockClear();
+	mockClose.mockClear();
 });
 
 describe("User-related database function tests", () => {
@@ -59,6 +60,7 @@ describe("User-related database function tests", () => {
 		});
 
 		addUserToDb(mockUser).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
@@ -79,5 +81,15 @@ describe("User-related database function tests", () => {
 
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundUser).toEqual(mockUser2);
+	});
+
+	it("throws an error when getting a user that has not been added", () => {
+		const idString = "618cacca81bc431f3dcde5bd";
+		// no user is added!
+
+		getUserByID(new ObjectId(idString)).catch(e => {
+			expect(e).toBeInstanceOf(DbOperationError);
+			expect(mockClose).toHaveBeenCalled();
+		});
 	});
 });
