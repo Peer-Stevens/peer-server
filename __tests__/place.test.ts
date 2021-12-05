@@ -176,4 +176,14 @@ describe("Place-related database function tests", () => {
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
+
+	it.skip("adds a place if it does not exists when getting a place by id", async () => {
+		// arrange: mockPlace1 is NOT added!
+
+		const foundPlace = await getPlaceByID(mockPlace1._id);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundPlace).toEqual(mockPlace1);
+		expect(mockCollection).toContain(mockPlace1);
+	});
 });
