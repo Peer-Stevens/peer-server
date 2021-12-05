@@ -10,9 +10,9 @@ const mockGetBy = getUserByEmailAndHash as jest.MockedFunction<typeof getUserByE
 
 describe("login endpoint tests", () => {
 	it("returns a 404 status if the account is not found", async () => {
-		mockGetBy.mockImplementation((username, hash) => {
+		mockGetBy.mockImplementation((email, hash) => {
 			throw new AuthenticationError(
-				`No user exists with the username ${username} and hash ${hash}`
+				`No user exists with the email address ${email} and hash ${hash}`
 			);
 		});
 		const mockSend = jest.fn();
