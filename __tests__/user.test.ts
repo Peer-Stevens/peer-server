@@ -1,9 +1,9 @@
 import { Collection, MongoClient, ObjectId } from "mongodb";
-import { addUserToDb, getUserByID } from "../src/db/User/user";
+import { addUserToDb, getUserByEmailOnly, getUserByID } from "../src/db/User/user";
 import { getCollection } from "../src/db/mongoCollections";
 import { User } from "../src/db/types";
-import { DbOperationError } from "../src/errorClasses";
-import { createToken } from "rest/util";
+import { AuthenticationError, DbOperationError } from "../src/errorClasses";
+import { createToken } from "../src/rest/util";
 
 // getCollection mock
 jest.mock("../src/db/mongoCollections");
@@ -27,7 +27,8 @@ mockGetCollection.mockResolvedValue({
 	_connection: { close: mockClose },
 });
 
-const mockUser: User = {
+// mock data
+const mockUser = {
 	email: "ilovecheese@hotmail.com",
 	hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 	isBlindMode: true,
@@ -65,7 +66,7 @@ describe("User-related database function tests", () => {
 		});
 	});
 
-	it("successfully gets a user", async () => {
+	it("successfully gets a user by id", async () => {
 		const idString = "618cacca81bc431f3dcde5bd";
 		const mockUser2 = {
 			_id: new ObjectId(idString),
@@ -83,13 +84,37 @@ describe("User-related database function tests", () => {
 		expect(foundUser).toEqual(mockUser2);
 	});
 
-	it("throws an error when getting a user that has not been added", () => {
+	it("throws an error when getting a user by id that has not been added", () => {
 		const idString = "618cacca81bc431f3dcde5bd";
 		// no user is added!
 
 		getUserByID(new ObjectId(idString)).catch(e => {
 			expect(e).toBeInstanceOf(DbOperationError);
 			expect(mockClose).toHaveBeenCalled();
+		});
+	});
+
+	it("successfully gets a user by email", async () => {
+		mockCollection.push(mockUser);
+		mockFindOne.mockImplementationOnce(({ email: email }: { email: string }) => {
+			return mockCollection.find(value => email === value.email);
+		});
+
+		const foundUser = await getUserByEmailOnly(mockUser.email);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundUser).toEqual(mockUser);
+	});
+
+	it("throws an error when getting a user by email that has not been added", () => {
+		mockFindOne.mockImplementationOnce(({ email: email }: { email: string }) => {
+			return mockCollection.find(value => email === value.email);
+		});
+		// user has not been added!
+
+		getUserByEmailOnly(mockUser.email).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(AuthenticationError);
 		});
 	});
 });
