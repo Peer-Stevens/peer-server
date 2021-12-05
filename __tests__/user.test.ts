@@ -1,143 +1,63 @@
-import { ObjectId } from "bson";
+import { Collection, MongoClient } from "mongodb";
+import { addUserToDb } from "../src/db/User/user";
+import { getCollection } from "../src/db/mongoCollections";
 import { User } from "../src/db/types";
-import { dbConnection } from "../src/db/mongoConnection";
-import { addUserToDb, getUserByID, editUserInDb, getUserByEmailAndHash } from "../src/db/User/user";
-import { MongoServerError } from "mongodb";
-import { AuthenticationError } from "../src/errorClasses";
+import { DbOperationError } from "../src/errorClasses";
+import { createToken } from "rest/util";
 
-let mockUser: User;
+// getCollection mock
+jest.mock("../src/db/mongoCollections");
+type mockGetCollectionSignature = <T>(
+	collection: "user" | "rating" | "place"
+) => Promise<{ _col: Partial<Collection<T>>; _connection: Partial<MongoClient> }>;
+const mockGetCollection = getCollection as jest.MockedFunction<mockGetCollectionSignature>;
 
-beforeEach(async () => {
-	const { _db, _connection } = await dbConnection();
-	await _db.dropDatabase();
-	await _connection.close();
-
-	mockUser = {
-		_id: new ObjectId("617cacca81bc431f3dcde5bd"),
-		email: "ilovecheese@hotmail.com",
-		hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-		isBlindMode: true,
-		doesNotPreferHelp: false,
-		readsBraille: true,
-		dateTokenCreated: new Date(),
-		token: "aaaaaaaaaaaaaaaaaaaaaa",
-	};
-
-	try {
-		await addUserToDb(mockUser);
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
+// mock adding to a collection
+let mockCollection: User[];
+const mockInsertOne = jest.fn().mockImplementation((user: User) => {
+	mockCollection.push(user);
+	return { acknowledged: true };
+});
+const mockClose = jest.fn();
+mockGetCollection.mockResolvedValue({
+	_col: { insertOne: mockInsertOne },
+	_connection: { close: mockClose },
 });
 
-describe("User database functions", () => {
-	it("throws error when it tries to get nonexistent user", async () => {
-		expect.assertions(1);
-		await getUserByID(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no user exists with that ID");
-			}
-		});
-	});
-	it("gets user", async () => {
-		let user!: User;
-		try {
-			user = await getUserByID(new ObjectId("617cacca81bc431f3dcde5bd"));
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
+const mockUser: User = {
+	email: "ilovecheese@hotmail.com",
+	hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+	isBlindMode: true,
+	doesNotPreferHelp: false,
+	readsBraille: true,
+	token: createToken(),
+	dateTokenCreated: new Date(),
+};
 
-		expect(user).toMatchObject<User>({
-			email: "ilovecheese@hotmail.com",
-			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			isBlindMode: true,
-			doesNotPreferHelp: false,
-			readsBraille: true,
-			dateTokenCreated: new Date(),
-			token: "aaaaaaaaaaaaaaaaaaaaaa",
-		});
-	});
-	it("throws error when it tries to edit nonexistent user", async () => {
-		expect.assertions(1);
-		return await editUserInDb(new ObjectId("618cacca81bc431f3dcde5bd"), {
-			email: "totallyfake",
-		}).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no user exists with that ID");
-			}
-		});
-	});
-	it("edits user", async () => {
-		let user!: User;
-		try {
-			user = await editUserInDb(new ObjectId("617cacca81bc431f3dcde5bd"), {
-				email: "ilovedairy@hotmail.com",
-				readsBraille: false,
-			});
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(user).toMatchObject<User>({
-			email: "ilovedairy@hotmail.com",
-			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			isBlindMode: true,
-			doesNotPreferHelp: false,
-			readsBraille: false,
-			dateTokenCreated: new Date(),
-			token: "aaaaaaaaaaaaaaaaaaaaaa",
-		});
-	});
+beforeEach(() => {
+	mockCollection = [];
 });
 
-describe("getByUsernameAndHash tests", () => {
-	it("gets a user by username and hash", async () => {
-		const user = await getUserByEmailAndHash(
-			"ilovecheese@hotmail.com",
-			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
-		);
-		expect(user).toMatchObject<User>(mockUser);
+describe("User-related database function tests", () => {
+	it("successfully adds a user", async () => {
+		const insertedUser = await addUserToDb(mockUser);
+		expect(insertedUser).toEqual(mockUser);
+		expect(mockCollection).toContain(mockUser);
 	});
-	it("throws an authentication error if the username is not in the database", async () => {
-		expect.assertions(1);
-		await getUserByEmailAndHash(
-			"ilovespaghetti@hotmail.com",
-			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
-		).catch(e => {
-			expect(e).toBeInstanceOf(AuthenticationError);
+
+	it("throws an error when it fails to add a user", () => {
+		const mockInsertOne = jest.fn().mockImplementation((user: User) => {
+			mockCollection.push(user);
+			return { acknowledged: false };
 		});
-	});
-	it("throws an authentication error if the hash is not in the database", async () => {
-		expect.assertions(1);
-		await getUserByEmailAndHash(
-			"ilovecheese@hotmail.com",
-			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // totally a valid hash btw
-		).catch(e => {
-			expect(e).toBeInstanceOf(AuthenticationError);
+		const mockClose = jest.fn();
+		mockGetCollection.mockResolvedValue({
+			_col: { insertOne: mockInsertOne },
+			_connection: { close: mockClose },
+		});
+
+		addUserToDb(mockUser).catch(e => {
+			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
 });
