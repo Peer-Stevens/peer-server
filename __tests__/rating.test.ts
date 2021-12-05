@@ -1,6 +1,8 @@
 import { Collection, MongoClient, ObjectId } from "mongodb";
 import { Rating } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
+import { getRatingById } from "../src/db/Rating/rating";
+import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
 jest.mock("../src/db/mongoCollections");
@@ -15,10 +17,7 @@ const mockInsertOne = jest.fn().mockImplementation((rating: Rating) => {
 	mockCollection.push(rating);
 	return { acknowledged: true };
 });
-const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
-	const got = mockCollection.find(value => id.equals(value._id as ObjectId));
-	return got ? got : null;
-});
+const mockFindOne = jest.fn();
 const mockUpdateOne = jest
 	.fn()
 	.mockImplementation(
@@ -52,4 +51,62 @@ const mockClose = jest.fn();
 mockGetCollection.mockResolvedValue({
 	_col: { insertOne: mockInsertOne, findOne: mockFindOne, updateOne: mockUpdateOne },
 	_connection: { close: mockClose },
+});
+
+// mock data
+
+const mockRating1: Rating = {
+	_id: new ObjectId("617cacca81bc431f3dcde5be"),
+	userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
+	placeID: "fakeplace123",
+	braille: 4,
+	fontReadability: null,
+	guideDogFriendly: 5,
+	navigability: 2,
+	staffHelpfulness: 1,
+	comment: null,
+	dateCreated: new Date(),
+};
+
+beforeEach(() => {
+	mockCollection = [];
+	mockClose.mockReset();
+	mockFindOne.mockReset();
+	mockInsertOne.mockReset();
+	mockUpdateOne.mockReset();
+});
+
+describe("Rating-related database function tests", () => {
+	it("gets a rating by its ID successfully", async () => {
+		const idString = "617cacca81bc431f3ccde5be";
+		const mockRating2 = {
+			_id: new ObjectId(idString),
+			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
+			placeID: "fakeplace456",
+			braille: null,
+			fontReadability: 3,
+			guideDogFriendly: 1,
+			navigability: 3,
+			staffHelpfulness: 1,
+			comment: null,
+			dateCreated: new Date(),
+		};
+		mockCollection.push(mockRating2);
+		mockFindOne.mockResolvedValueOnce(mockRating2);
+
+		const foundRating = await getRatingById(new ObjectId(idString));
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundRating).toEqual(mockRating2);
+	});
+
+	it("throws an error when trying to get a rating by its ID and there is a remote problem", () => {
+		mockFindOne.mockResolvedValueOnce(null);
+
+		expect.assertions(2);
+		getRatingById(new ObjectId(mockRating1._id)).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
+	});
 });
