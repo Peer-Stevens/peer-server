@@ -2,7 +2,13 @@ import { Collection, MongoClient } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { getCollection } from "../src/db/mongoCollections";
 import type { Place } from "../src/db/types";
-import { addPlace, getAllPlaces, getPlaceByID, isPlaceInDb } from "../src/db/Place/place";
+import {
+	addPlace,
+	getAllPlaces,
+	getPlaceByID,
+	isPlaceInDb,
+	updatePlace,
+} from "../src/db/Place/place";
 import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
@@ -39,34 +45,37 @@ const mockUpdateOne = jest
 				avgBraille:
 					newPlace.avgBraille !== undefined
 						? newPlace.avgBraille
-						: (old?.avgBraille as number),
+						: old?.avgBraille || null,
 				avgFontReadability:
 					newPlace.avgFontReadability !== undefined
 						? newPlace.avgFontReadability
-						: (old?.avgFontReadability as number),
+						: old?.avgFontReadability || null,
 				avgStaffHelpfulness:
 					newPlace.avgStaffHelpfulness !== undefined
 						? newPlace.avgStaffHelpfulness
-						: (old?.avgStaffHelpfulness as number),
+						: old?.avgStaffHelpfulness || null,
 				avgNavigability:
 					newPlace.avgNavigability !== undefined
 						? newPlace.avgNavigability
-						: (old?.avgNavigability as number),
+						: old?.avgNavigability || null,
 				avgGuideDogFriendly:
 					newPlace.avgGuideDogFriendly !== undefined
 						? newPlace.avgGuideDogFriendly
-						: (old?.avgGuideDogFriendly as number),
+						: old?.avgGuideDogFriendly || null,
 			});
 			return { acknowledged: true };
 		}
 	);
 const mockClose = jest.fn();
+const mockAgg = jest.fn();
+mockAgg.mockReturnValue({ toArray: () => [mockPlace2] });
 mockGetCollection.mockResolvedValue({
 	_col: {
 		insertOne: mockInsertOne,
 		findOne: mockFindOne,
 		updateOne: mockUpdateOne,
 		find: mockFind,
+		aggregate: mockAgg,
 	},
 	_connection: { close: mockClose },
 });
@@ -185,5 +194,21 @@ describe("Place-related database function tests", () => {
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundPlace).toEqual(mockPlace1);
 		expect(mockCollection).toContain(mockPlace1);
+	});
+
+	it("updates a place without throwing an error", async () => {
+		const updatedPlace = await updatePlace(mockPlace1._id);
+
+		expect(mockClose).toHaveBeenCalledTimes(3); // twice by place col, once by rating col
+		expect(updatedPlace).toEqual(mockPlace1);
+	});
+
+	it("throws an error when updating a place if there is a problem with the remote collection", () => {
+		mockUpdateOne.mockReturnValueOnce({ acknowledged: false });
+
+		updatePlace(mockPlace1._id).catch(e => {
+			expect(mockClose).toHaveBeenCalledTimes(2);
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
 	});
 });
