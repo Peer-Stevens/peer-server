@@ -55,7 +55,7 @@ export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User
 		{ $set: newUserFields }
 	);
 	await _connection.close();
-	if (userToUpdate.acknowledged === false) throw "Could not update User";
+	if (userToUpdate.acknowledged === false) throw new DbOperationError("Could not update User");
 
 	return await getUserByID(userId);
 }

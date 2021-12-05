@@ -1,6 +1,7 @@
 import { Collection, MongoClient, ObjectId } from "mongodb";
 import {
 	addUserToDb,
+	editUserInDb,
 	getUserByEmailAndHash,
 	getUserByEmailOnly,
 	getUserByID,
@@ -26,9 +27,35 @@ const mockInsertOne = jest.fn().mockImplementation((user: User) => {
 const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
 	return mockCollection.find(value => id.equals(value._id as ObjectId));
 });
+const mockUpdateOne = jest
+	.fn()
+	.mockImplementation(
+		({ _id: id }: { _id: ObjectId }, { $set: newUser }: { $set: Partial<User> }) => {
+			const old = mockCollection.find(value => id.equals(value._id as ObjectId));
+			mockCollection.pop();
+			mockCollection.push({
+				_id: id,
+				email: newUser.email ? newUser.email : (old?.email as string),
+				hash: newUser.hash ? newUser.hash : (old?.hash as string),
+				isBlindMode:
+					newUser.isBlindMode !== undefined
+						? newUser.isBlindMode
+						: (old?.isBlindMode as boolean),
+				doesNotPreferHelp:
+					newUser.doesNotPreferHelp !== undefined
+						? newUser.doesNotPreferHelp
+						: (old?.doesNotPreferHelp as boolean),
+				readsBraille:
+					newUser.readsBraille !== undefined
+						? newUser.readsBraille
+						: (old?.readsBraille as boolean),
+			});
+			return { acknowledged: true };
+		}
+	);
 const mockClose = jest.fn();
 mockGetCollection.mockResolvedValue({
-	_col: { insertOne: mockInsertOne, findOne: mockFindOne },
+	_col: { insertOne: mockInsertOne, findOne: mockFindOne, updateOne: mockUpdateOne },
 	_connection: { close: mockClose },
 });
 
@@ -65,6 +92,7 @@ describe("User-related database function tests", () => {
 			return { acknowledged: false };
 		});
 
+		expect.assertions(2);
 		addUserToDb(mockUser).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
@@ -93,6 +121,7 @@ describe("User-related database function tests", () => {
 		const idString = "618cacca81bc431f3dcde5bd";
 		// no user is added!
 
+		expect.assertions(2);
 		getUserByID(new ObjectId(idString)).catch(e => {
 			expect(e).toBeInstanceOf(DbOperationError);
 			expect(mockClose).toHaveBeenCalled();
@@ -117,6 +146,7 @@ describe("User-related database function tests", () => {
 		});
 		// user has not been added!
 
+		expect.assertions(2);
 		getUserByEmailOnly(mockUser.email).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(AuthenticationError);
@@ -145,9 +175,54 @@ describe("User-related database function tests", () => {
 		);
 		// user has not been added!
 
+		expect.assertions(2);
 		getUserByEmailAndHash(mockUser.email, mockUser.hash).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(AuthenticationError);
+		});
+	});
+
+	it("sucessfully edits an existing user", async () => {
+		const mockUser2 = {
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			isBlindMode: true,
+			doesNotPreferHelp: false,
+			readsBraille: true,
+		};
+		mockCollection.push(mockUser2);
+
+		const editedUser = await editUserInDb(mockUser2._id, { isBlindMode: false });
+
+		const expectedUser2 = {
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			isBlindMode: false,
+			doesNotPreferHelp: false,
+			readsBraille: true,
+		};
+		expect(mockClose).toHaveBeenCalled();
+		expect(editedUser).not.toEqual(mockUser2);
+		expect(editedUser).toEqual(expectedUser2);
+	});
+
+	it("throws an error when receives error from the server", () => {
+		const mockUser2 = {
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			isBlindMode: true,
+			doesNotPreferHelp: false,
+			readsBraille: true,
+		};
+		mockUpdateOne.mockReturnValueOnce({ acknowledged: false });
+
+		expect.assertions(2);
+		editUserInDb(mockUser2._id, { isBlindMode: false }).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
 });
