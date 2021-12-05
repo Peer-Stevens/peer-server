@@ -19,6 +19,11 @@ export async function addUserToDb(userToAdd: User): Promise<User> {
 	return userToAdd;
 }
 
+/**
+ * Finds a user from the remote collection.
+ * @param id the id of the user to find
+ * @returns the user
+ */
 export async function getUserByID(id: ObjectId): Promise<User> {
 	const { _col, _connection } = await getCollection<User>("user");
 
@@ -29,6 +34,11 @@ export async function getUserByID(id: ObjectId): Promise<User> {
 	return userReturned;
 }
 
+/**
+ * Finds a user from the remote collection by their email.
+ * @param email the email of the user to find
+ * @returns the user
+ */
 export const getUserByEmailOnly = async (email: string): Promise<User> => {
 	const { _col, _connection } = await getCollection<User>("user");
 	const userReturned = await _col.findOne({ email: email });
@@ -38,6 +48,14 @@ export const getUserByEmailOnly = async (email: string): Promise<User> => {
 	return userReturned;
 };
 
+/**
+ * Finds a user from the remote collection by both their email and hash.
+ * A user with both a matching email and hash must be in the collection
+ * for this to return.
+ * @param email the email of the user to find
+ * @param hash the hash of the user to find
+ * @returns the user
+ */
 export const getUserByEmailAndHash = async (email: string, hash: string): Promise<User> => {
 	const { _col, _connection } = await getCollection<User>("user");
 	const userReturned = await _col.findOne({ email: email, hash: hash });
@@ -47,6 +65,12 @@ export const getUserByEmailAndHash = async (email: string, hash: string): Promis
 	return userReturned;
 };
 
+/**
+ * Updates the fields of a user in the remote collection.
+ * @param userId the id of ther user to edit
+ * @param newUserFields the new fields for the user
+ * @returns the user as it now appears in the collection
+ */
 export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User>): Promise<User> {
 	const { _col, _connection } = await getCollection<User>("user");
 
