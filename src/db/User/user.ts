@@ -16,9 +16,7 @@ export async function addUserToDb(userToAdd: User): Promise<User> {
 	await _connection.close();
 	if (insertInfo.acknowledged === false) throw "Error adding user";
 
-	const newID = insertInfo.insertedId;
-
-	return await getUserByID(newID);
+	return userToAdd;
 }
 
 export async function getUserByID(id: ObjectId): Promise<User> {
