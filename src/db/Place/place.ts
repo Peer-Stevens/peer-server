@@ -119,7 +119,7 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
 
 	const newID = insertInfo.insertedId;
 
-	return await getPlaceByID(newID);
+	return getPlaceByID(newID);
 }
 
 /**
@@ -212,5 +212,5 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 	await placeConn.close();
 	if (placeToUpdate.acknowledged === false) throw new DbOperationError("Could not update Place.");
 
-	return await getPlaceByID(id);
+	return getPlaceByID(id);
 }

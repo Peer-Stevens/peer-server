@@ -88,5 +88,5 @@ export async function editUserInDb(userId: ObjectId, newUserFields: Partial<User
 	await _connection.close();
 	if (userToUpdate.acknowledged === false) throw new DbOperationError("Could not update User");
 
-	return await getUserByID(userId);
+	return getUserByID(userId);
 }
