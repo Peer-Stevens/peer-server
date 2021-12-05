@@ -46,14 +46,9 @@ describe("User-related database function tests", () => {
 	});
 
 	it("throws an error when it fails to add a user", () => {
-		const mockInsertOne = jest.fn().mockImplementation((user: User) => {
+		mockInsertOne.mockImplementationOnce((user: User) => {
 			mockCollection.push(user);
 			return { acknowledged: false };
-		});
-		const mockClose = jest.fn();
-		mockGetCollection.mockResolvedValue({
-			_col: { insertOne: mockInsertOne },
-			_connection: { close: mockClose },
 		});
 
 		addUserToDb(mockUser).catch(e => {
