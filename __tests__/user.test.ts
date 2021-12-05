@@ -73,6 +73,7 @@ const mockUser = {
 beforeEach(() => {
 	mockCollection = [];
 	mockInsertOne.mockClear();
+	mockUpdateOne.mockClear();
 	mockFindOne.mockClear();
 	mockClose.mockClear();
 });
