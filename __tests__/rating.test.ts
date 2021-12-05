@@ -1,393 +1,55 @@
-import { ObjectId } from "bson";
-import {
-	addRating,
-	deleteRatingFromDb,
-	editRatingInDb,
-	getAllRatingsForPlace,
-	getAllRatingsFromUser,
-	getRatingById,
-} from "../src/db/Rating/rating";
-import { getPlaceByID } from "../src/db/Place/place";
-import { dbConnection } from "../src/db/mongoConnection";
-import { Rating, Place } from "../src/db/types";
-import { addPlace } from "../src/db/Place/place";
-import { addUserToDb } from "../src/db/User/user";
-import { MongoServerError } from "mongodb";
+import { Collection, MongoClient, ObjectId } from "mongodb";
+import { Rating } from "../src/db/types";
+import { getCollection } from "../src/db/mongoCollections";
 
-beforeEach(async () => {
-	const { _db, _connection } = await dbConnection();
-	await _db.dropDatabase();
-	await _connection.close();
+// getCollection mock
+jest.mock("../src/db/mongoCollections");
+type mockGetCollectionSignature = <T>(
+	collection: "user" | "rating" | "place"
+) => Promise<{ _col: Partial<Collection<T>>; _connection: Partial<MongoClient> }>;
+const mockGetCollection = getCollection as jest.MockedFunction<mockGetCollectionSignature>;
 
-	// add place to db
-	try {
-		await addPlace({
-			_id: "fakeplace123",
-			avgBraille: null,
-			avgFontReadability: null,
-			avgGuideDogFriendly: null,
-			avgNavigability: null,
-			avgStaffHelpfulness: null,
-		});
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
-
-	// add another place to db
-	try {
-		await addPlace({
-			_id: "fakeplace456",
-			avgBraille: null,
-			avgFontReadability: null,
-			avgGuideDogFriendly: null,
-			avgNavigability: null,
-			avgStaffHelpfulness: null,
-		});
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
-
-	// add user to db
-	try {
-		await addUserToDb({
-			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			email: "ausername@gmail.com",
-			hash: "8a8a10b2cad2303074da59d8bbd767419541ccb9",
-			readsBraille: true,
-			isBlindMode: true,
-			doesNotPreferHelp: false,
-			dateTokenCreated: new Date(),
-			token: "aaaaaaaaaaaaaaaaaaaaaa",
-		});
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
-
-	// add another user to db
-	try {
-		await addUserToDb({
-			_id: new ObjectId("617ccccd81bc431f3dcde5bd"),
-			email: "anotherusername@gmail.com",
-			hash: "3a74c46136c344291b4db6fd7d3be7353cdeb941",
-			readsBraille: false,
-			isBlindMode: false,
-			doesNotPreferHelp: false,
-			dateTokenCreated: new Date(),
-			token: "aaaaaaaaaaaaaaaaaaaaaa",
-		});
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
-
-	// add rating to db
-	try {
-		await addRating({
-			_id: new ObjectId("617cacca81bc431f3dcde5be"),
-			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			placeID: "fakeplace123",
-			braille: 4,
-			fontReadability: null,
-			guideDogFriendly: 5,
-			navigability: 2,
-			staffHelpfulness: 1,
-			comment: null,
-			dateCreated: new Date(),
-		});
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
-
-	// add another rating to db
-	try {
-		await addRating({
-			_id: new ObjectId("617cacca81bc431f3ccde5be"),
-			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			placeID: "fakeplace456",
-			braille: null,
-			fontReadability: 3,
-			guideDogFriendly: 1,
-			navigability: 3,
-			staffHelpfulness: 1,
-			comment: null,
-			dateCreated: new Date(),
-		});
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
-		}
-	}
+// mock adding to a collection
+let mockCollection: Rating[];
+const mockInsertOne = jest.fn().mockImplementation((rating: Rating) => {
+	mockCollection.push(rating);
+	return { acknowledged: true };
 });
-
-describe("Rating database functions", () => {
-	it("throws error when it tries to get nonexistent rating", async () => {
-		expect.assertions(1);
-		return await getRatingById(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no rating exists with that ID");
-			}
-		});
-	});
-	it("gets rating", async () => {
-		let rating!: Rating;
-		try {
-			rating = await getRatingById(new ObjectId("617cacca81bc431f3dcde5be"));
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(rating).toMatchObject<Partial<Rating>>({
-			_id: new ObjectId("617cacca81bc431f3dcde5be"),
-			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			placeID: "fakeplace123",
-			braille: 4,
-			fontReadability: null,
-			guideDogFriendly: 5,
-			navigability: 2,
-			staffHelpfulness: 1,
-			comment: null,
-		});
-	});
-	it("throws error when user tries to add a rating to a place they've already reviewed", async () => {
-		expect.assertions(1);
-		return await addRating({
-			_id: new ObjectId("617caaca81bc431f3dcde5be"),
-			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			placeID: "fakeplace123",
-			braille: 2,
-			fontReadability: 1,
-			guideDogFriendly: 5,
-			navigability: 2,
-			staffHelpfulness: 1,
-			comment: "Ok",
-			dateCreated: new Date(),
-		}).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("User cannot add more than one rating to the same place");
-			}
-		});
-	});
-	it("adds rating", async () => {
-		let rating!: Rating;
-		try {
-			rating = await addRating({
-				userID: new ObjectId("617ccccd81bc431f3dcde5bd"),
-				placeID: "fakeplace456",
-				braille: 1,
-				fontReadability: 4,
-				guideDogFriendly: 3,
-				navigability: 2,
-				staffHelpfulness: null,
-				comment: "Great",
-				dateCreated: new Date(),
+const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
+	const got = mockCollection.find(value => id.equals(value._id as ObjectId));
+	return got ? got : null;
+});
+const mockUpdateOne = jest
+	.fn()
+	.mockImplementation(
+		({ _id: id }: { _id: ObjectId }, { $set: newRating }: { $set: Partial<Rating> }) => {
+			const old = mockCollection.find(value => id.equals(value._id as ObjectId));
+			mockCollection.pop();
+			mockCollection.push({
+				_id: id,
+				userID: old?.userID as ObjectId,
+				placeID: old?.placeID as string,
+				braille: newRating.braille ? newRating.braille : old?.braille || null,
+				fontReadability: newRating.fontReadability
+					? newRating.fontReadability
+					: old?.fontReadability || null,
+				staffHelpfulness: newRating.staffHelpfulness
+					? newRating.staffHelpfulness
+					: old?.staffHelpfulness || null,
+				navigability: newRating.navigability
+					? newRating.navigability
+					: old?.navigability || null,
+				guideDogFriendly: newRating.guideDogFriendly
+					? newRating.guideDogFriendly
+					: old?.guideDogFriendly || null,
+				comment: newRating.comment ? newRating.comment : (old?.comment as string),
+				dateCreated: old?.dateCreated as Date,
 			});
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
+			return { acknowledged: true };
 		}
-
-		expect(rating).toMatchObject<Partial<Rating>>({
-			userID: new ObjectId("617ccccd81bc431f3dcde5bd"),
-			placeID: "fakeplace456",
-			braille: 1,
-			fontReadability: 4,
-			guideDogFriendly: 3,
-			navigability: 2,
-			staffHelpfulness: null,
-			comment: "Great",
-		});
-	});
-	it("throws error when it tries to edit nonexistent rating", async () => {
-		expect.assertions(1);
-		return await editRatingInDb(new ObjectId("617cacca81bc431f3dcde5bd"), { braille: 5 }).catch(
-			e => {
-				if (e instanceof MongoServerError) {
-					console.log(
-						"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-					);
-				} else {
-					expect(e).toEqual("Sorry, no rating exists with that ID");
-				}
-			}
-		);
-	});
-	it("edits rating", async () => {
-		let rating!: Rating;
-		try {
-			rating = await editRatingInDb(new ObjectId("617cacca81bc431f3dcde5be"), {
-				navigability: 5,
-				comment: "Fantastic, just fantastic.",
-			});
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-		expect(rating).toMatchObject<Partial<Rating>>({
-			_id: new ObjectId("617cacca81bc431f3dcde5be"),
-			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
-			placeID: "fakeplace123",
-			braille: 4,
-			fontReadability: null,
-			guideDogFriendly: 5,
-			navigability: 5,
-			staffHelpfulness: 1,
-			comment: "Fantastic, just fantastic.",
-		});
-	});
-	it("throws error when it tries to get all ratings from a nonexistent user", async () => {
-		expect.assertions(1);
-		return await getAllRatingsFromUser(new ObjectId("617cacca81bc431f3dcde5bd")).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no ratings have been given by that user");
-			}
-		});
-	});
-	it("gets all ratings added by user", async () => {
-		let ratings!: Array<Rating>;
-		try {
-			ratings = await getAllRatingsFromUser(new ObjectId("617ccccc81bc431f3dcde5bd"));
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(ratings).toHaveLength(2);
-	});
-	it("throws error when it tries to get all ratings for a place that is not in the database", async () => {
-		expect.assertions(1);
-		return await getAllRatingsForPlace("placeThatIsNotInDb").catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no ratings exist for that place");
-			}
-		});
-	});
-	it("gets all ratings added for a place", async () => {
-		let ratings!: Array<Rating>;
-		try {
-			ratings = await getAllRatingsForPlace("fakeplace456");
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(ratings).toHaveLength(2);
-	});
-	it("throws error when it tries to delete a nonexistent rating", async () => {
-		let didDelete!: boolean;
-		try {
-			didDelete = await deleteRatingFromDb(new ObjectId("617cacca81bc431f3dcde5bd"));
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(didDelete).toEqual(false);
-	});
-	it("deletes a rating", async () => {
-		let didDelete!: boolean;
-		try {
-			didDelete = await deleteRatingFromDb(new ObjectId("617cacca81bc431f3dcde5be"));
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(didDelete).toEqual(true);
-	});
-	it("place averages are updating correctly", async () => {
-		let place!: Place;
-		try {
-			place = await getPlaceByID("fakeplace456");
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
-
-		expect(place).toMatchObject<Place>({
-			_id: "fakeplace456",
-			avgBraille: 1,
-			avgFontReadability: 3.5,
-			avgGuideDogFriendly: 2,
-			avgNavigability: 2.5,
-			avgStaffHelpfulness: 1,
-		});
-	});
+	);
+const mockClose = jest.fn();
+mockGetCollection.mockResolvedValue({
+	_col: { insertOne: mockInsertOne, findOne: mockFindOne, updateOne: mockUpdateOne },
+	_connection: { close: mockClose },
 });
