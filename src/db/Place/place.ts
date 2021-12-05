@@ -107,7 +107,9 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
 	const doesExist = await isPlaceInDb(placeToAdd._id);
 	if (doesExist) {
 		await _connection.close();
-		throw "That place already exists in the database and cannot be added again.";
+		throw new DbOperationError(
+			"That place already exists in the database and cannot be added again."
+		);
 	}
 
 	// now its safe to add place to db

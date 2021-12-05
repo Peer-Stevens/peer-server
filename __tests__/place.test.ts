@@ -2,7 +2,7 @@ import { Collection, MongoClient } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { getCollection } from "../src/db/mongoCollections";
 import type { Place } from "../src/db/types";
-import { getAllPlaces, getPlaceByID, isPlaceInDb } from "../src/db/Place/place";
+import { addPlace, getAllPlaces, getPlaceByID, isPlaceInDb } from "../src/db/Place/place";
 import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
@@ -16,12 +16,13 @@ const mockGetCollection = getCollection as jest.MockedFunction<mockGetCollection
 let mockCollection: Place[];
 const mockInsertOne = jest.fn().mockImplementation((place: Place) => {
 	mockCollection.push(place);
-	return { acknowledged: true };
+	return { acknowledged: true, insertedId: place._id };
 });
 const mockFindOne = jest
 	.fn()
 	.mockImplementation(({ _id: id }: { _id: GooglePlaceID["place_id"] }) => {
-		return mockCollection.find(value => id === value._id);
+		const found = mockCollection.find(value => id === value._id);
+		return found ? found : null;
 	});
 const mockFind = jest.fn();
 const mockUpdateOne = jest
@@ -121,12 +122,38 @@ describe("Place-related database function tests", () => {
 	});
 
 	it("checks if places have not been added to the collection", async () => {
-		mockFindOne.mockReturnValueOnce(null);
-
 		const foundPlace = await isPlaceInDb("sugar");
 
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundPlace).toBe(false);
+	});
+
+	it("adds a place to the database", async () => {
+		const addedPlace = await addPlace(mockPlace1);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(mockCollection).toContain(addedPlace);
+		expect(addedPlace).toEqual(mockPlace1);
+	});
+
+	it("throws an error when adding a duplicate to the database", () => {
+		mockCollection.push(mockPlace1);
+
+		expect.assertions(2);
+		addPlace(mockPlace1).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
+	});
+
+	it("throws an error when there is a problem with the remote collection", () => {
+		mockInsertOne.mockReturnValueOnce({ acknowledged: false });
+
+		expect.assertions(2);
+		addPlace(mockPlace1).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
 	});
 
 	// skipping get place by ID tests because the random
