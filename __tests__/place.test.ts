@@ -2,7 +2,8 @@ import { Collection, MongoClient } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { getCollection } from "../src/db/mongoCollections";
 import type { Place } from "../src/db/types";
-import { getAllPlaces } from "../src/db/Place/place";
+import { getAllPlaces, getPlaceByID } from "../src/db/Place/place";
+import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
 jest.mock("../src/db/mongoCollections");
@@ -108,5 +109,26 @@ describe("Place-related database function tests", () => {
 
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundPlaces).toEqual(mockCollection);
+	});
+
+	// skipping get place by ID tests because the random
+	// rating generation code is NOT expected behavior
+	// and would cause this test to fail
+
+	it.skip("successfully gets a place by its id", async () => {
+		mockCollection.push(mockPlace1);
+
+		const foundPlace = await getPlaceByID(mockPlace1._id);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundPlace).toEqual(mockPlace1);
+	});
+
+	it.skip("throws an error if an undefined id is provided when trying to get a place", () => {
+		expect.assertions(2);
+		getPlaceByID(undefined).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
 	});
 });

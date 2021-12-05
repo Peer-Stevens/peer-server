@@ -42,7 +42,7 @@ export async function getAllPlaces(): Promise<Place[]> {
  * Google Place ID. If the place is not in the remote collection,
  * adds it.
  * @param id a Google Place API id
- * @throws if id is null or undefined
+ * @throws if id is undefined
  * @returns the place
  */
 export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
