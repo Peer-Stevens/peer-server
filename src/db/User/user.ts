@@ -3,7 +3,12 @@ import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import type { User } from "../types";
 import { AuthenticationError, DbOperationError } from "../../errorClasses";
 
-// should be called when user creates an account
+/**
+ * Adds a user to the remote collection. Intended to be called when
+ * a user creates an account.
+ * @param userToAdd the new user to add
+ * @returns the user that has just been added
+ */
 export async function addUserToDb(userToAdd: User): Promise<User> {
 	const { _col, _connection } = await getCollection<User>("user");
 
