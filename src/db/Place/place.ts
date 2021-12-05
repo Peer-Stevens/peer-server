@@ -3,9 +3,11 @@ import { InsertOneResult, ObjectId } from "mongodb";
 import { Place, Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { addRating } from "../Rating/rating";
+import { DbOperationError } from "../../errorClasses";
 
 // generate a new rating object with the given id and random ratings from 0 to 5 in increments of 0.5
-export const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
+// internal function, no need to export
+const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
 	return {
 		userID: userId,
 		placeID: placeId,
@@ -21,6 +23,11 @@ export const generateNewRating = (placeId: string, userId: ObjectId): Rating => 
 
 // idk if we need this, but here it is in case we do
 // did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
+
+/**
+ * Returns all of the places in the remote collection.
+ * @returns All of the places
+ */
 export async function getAllPlaces(): Promise<Place[]> {
 	const { _col, _connection } = await getCollection<Place>("place");
 
@@ -30,12 +37,21 @@ export async function getAllPlaces(): Promise<Place[]> {
 	return getPlaces;
 }
 
+/**
+ * Finds a single place in the remote collection by its
+ * Google Place ID. If the place is not in the remote collection,
+ * adds it.
+ * @param id a Google Place API id
+ * @throws if id is null or undefined
+ * @returns the place
+ */
 export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
-	if (!id) throw new Error("No place id provided");
+	if (!id) throw new DbOperationError("No place id provided");
 
 	const { _col, _connection } = await getCollection<Place>("place");
 
 	const placeReturned = await _col.findOne({ _id: id });
+	// add the place if not in the remote collection
 	if (placeReturned === null) {
 		await addPlace({
 			_id: id,
@@ -62,6 +78,11 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 	}
 }
 
+/**
+ * Checks if the place is currently in the remote collection.
+ * @param id a Google Place API id
+ * @returns true if the place is in the remote collection, false otherwise
+ */
 export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
 	const { _col, _connection } = await getCollection<Place>("place");
 
@@ -72,6 +93,13 @@ export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolea
 	return true;
 }
 
+/**
+ * Adds a place to the remote collection.
+ * @param placeToAdd place data
+ * @throws when adding a place to the remote collection that already exists
+ * @throws when there is a problem with the remote collection adding a place
+ * @returns the place that has been added
+ */
 export async function addPlace(placeToAdd: Place): Promise<Place> {
 	const { _col, _connection } = await getCollection<Place>("place");
 
@@ -85,7 +113,7 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
 	// now its safe to add place to db
 	const insertInfo: InsertOneResult<Place> = await _col.insertOne(placeToAdd);
 	await _connection.close();
-	if (insertInfo.acknowledged === false) throw "Error adding place";
+	if (insertInfo.acknowledged === false) throw new DbOperationError("Error adding place");
 
 	const newID = insertInfo.insertedId;
 
@@ -93,12 +121,15 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
 }
 
 /**
- * An aggregate function that utilizes the Mongo aggregate framework
- * This function's purpose is to calculate the average ratings per metric that we want to collect.
- * This is more efficient that doing the calculations ourselves.
- * Returns the place after its been updated in the database with the averages
+ * Updates a place's scores based on all of the ratings stored
+ * in the remote collection. Calculates the average ratings per metric.
+ * More efficient then performing the calculations manually.
+ *
+ * This is an aggregate function that utilizes the Mongo aggregate framework.
+ * @param id a Google Place API id
+ * @throws when there is a problem with the remote collection updating the place
+ * @returns the place after its been updated in the database with the averages
  * */
-
 export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
 	const { _col: placeCol, _connection: placeConn } = await getCollection<Place>("place");
 
@@ -177,7 +208,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 
 	const placeToUpdate = await placeCol.updateOne({ _id: id }, { $set: avgsObj });
 	await placeConn.close();
-	if (placeToUpdate.acknowledged === false) throw "Could not update Place.";
+	if (placeToUpdate.acknowledged === false) throw new DbOperationError("Could not update Place.");
 
 	return await getPlaceByID(id);
 }
