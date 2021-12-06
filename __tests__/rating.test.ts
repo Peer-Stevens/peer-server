@@ -3,6 +3,7 @@ import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js
 import { Rating } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
 import {
+	deleteRatingFromDb,
 	getAllRatingsForPlace,
 	getAllRatingsFromUser,
 	getRatingById,
@@ -67,6 +68,12 @@ const mockUpdateOne = jest
 			return { acknowledged: true };
 		}
 	);
+const mockDeleteOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
+	return new Promise(resolve => {
+		mockCollection = mockCollection.filter(value => value._id !== id);
+		resolve({ deletedCount: 1 });
+	});
+});
 const mockClose = jest.fn();
 mockGetCollection.mockResolvedValue({
 	_col: {
@@ -74,6 +81,7 @@ mockGetCollection.mockResolvedValue({
 		findOne: mockFindOne,
 		updateOne: mockUpdateOne,
 		find: mockFind,
+		deleteOne: mockDeleteOne,
 	},
 	_connection: { close: mockClose },
 });
@@ -214,5 +222,24 @@ describe("Rating-related database function tests", () => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
+	});
+
+	it("deletes a rating from the database", async () => {
+		mockCollection.push(mockRating1);
+
+		const didDelete = await deleteRatingFromDb(mockRating1._id as ObjectId);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(didDelete).toBe(true);
+		expect(mockCollection).not.toContain(mockRating1);
+	});
+
+	it("returns false when attempting to delete something not in the database", async () => {
+		mockDeleteOne.mockResolvedValueOnce({ deletedCount: 0 });
+
+		const didDelete = await deleteRatingFromDb(mockRating1._id as ObjectId);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(didDelete).toBe(false);
 	});
 });
