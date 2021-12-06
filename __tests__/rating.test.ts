@@ -2,7 +2,11 @@ import { Collection, MongoClient, ObjectId } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { Rating } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
-import { getAllRatingsForPlace, getRatingById } from "../src/db/Rating/rating";
+import {
+	getAllRatingsForPlace,
+	getAllRatingsFromUser,
+	getRatingById,
+} from "../src/db/Rating/rating";
 import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
@@ -91,7 +95,7 @@ const mockRating1: Rating = {
 
 const mockRating2: Rating = {
 	_id: new ObjectId("617cacca81bc431f3dcde5be"),
-	userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
+	userID: new ObjectId("617cacca8123431f3dcde5bd"),
 	placeID: "fakeplace123",
 	braille: 3.5,
 	fontReadability: null,
@@ -168,7 +172,45 @@ describe("Rating-related database function tests", () => {
 	it("throws an error if no ratings could be found for a requested place", () => {
 		// no ratings added!
 
+		expect.assertions(2);
 		getAllRatingsForPlace(mockRating1.placeID).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
+	});
+
+	it("gets all ratings from a user", async () => {
+		mockFind.mockImplementationOnce(({ userID: id }: { userID: ObjectId }) => {
+			const got = mockCollection.filter(value => value.userID.equals(id));
+			return {
+				toArray: () => {
+					return new Promise(resolve => resolve(got));
+				},
+			};
+		});
+		mockCollection = [mockRating1, mockRating2, mockRating3];
+
+		const foundRatings = await getAllRatingsFromUser(mockRating1.userID);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundRatings).toContain(mockRating1);
+		expect(foundRatings).toContain(mockRating3);
+		expect(foundRatings).not.toContain(mockRating2);
+	});
+
+	it("throws if cannot find any ratings from requested user", () => {
+		mockFind.mockImplementationOnce(({ userID: id }: { userID: ObjectId }) => {
+			const got = mockCollection.filter(value => value.userID.equals(id));
+			return {
+				toArray: () => {
+					return new Promise(resolve => resolve(got));
+				},
+			};
+		});
+		// no ratings added!
+
+		expect.assertions(2);
+		getAllRatingsFromUser(mockRating1.userID).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
