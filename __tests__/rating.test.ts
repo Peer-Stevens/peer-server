@@ -4,11 +4,17 @@ import { Rating } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
 import {
 	deleteRatingFromDb,
+	editRatingInDb,
 	getAllRatingsForPlace,
 	getAllRatingsFromUser,
 	getRatingById,
 } from "../src/db/Rating/rating";
+import { updatePlace } from "../src/db/Place/place";
 import { DbOperationError } from "../src/errorClasses";
+
+// external db function mocks
+jest.mock("../src/db/Place/place");
+const mockUpdatePlace = updatePlace as jest.MockedFunction<typeof updatePlace>;
 
 // getCollection mock
 jest.mock("../src/db/mongoCollections");
@@ -21,7 +27,9 @@ const mockGetCollection = getCollection as jest.MockedFunction<mockGetCollection
 let mockCollection: Rating[];
 const mockInsertOne = jest.fn().mockImplementation((rating: Rating) => {
 	mockCollection.push(rating);
-	return { acknowledged: true };
+	return new Promise(resolve => {
+		resolve({ acknowledged: true });
+	});
 });
 const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
 	return new Promise(resolve => {
@@ -39,35 +47,7 @@ const mockFind = jest
 			},
 		};
 	});
-const mockUpdateOne = jest
-	.fn()
-	.mockImplementation(
-		({ _id: id }: { _id: ObjectId }, { $set: newRating }: { $set: Partial<Rating> }) => {
-			const old = mockCollection.find(value => id.equals(value._id as ObjectId));
-			mockCollection.pop();
-			mockCollection.push({
-				_id: id,
-				userID: old?.userID as ObjectId,
-				placeID: old?.placeID as string,
-				braille: newRating.braille ? newRating.braille : old?.braille || null,
-				fontReadability: newRating.fontReadability
-					? newRating.fontReadability
-					: old?.fontReadability || null,
-				staffHelpfulness: newRating.staffHelpfulness
-					? newRating.staffHelpfulness
-					: old?.staffHelpfulness || null,
-				navigability: newRating.navigability
-					? newRating.navigability
-					: old?.navigability || null,
-				guideDogFriendly: newRating.guideDogFriendly
-					? newRating.guideDogFriendly
-					: old?.guideDogFriendly || null,
-				comment: newRating.comment ? newRating.comment : (old?.comment as string),
-				dateCreated: old?.dateCreated as Date,
-			});
-			return { acknowledged: true };
-		}
-	);
+const mockUpdateOne = jest.fn();
 const mockDeleteOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
 	return new Promise(resolve => {
 		mockCollection = mockCollection.filter(value => value._id !== id);
@@ -133,6 +113,7 @@ beforeEach(() => {
 	mockFindOne.mockClear();
 	mockInsertOne.mockClear();
 	mockUpdateOne.mockClear();
+	mockUpdatePlace.mockClear();
 });
 
 describe("Rating-related database function tests", () => {
@@ -241,5 +222,26 @@ describe("Rating-related database function tests", () => {
 
 		expect(mockClose).toHaveBeenCalled();
 		expect(didDelete).toBe(false);
+	});
+
+	it("edits a rating in the database", async () => {
+		mockCollection.push(mockRating1);
+		mockUpdateOne.mockResolvedValueOnce({ acknowledged: true });
+
+		await editRatingInDb(mockRating1._id as ObjectId, { braille: 0 });
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(mockUpdateOne).toHaveBeenCalled();
+	});
+
+	it("throws an error while editing if there is a problem with the remote database", () => {
+		mockCollection.push(mockRating1);
+		mockUpdateOne.mockResolvedValueOnce({ acknowledged: false });
+
+		expect.assertions(2);
+		editRatingInDb(mockRating1._id as ObjectId, { braille: 0 }).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
 	});
 });
