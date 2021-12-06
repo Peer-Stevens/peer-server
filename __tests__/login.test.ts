@@ -37,6 +37,8 @@ describe("login endpoint tests", () => {
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: true,
+			dateTokenCreated: new Date(),
+			token: "aaaaaaaaaaaaaaaaaaaaaa",
 		});
 		const mockSend = jest.fn();
 		mockSend.mockImplementation(() => {
