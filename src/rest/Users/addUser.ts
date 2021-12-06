@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { addUserToDb, getUserByEmailOnly } from "../../db/User/user";
+import { addUserToDb, editUserInDb, getUserByEmailOnly } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
 import {
@@ -7,8 +7,10 @@ import {
 	AccountExistsErrorJSON,
 	MissingParametersErrorJSON,
 	UserCreatedJSON,
+	createToken,
 } from "../util";
 import { AuthenticationError } from "../../errorClasses";
+import { ObjectId } from "bson";
 
 const endPointName = "addUser";
 
@@ -82,8 +84,13 @@ export const addUser = async (
 	}
 
 	try {
-		await addUserToDb(userDetails);
-		res.status(StatusCode.OK).json(UserCreatedJSON);
+		const addedUser = await addUserToDb(userDetails);
+		const token = createToken();
+		await editUserInDb(addedUser._id as ObjectId, {
+			token: token,
+			dateTokenCreated: new Date(),
+		});
+		res.status(StatusCode.OK).json({ ...UserCreatedJSON, token: token });
 	} catch (e) {
 		handleError<AddUserRequestBody>(e, endPointName, req, res);
 	}
