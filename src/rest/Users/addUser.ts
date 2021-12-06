@@ -84,9 +84,9 @@ export const addUser = async (
 	}
 
 	try {
-		const addedUser = await addUserToDb(userDetails);
 		const token = createToken();
-		await editUserInDb(addedUser._id as ObjectId, {
+		await addUserToDb({
+			...userDetails,
 			token: token,
 			dateTokenCreated: new Date(),
 		});
