@@ -17,7 +17,12 @@ const mockInsertOne = jest.fn().mockImplementation((rating: Rating) => {
 	mockCollection.push(rating);
 	return { acknowledged: true };
 });
-const mockFindOne = jest.fn();
+const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
+	return new Promise(resolve => {
+		const got = mockCollection.find(value => id.equals(value._id as ObjectId));
+		got ? resolve(got) : resolve(null);
+	});
+});
 const mockUpdateOne = jest
 	.fn()
 	.mockImplementation(
@@ -70,10 +75,10 @@ const mockRating1: Rating = {
 
 beforeEach(() => {
 	mockCollection = [];
-	mockClose.mockReset();
-	mockFindOne.mockReset();
-	mockInsertOne.mockReset();
-	mockUpdateOne.mockReset();
+	mockClose.mockClear();
+	mockFindOne.mockClear();
+	mockInsertOne.mockClear();
+	mockUpdateOne.mockClear();
 });
 
 describe("Rating-related database function tests", () => {
@@ -92,7 +97,6 @@ describe("Rating-related database function tests", () => {
 			dateCreated: new Date(),
 		};
 		mockCollection.push(mockRating2);
-		mockFindOne.mockResolvedValueOnce(mockRating2);
 
 		const foundRating = await getRatingById(new ObjectId(idString));
 
