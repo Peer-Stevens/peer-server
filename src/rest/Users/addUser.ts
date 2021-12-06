@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { addUserToDb, editUserInDb, getUserByEmailOnly } from "../../db/User/user";
+import { addUserToDb, getUserByEmailOnly } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
 import {
@@ -10,7 +10,6 @@ import {
 	createToken,
 } from "../util";
 import { AuthenticationError } from "../../errorClasses";
-import { ObjectId } from "bson";
 
 const endPointName = "addUser";
 

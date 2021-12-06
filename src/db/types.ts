@@ -13,8 +13,8 @@ export interface User {
 	readsBraille: boolean;
 	doesNotPreferHelp: boolean;
 	dateEdited?: Date;
-	token?: string;
-	dateTokenCreated?: Date;
+	token: string;
+	dateTokenCreated: Date;
 }
 
 export interface Rating {
