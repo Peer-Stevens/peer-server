@@ -19,6 +19,8 @@ beforeEach(async () => {
 		isBlindMode: true,
 		doesNotPreferHelp: false,
 		readsBraille: true,
+		dateTokenCreated: new Date(),
+		token: "aaaaaaaaaaaaaaaaaaaaaa",
 	};
 
 	try {
@@ -65,6 +67,8 @@ describe("User database functions", () => {
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
+			dateTokenCreated: new Date(),
+			token: "aaaaaaaaaaaaaaaaaaaaaa",
 		});
 	});
 	it("throws error when it tries to edit nonexistent user", async () => {
@@ -104,6 +108,8 @@ describe("User database functions", () => {
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: false,
+			dateTokenCreated: new Date(),
+			token: "aaaaaaaaaaaaaaaaaaaaaa",
 		});
 	});
 });

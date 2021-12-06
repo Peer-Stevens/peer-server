@@ -59,7 +59,6 @@ async function main() {
 		console.log(e);
 	}
 
-	// example of created user who has yet to authenticate
 	let user3!: User;
 	try {
 		user3 = await addUserToDb({
@@ -68,6 +67,8 @@ async function main() {
 			isBlindMode: false,
 			readsBraille: false,
 			doesNotPreferHelp: false,
+			token: createToken(),
+			dateTokenCreated: new Date(),
 		});
 	} catch (e) {
 		console.log(e);

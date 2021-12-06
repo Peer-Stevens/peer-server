@@ -7,6 +7,7 @@ import {
 	AccountExistsErrorJSON,
 	MissingParametersErrorJSON,
 	UserCreatedJSON,
+	createToken,
 } from "../util";
 import { AuthenticationError } from "../../errorClasses";
 
@@ -82,8 +83,13 @@ export const addUser = async (
 	}
 
 	try {
-		await addUserToDb(userDetails);
-		res.status(StatusCode.OK).json(UserCreatedJSON);
+		const token = createToken();
+		await addUserToDb({
+			...userDetails,
+			token: token,
+			dateTokenCreated: new Date(),
+		});
+		res.status(StatusCode.OK).json({ ...UserCreatedJSON, token: token });
 	} catch (e) {
 		handleError<AddUserRequestBody>(e, endPointName, req, res);
 	}
