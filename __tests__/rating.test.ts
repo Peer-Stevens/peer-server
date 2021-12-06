@@ -3,6 +3,7 @@ import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js
 import { Rating } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
 import {
+	addRating,
 	deleteRatingFromDb,
 	editRatingInDb,
 	getAllRatingsForPlace,
@@ -28,7 +29,7 @@ let mockCollection: Rating[];
 const mockInsertOne = jest.fn().mockImplementation((rating: Rating) => {
 	mockCollection.push(rating);
 	return new Promise(resolve => {
-		resolve({ acknowledged: true });
+		resolve({ acknowledged: true, insertedId: rating._id });
 	});
 });
 const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
@@ -240,6 +241,67 @@ describe("Rating-related database function tests", () => {
 
 		expect.assertions(2);
 		editRatingInDb(mockRating1._id as ObjectId, { braille: 0 }).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
+	});
+
+	it("adds a rating into the database", async () => {
+		mockFindOne.mockImplementationOnce(
+			({
+				userID: userID,
+				placeID: placeID,
+			}: {
+				userID: ObjectId;
+				placeID: GooglePlaceID;
+			}) => {
+				const got = mockCollection.find(value => {
+					return value.userID === userID && value.placeID === placeID;
+				});
+				return new Promise(resolve => {
+					got ? resolve(got) : resolve(null);
+				});
+			}
+		);
+
+		const addedRating = await addRating(mockRating1);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(addedRating).toEqual(mockRating1);
+		expect(mockCollection).toContain(mockRating1);
+	});
+
+	it("throws an error if there is already a rating on this place by this user", () => {
+		mockCollection.push(mockRating1);
+		mockFindOne.mockImplementationOnce(
+			({
+				userID: userID,
+				placeID: placeID,
+			}: {
+				userID: ObjectId;
+				placeID: GooglePlaceID;
+			}) => {
+				const got = mockCollection.find(value => {
+					return value.userID === userID && value.placeID === placeID;
+				});
+				return new Promise(resolve => {
+					got ? resolve(got) : resolve(null);
+				});
+			}
+		);
+
+		expect.assertions(2);
+		addRating(mockRating1).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
+	});
+
+	it("throws an error if there was an error inserting into the remote collection", () => {
+		mockInsertOne.mockResolvedValueOnce({ acknowledged: false });
+
+		expect.assertions(2);
+		addRating(mockRating1).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
