@@ -1,7 +1,8 @@
 import { Collection, MongoClient, ObjectId } from "mongodb";
+import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { Rating } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
-import { getRatingById } from "../src/db/Rating/rating";
+import { getAllRatingsForPlace, getRatingById } from "../src/db/Rating/rating";
 import { DbOperationError } from "../src/errorClasses";
 
 // getCollection mock
@@ -23,6 +24,16 @@ const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }
 		got ? resolve(got) : resolve(null);
 	});
 });
+const mockFind = jest
+	.fn()
+	.mockImplementation(({ placeID: id }: { placeID: GooglePlaceID["place_id"] }) => {
+		const got = mockCollection.filter(value => value.placeID === id);
+		return {
+			toArray: () => {
+				return new Promise(resolve => resolve(got));
+			},
+		};
+	});
 const mockUpdateOne = jest
 	.fn()
 	.mockImplementation(
@@ -54,7 +65,12 @@ const mockUpdateOne = jest
 	);
 const mockClose = jest.fn();
 mockGetCollection.mockResolvedValue({
-	_col: { insertOne: mockInsertOne, findOne: mockFindOne, updateOne: mockUpdateOne },
+	_col: {
+		insertOne: mockInsertOne,
+		findOne: mockFindOne,
+		updateOne: mockUpdateOne,
+		find: mockFind,
+	},
 	_connection: { close: mockClose },
 });
 
@@ -67,6 +83,32 @@ const mockRating1: Rating = {
 	braille: 4,
 	fontReadability: null,
 	guideDogFriendly: 5,
+	navigability: 2,
+	staffHelpfulness: 1,
+	comment: null,
+	dateCreated: new Date(),
+};
+
+const mockRating2: Rating = {
+	_id: new ObjectId("617cacca81bc431f3dcde5be"),
+	userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
+	placeID: "fakeplace123",
+	braille: 3.5,
+	fontReadability: null,
+	guideDogFriendly: 1,
+	navigability: 2,
+	staffHelpfulness: 2.5,
+	comment: null,
+	dateCreated: new Date(),
+};
+
+const mockRating3: Rating = {
+	_id: new ObjectId("617cacca81bc431f3dcde5be"),
+	userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
+	placeID: "fakeplace456",
+	braille: 2,
+	fontReadability: null,
+	guideDogFriendly: 3,
 	navigability: 2,
 	staffHelpfulness: 1,
 	comment: null,
@@ -105,10 +147,28 @@ describe("Rating-related database function tests", () => {
 	});
 
 	it("throws an error when trying to get a rating by its ID and there is a remote problem", () => {
-		mockFindOne.mockResolvedValueOnce(null);
-
 		expect.assertions(2);
 		getRatingById(new ObjectId(mockRating1._id)).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
+		});
+	});
+
+	it("gets all ratings for a place", async () => {
+		mockCollection = [mockRating1, mockRating2, mockRating3];
+
+		const foundRatings = await getAllRatingsForPlace(mockRating1.placeID);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundRatings).toContain(mockRating1);
+		expect(foundRatings).toContain(mockRating2);
+		expect(foundRatings).not.toContain(mockRating3);
+	});
+
+	it("throws an error if no ratings could be found for a requested place", () => {
+		// no ratings added!
+
+		getAllRatingsForPlace(mockRating1.placeID).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
