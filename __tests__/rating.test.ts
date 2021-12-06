@@ -64,6 +64,8 @@ beforeEach(async () => {
 			readsBraille: true,
 			isBlindMode: true,
 			doesNotPreferHelp: false,
+			dateTokenCreated: new Date(),
+			token: "aaaaaaaaaaaaaaaaaaaaaa",
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
@@ -82,6 +84,8 @@ beforeEach(async () => {
 			readsBraille: false,
 			isBlindMode: false,
 			doesNotPreferHelp: false,
+			dateTokenCreated: new Date(),
+			token: "aaaaaaaaaaaaaaaaaaaaaa",
 		});
 	} catch (e) {
 		if (e instanceof MongoServerError) {
