@@ -17,10 +17,6 @@ describe("Get place photo endpoint tests", () => {
 		const mockSend = jest.fn();
 		const mockStatus = jest.fn().mockReturnValue({ send: mockSend });
 
-		// getPlacePhoto needs an await to finish executing the promise...
-		// yet it does not return one so its not technically "awaitable"
-
-		//eslint-disable-next-line @typescript-eslint/await-thenable
 		await getPlacePhoto(
 			{ params: { ref: "aaaaaaaa" } } as unknown as Request,
 			{
