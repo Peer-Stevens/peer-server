@@ -1,143 +1,245 @@
-import { ObjectId } from "bson";
+import { Collection, MongoClient, ObjectId } from "mongodb";
+import {
+	addUserToDb,
+	editUserInDb,
+	getUserByEmailAndHash,
+	getUserByEmailOnly,
+	getUserByID,
+} from "../src/db/User/user";
+import { getCollection } from "../src/db/mongoCollections";
 import { User } from "../src/db/types";
-import { dbConnection } from "../src/db/mongoConnection";
-import { addUserToDb, getUserByID, editUserInDb, getUserByEmailAndHash } from "../src/db/User/user";
-import { MongoServerError } from "mongodb";
-import { AuthenticationError } from "../src/errorClasses";
+import { AuthenticationError, DbOperationError } from "../src/errorClasses";
+import { createToken } from "../src/rest/util";
 
-let mockUser: User;
+// getCollection mock
+jest.mock("../src/db/mongoCollections");
+type mockGetCollectionSignature = <T>(
+	collection: "user" | "rating" | "place"
+) => Promise<{ _col: Partial<Collection<T>>; _connection: Partial<MongoClient> }>;
+const mockGetCollection = getCollection as jest.MockedFunction<mockGetCollectionSignature>;
 
-beforeEach(async () => {
-	const { _db, _connection } = await dbConnection();
-	await _db.dropDatabase();
-	await _connection.close();
-
-	mockUser = {
-		_id: new ObjectId("617cacca81bc431f3dcde5bd"),
-		email: "ilovecheese@hotmail.com",
-		hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-		isBlindMode: true,
-		doesNotPreferHelp: false,
-		readsBraille: true,
-		dateTokenCreated: new Date(),
-		token: "aaaaaaaaaaaaaaaaaaaaaa",
-	};
-
-	try {
-		await addUserToDb(mockUser);
-	} catch (e) {
-		if (e instanceof MongoServerError) {
-			console.log("MONGOSERVERERROR: Something went wrong while trying to connect to Mongo");
-		} else {
-			throw e;
+// mock adding to a collection
+let mockCollection: User[];
+const mockInsertOne = jest.fn().mockImplementation((user: User) => {
+	mockCollection.push(user);
+	return { acknowledged: true };
+});
+const mockFindOne = jest.fn().mockImplementation(({ _id: id }: { _id: ObjectId }) => {
+	const got = mockCollection.find(value => id.equals(value._id as ObjectId));
+	return got ? got : null;
+});
+const mockUpdateOne = jest
+	.fn()
+	.mockImplementation(
+		({ _id: id }: { _id: ObjectId }, { $set: newUser }: { $set: Partial<User> }) => {
+			const old = mockCollection.find(value => id.equals(value._id as ObjectId));
+			mockCollection.pop();
+			mockCollection.push({
+				_id: id,
+				email: newUser.email ? newUser.email : (old?.email as string),
+				hash: newUser.hash ? newUser.hash : (old?.hash as string),
+				isBlindMode:
+					newUser.isBlindMode !== undefined
+						? newUser.isBlindMode
+						: (old?.isBlindMode as boolean),
+				doesNotPreferHelp:
+					newUser.doesNotPreferHelp !== undefined
+						? newUser.doesNotPreferHelp
+						: (old?.doesNotPreferHelp as boolean),
+				readsBraille:
+					newUser.readsBraille !== undefined
+						? newUser.readsBraille
+						: (old?.readsBraille as boolean),
+				token: old?.token as string,
+				dateTokenCreated: old?.dateTokenCreated as Date,
+			});
+			return { acknowledged: true };
 		}
-	}
+	);
+const mockClose = jest.fn();
+mockGetCollection.mockResolvedValue({
+	_col: { insertOne: mockInsertOne, findOne: mockFindOne, updateOne: mockUpdateOne },
+	_connection: { close: mockClose },
 });
 
-describe("User database functions", () => {
-	it("throws error when it tries to get nonexistent user", async () => {
-		expect.assertions(1);
-		await getUserByID(new ObjectId("618cacca81bc431f3dcde5bd")).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no user exists with that ID");
-			}
+// mock data
+const mockUser = {
+	email: "ilovecheese@hotmail.com",
+	hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+	isBlindMode: true,
+	doesNotPreferHelp: false,
+	readsBraille: true,
+	token: createToken(),
+	dateTokenCreated: new Date(),
+};
+
+beforeEach(() => {
+	mockCollection = [];
+	mockInsertOne.mockClear();
+	mockUpdateOne.mockClear();
+	mockFindOne.mockClear();
+	mockClose.mockClear();
+});
+
+describe("User-related database function tests", () => {
+	it("successfully adds a user", async () => {
+		const insertedUser = await addUserToDb(mockUser);
+
+		expect(insertedUser).toEqual(mockUser);
+		expect(mockCollection).toContain(mockUser);
+		expect(mockClose).toHaveBeenCalled();
+	});
+
+	it("throws an error when it fails to add a user", () => {
+		mockInsertOne.mockImplementationOnce((user: User) => {
+			mockCollection.push(user);
+			return { acknowledged: false };
+		});
+
+		expect.assertions(2);
+		addUserToDb(mockUser).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
-	it("gets user", async () => {
-		let user!: User;
-		try {
-			user = await getUserByID(new ObjectId("617cacca81bc431f3dcde5bd"));
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
 
-		expect(user).toMatchObject<User>({
+	it("successfully gets a user by id", async () => {
+		const idString = "618cacca81bc431f3dcde5bd";
+		const mockUser2: User = {
+			_id: new ObjectId(idString),
 			email: "ilovecheese@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
+			token: createToken(),
 			dateTokenCreated: new Date(),
-			token: "aaaaaaaaaaaaaaaaaaaaaa",
-		});
-	});
-	it("throws error when it tries to edit nonexistent user", async () => {
-		expect.assertions(1);
-		return await editUserInDb(new ObjectId("618cacca81bc431f3dcde5bd"), {
-			email: "totallyfake",
-		}).catch(e => {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				expect(e).toEqual("Sorry, no user exists with that ID");
-			}
-		});
-	});
-	it("edits user", async () => {
-		let user!: User;
-		try {
-			user = await editUserInDb(new ObjectId("617cacca81bc431f3dcde5bd"), {
-				email: "ilovedairy@hotmail.com",
-				readsBraille: false,
-			});
-		} catch (e) {
-			if (e instanceof MongoServerError) {
-				console.log(
-					"MONGOSERVERERROR: Something went wrong while trying to connect to Mongo"
-				);
-			} else {
-				throw e;
-			}
-		}
+		};
+		mockCollection.push(mockUser2);
 
-		expect(user).toMatchObject<User>({
-			email: "ilovedairy@hotmail.com",
+		const foundUser = await getUserByID(new ObjectId(idString));
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundUser).toEqual(mockUser2);
+	});
+
+	it("throws an error when getting a user by id that has not been added", () => {
+		const idString = "618cacca81bc431f3dcde5bd";
+		// no user is added!
+
+		expect.assertions(2);
+		getUserByID(new ObjectId(idString)).catch(e => {
+			expect(e).toBeInstanceOf(DbOperationError);
+			expect(mockClose).toHaveBeenCalled();
+		});
+	});
+
+	it("successfully gets a user by email", async () => {
+		mockCollection.push(mockUser);
+		mockFindOne.mockImplementationOnce(({ email: email }: { email: string }) => {
+			return mockCollection.find(value => email === value.email);
+		});
+
+		const foundUser = await getUserByEmailOnly(mockUser.email);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundUser).toEqual(mockUser);
+	});
+
+	it("throws an error when getting a user by email that has not been added", () => {
+		mockFindOne.mockImplementationOnce(({ email: email }: { email: string }) => {
+			const got = mockCollection.find(value => email === value.email);
+			return got ? got : null;
+		});
+		// user has not been added!
+
+		expect.assertions(2);
+		getUserByEmailOnly(mockUser.email).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(AuthenticationError);
+		});
+	});
+
+	it("successfully gets a user by their email and hash", async () => {
+		mockCollection.push(mockUser);
+		mockFindOne.mockImplementationOnce(
+			({ email: email, hash: hash }: { email: string; hash: string }) => {
+				const got = mockCollection.find(
+					value => email === value.email && hash === value.hash
+				);
+				return got ? got : null;
+			}
+		);
+
+		const foundUser = await getUserByEmailAndHash(mockUser.email, mockUser.hash);
+
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundUser).toEqual(mockUser);
+	});
+
+	it("throws an error when getting a user by email that has not been added", () => {
+		mockFindOne.mockImplementationOnce(
+			({ email: email, hash: hash }: { email: string; hash: string }) => {
+				const got = mockCollection.find(
+					value => email === value.email && hash === value.hash
+				);
+				return got ? got : null;
+			}
+		);
+		// user has not been added!
+
+		expect.assertions(2);
+		getUserByEmailAndHash(mockUser.email, mockUser.hash).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(AuthenticationError);
+		});
+	});
+
+	it("sucessfully edits an existing user", async () => {
+		const mockUser2 = {
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
 			isBlindMode: true,
 			doesNotPreferHelp: false,
-			readsBraille: false,
+			readsBraille: true,
+			token: createToken(),
 			dateTokenCreated: new Date(),
-			token: "aaaaaaaaaaaaaaaaaaaaaa",
-		});
-	});
-});
+		};
+		mockCollection.push(mockUser2);
 
-describe("getByUsernameAndHash tests", () => {
-	it("gets a user by username and hash", async () => {
-		const user = await getUserByEmailAndHash(
-			"ilovecheese@hotmail.com",
-			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
-		);
-		expect(user).toMatchObject<User>(mockUser);
+		const editedUser = await editUserInDb(mockUser2._id, { isBlindMode: false });
+
+		const expectedUser2: User = {
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			isBlindMode: false,
+			doesNotPreferHelp: false,
+			readsBraille: true,
+			token: mockUser2.token,
+			dateTokenCreated: mockUser2.dateTokenCreated,
+		};
+		expect(mockClose).toHaveBeenCalled();
+		expect(editedUser).not.toEqual(mockUser2);
+		expect(editedUser).toEqual(expectedUser2);
 	});
-	it("throws an authentication error if the username is not in the database", async () => {
-		expect.assertions(1);
-		await getUserByEmailAndHash(
-			"ilovespaghetti@hotmail.com",
-			"2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823"
-		).catch(e => {
-			expect(e).toBeInstanceOf(AuthenticationError);
-		});
-	});
-	it("throws an authentication error if the hash is not in the database", async () => {
-		expect.assertions(1);
-		await getUserByEmailAndHash(
-			"ilovecheese@hotmail.com",
-			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // totally a valid hash btw
-		).catch(e => {
-			expect(e).toBeInstanceOf(AuthenticationError);
+
+	it("throws an error when receives error from the server", () => {
+		const mockUser2 = {
+			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			isBlindMode: true,
+			doesNotPreferHelp: false,
+			readsBraille: true,
+		};
+		mockUpdateOne.mockReturnValueOnce({ acknowledged: false });
+
+		expect.assertions(2);
+		editUserInDb(mockUser2._id, { isBlindMode: false }).catch(e => {
+			expect(mockClose).toHaveBeenCalled();
+			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
 });

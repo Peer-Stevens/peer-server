@@ -3,31 +3,33 @@ import { login } from "../src/rest/login";
 import { AuthenticationError } from "../src/errorClasses";
 import { Request, Response } from "express";
 import StatusCode from "../src/rest/status";
+import { AccountNotFoundErrorJSON } from "../src/rest/util";
 
 jest.mock("../src/db/User/user");
 const mockGetBy = getUserByEmailAndHash as jest.MockedFunction<typeof getUserByEmailAndHash>;
 
 describe("login endpoint tests", () => {
 	it("returns a 404 status if the account is not found", async () => {
-		mockGetBy.mockImplementation((username, hash) => {
+		mockGetBy.mockImplementation((email, hash) => {
 			throw new AuthenticationError(
-				`No user exists with the username ${username} and hash ${hash}`
+				`No user exists with the email address ${email} and hash ${hash}`
 			);
 		});
 		const mockSend = jest.fn();
 		mockSend.mockImplementation(() => {
-			return { send: mockSend, status: mockStatus };
+			return { send: mockSend, status: mockStatus, json: mockJSON };
 		});
 		const mockStatus = jest.fn();
 		mockStatus.mockImplementation(() => {
-			return { send: mockSend, status: mockStatus };
+			return { send: mockSend, status: mockStatus, json: mockJSON };
 		});
+		const mockJSON = jest.fn();
 		await login(
 			{ body: { username: "sludge", hash: "acbdefabcdefabcded" } } as Request,
-			{ send: mockSend, status: mockStatus } as unknown as Response
+			{ send: mockSend, status: mockStatus, json: mockJSON } as unknown as Response
 		);
 
-		expect(mockSend).toHaveBeenCalledWith("Account not found");
+		expect(mockJSON).toHaveBeenCalledWith(AccountNotFoundErrorJSON);
 		expect(mockStatus).toHaveBeenCalledWith(StatusCode.NOT_FOUND);
 	});
 	it("returns a token if the account is found", async () => {
