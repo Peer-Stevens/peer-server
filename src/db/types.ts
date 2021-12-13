@@ -9,9 +9,6 @@ export interface User {
 	_id?: ObjectId;
 	email: string;
 	hash: string;
-	isBlindMode: boolean;
-	readsBraille: boolean;
-	doesNotPreferHelp: boolean;
 	dateEdited?: Date;
 	token: string;
 	dateTokenCreated: Date;

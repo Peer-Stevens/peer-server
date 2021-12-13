@@ -36,9 +36,6 @@ describe("login endpoint tests", () => {
 		mockGetBy.mockResolvedValue({
 			email: "julioisfred@onedrive.com",
 			hash: "bd160cd097a48e6601402411225cefca8a15ec9ab4f817adf985bee5708a1bdc",
-			isBlindMode: false,
-			readsBraille: false,
-			doesNotPreferHelp: true,
 			dateTokenCreated: new Date(),
 			token: "aaaaaaaaaaaaaaaaaaaaaa",
 		});
