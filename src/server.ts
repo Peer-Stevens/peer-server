@@ -86,12 +86,7 @@ app.post(
 );
 
 // error handler
-app.use((err: Error, req: Request, res: Response, next: (err: Error) => void) => {
-	if (res.headersSent) {
-		next(err);
-	}
-	handleError(err, req.url, req, res);
-});
+app.use(handleError);
 
 export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);

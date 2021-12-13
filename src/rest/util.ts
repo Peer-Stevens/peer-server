@@ -11,22 +11,26 @@ import { AuthenticationError } from "../errorClasses";
 // Functions
 
 /**
- * Prints an error for a REST endpoint that processes data
- * sent to the body.
+ * Handles a generic error thrown by a REST endpoint. Logs the content of the body
+ * of the request.
  * @param e The error to be printed
- * @param name the name of the endpoint
- * @param req The request of the addUser endpoint
- * @param res The response of the addUser endpoint
+ * @param req The request of the endpoint
+ * @param res The response of the endpoint
  */
-export const handleError = <T>(
+export const handleError = (
 	e: Error | unknown,
-	name: string,
-	req: Request<unknown, unknown, T>,
-	res: Response
+	req: Request,
+	res: Response,
+	next: (err: Error | unknown) => void
 ): void => {
+	if (res.headersSent) {
+		next(e);
+	}
 	// do not send error `e` as a response for security reasons
 	console.error(
-		`${name}: The following error was thrown with the request body: ${JSON.stringify(req.body)}`
+		`${req.url}: The following error was thrown with the request body: ${JSON.stringify(
+			req.body
+		)}`
 	);
 	console.error(e);
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
