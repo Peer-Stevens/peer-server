@@ -2,8 +2,11 @@ import { createHash } from "crypto";
 import { ObjectId } from "bson";
 import { MongoServerError } from "mongodb";
 import type { Request, Response } from "express";
-import { getUserByID } from "../db/User/user";
+import { Strategy } from "passport-local";
+import { editUserInDb, getUserByEmailAndHash, getUserByID } from "../db/User/user";
 import StatusCode from "./status";
+import { User } from "../db/types";
+import { AuthenticationError } from "../errorClasses";
 
 // Functions
 
@@ -96,3 +99,41 @@ export const RatingAlreadyExistsErrorJSON = {
 export const PlaceDoesNotExistErrorJSON = {
 	error: "There is no place with the provided place ID.",
 };
+
+/**
+ * Strategy for the server to use for logging in.
+ * Assumes that the `AUTH_SEED` environment variable
+ * is set to call `createToken()`.
+ */
+export const strategy = new Strategy(
+	{ usernameField: "email", passwordField: "hash" },
+	async (email, hash, done) => {
+		let user: User;
+		try {
+			user = await getUserByEmailAndHash(email, hash);
+		} catch (e) {
+			if (e instanceof AuthenticationError) {
+				return done(null, false, {
+					message: "Account with that email and/or password not found.",
+				});
+			} else {
+				return done(e);
+			}
+		}
+
+		const token = createToken();
+
+		try {
+			await editUserInDb(user._id as ObjectId, {
+				token: token,
+				dateTokenCreated: new Date(),
+			});
+		} catch (e) {
+			return done(e);
+		}
+
+		console.log(`Successfully signed in ${email}`);
+
+		return done(null, token);
+	}
+);
