@@ -14,8 +14,26 @@ import {
 	WrongParamatersErrorJSON,
 } from "../util";
 import { DbOperationError } from "../../errorClasses";
-import { userExists } from "../Users/util";
 import { getPlaceByID } from "../../db/Place/place";
+import { getUserByID } from "../../db/User/user";
+
+/**
+ * Checks if the passed user exists. Calls `getUserByID`.
+ * @param userID the user's bson ID as a string
+ * @returns true if the user exists in the database
+ */
+const userExists = async (userID: string): Promise<boolean> => {
+	try {
+		await getUserByID(new ObjectId(userID));
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return false;
+		} else {
+			throw e;
+		}
+	}
+	return true;
+};
 
 /**
  * Checks if the passed place exists. Calls `getPlaceByID`.
@@ -84,7 +102,7 @@ export const addRatingToPlace = async (
 	}
 
 	// check that user exists
-	if (!(await userExists<AddRatingRequestBody>(userID, req.url, req, res))) {
+	if (!(await userExists(userID))) {
 		console.warn(
 			"addRatingToPlace: request made where user ID provided does not match an existing user"
 		);
