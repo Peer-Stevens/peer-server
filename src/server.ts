@@ -15,7 +15,7 @@ import { addPlaceToDb } from "./rest/Places/addPlace";
 import { editRating } from "./rest/Ratings/editRating";
 import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
-import { strategy } from "./rest/util";
+import { handleError, strategy } from "./rest/util";
 import StatusCode from "./rest/status";
 
 export const app = express();
@@ -84,6 +84,14 @@ app.post(
 		res.status(StatusCode.OK).send(token);
 	}
 );
+
+// error handler
+app.use((err: Error, req: Request, res: Response, next: (err: Error) => void) => {
+	if (res.headersSent) {
+		next(err);
+	}
+	handleError(err, req.url, req, res);
+});
 
 export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);
