@@ -3,15 +3,12 @@ import { addUserToDb, getUserByEmailOnly } from "../../db/User/user";
 import type { User } from "../../db/types";
 import StatusCode from "../status";
 import {
-	handleError,
 	AccountExistsErrorJSON,
 	MissingParametersErrorJSON,
 	UserCreatedJSON,
 	createToken,
 } from "../util";
 import { AuthenticationError } from "../../errorClasses";
-
-const endPointName = "addUser";
 
 type AddUserRequestBody = Partial<
 	Omit<User, "isBlindMode" | "readsBraille" | "doesNotPreferHelp"> & {
@@ -24,24 +21,17 @@ type AddUserRequestBody = Partial<
 /**
  * Checks if a user is in the database by their email.
  * @param email the user's email
- * @param req the request of the addUser endpoint
- * @param res the response of the addUser endpoint
- * @returns
+ * @returns true if the user is in the database, otherwise false
  */
-const userIsInDb = async (
-	email: string,
-	req: Request<unknown, unknown, AddUserRequestBody>,
-	res: Response
-) => {
+const userIsInDb = async (email: string) => {
 	try {
 		// check that user not already in db
 		await getUserByEmailOnly(email); // check only email because we don't care if hash is different
 	} catch (e) {
-		if (!(e instanceof AuthenticationError)) {
-			handleError<AddUserRequestBody>(e, endPointName, req, res);
-		} else {
+		if (e instanceof AuthenticationError) {
 			return false;
 		}
+		throw e;
 	}
 	return true;
 };
@@ -76,21 +66,17 @@ export const addUser = async (
 		doesNotPreferHelp: doesNotPreferHelp === "true",
 	};
 
-	if (await userIsInDb(email, req, res)) {
+	if (await userIsInDb(email)) {
 		console.warn(`addUser: Attempted to make new account with existing email ${email}`);
 		res.status(StatusCode.BAD_REQUEST).json(AccountExistsErrorJSON);
 		return;
 	}
 
-	try {
-		const token = createToken();
-		await addUserToDb({
-			...userDetails,
-			token: token,
-			dateTokenCreated: new Date(),
-		});
-		res.status(StatusCode.OK).json({ ...UserCreatedJSON, token: token });
-	} catch (e) {
-		handleError<AddUserRequestBody>(e, endPointName, req, res);
-	}
+	const token = createToken();
+	await addUserToDb({
+		...userDetails,
+		token: token,
+		dateTokenCreated: new Date(),
+	});
+	res.status(StatusCode.OK).json({ ...UserCreatedJSON, token: token });
 };
