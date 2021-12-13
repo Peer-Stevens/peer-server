@@ -84,6 +84,7 @@ export const addRatingToPlace = async (
 			"addRatingToPlace: request made where place ID provided does not match a place in the database"
 		);
 		res.status(StatusCode.BAD_REQUEST).json(PlaceDoesNotExistErrorJSON);
+		return;
 	}
 
 	// request body starts as strings, convert to float if present
