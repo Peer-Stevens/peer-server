@@ -4,11 +4,9 @@ import { ObjectId } from "mongodb";
 import type { Rating } from "../../db/types";
 import StatusCode from "../status";
 import {
-	handleError,
 	isAuthenticated,
 	MissingParametersErrorJSON,
 	RatingUpdatedJSON,
-	ServerErrorJSON,
 	UnauthorizedErrorJSON,
 	WrongParamatersErrorJSON,
 } from "../util";
@@ -75,13 +73,7 @@ export const editRating = async (
 	}
 
 	// get old Rating
-	let oldRatingObj: Rating;
-	try {
-		oldRatingObj = await getRatingById(new ObjectId(_id));
-	} catch (e) {
-		handleError<EditRatingRequestBody>(e, "editRating", req, res);
-		return;
-	}
+	const oldRatingObj = await getRatingById(new ObjectId(_id));
 
 	// ensure request made by user associated with rating
 	if (!(await isAuthenticated(oldRatingObj.userID.toString(), token))) {
@@ -103,11 +95,6 @@ export const editRating = async (
 	};
 
 	// ready to edit rating
-	try {
-		await editRatingInDb(new ObjectId(_id), newRatingObj);
-		res.status(StatusCode.OK).json(RatingUpdatedJSON);
-	} catch (e) {
-		handleError<EditRatingRequestBody>(e, "editRating", req, res);
-		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
-	}
+	await editRatingInDb(new ObjectId(_id), newRatingObj);
+	res.status(StatusCode.OK).json(RatingUpdatedJSON);
 };
