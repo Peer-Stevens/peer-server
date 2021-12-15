@@ -10,13 +10,7 @@ import {
 } from "../util";
 import { AuthenticationError } from "../../errorClasses";
 
-type AddUserRequestBody = Partial<
-	Omit<User, "isBlindMode" | "readsBraille" | "doesNotPreferHelp"> & {
-		isBlindMode: string;
-		readsBraille: string;
-		doesNotPreferHelp: string;
-	}
->;
+type AddUserRequestBody = Partial<User>;
 
 /**
  * Checks if a user is in the database by their email.
@@ -50,21 +44,13 @@ export const addUser = async (
 	req: Request<unknown, unknown, AddUserRequestBody>,
 	res: Response
 ): Promise<void> => {
-	const { email, hash, isBlindMode, readsBraille, doesNotPreferHelp } = req.body;
+	const { email, hash } = req.body;
 
 	if (!email || !hash) {
 		console.warn("addUser: Attempted to make new account without email or hash");
 		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
 	}
-
-	const userDetails = {
-		email: email,
-		hash: hash,
-		isBlindMode: isBlindMode === "true",
-		readsBraille: readsBraille === "true",
-		doesNotPreferHelp: doesNotPreferHelp === "true",
-	};
 
 	if (await userIsInDb(email)) {
 		console.warn(`addUser: Attempted to make new account with existing email ${email}`);
@@ -74,7 +60,8 @@ export const addUser = async (
 
 	const token = createToken();
 	await addUserToDb({
-		...userDetails,
+		email: email,
+		hash: hash,
 		token: token,
 		dateTokenCreated: new Date(),
 	});
