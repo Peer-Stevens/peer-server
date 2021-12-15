@@ -38,18 +38,6 @@ const mockUpdateOne = jest
 				_id: id,
 				email: newUser.email ? newUser.email : (old?.email as string),
 				hash: newUser.hash ? newUser.hash : (old?.hash as string),
-				isBlindMode:
-					newUser.isBlindMode !== undefined
-						? newUser.isBlindMode
-						: (old?.isBlindMode as boolean),
-				doesNotPreferHelp:
-					newUser.doesNotPreferHelp !== undefined
-						? newUser.doesNotPreferHelp
-						: (old?.doesNotPreferHelp as boolean),
-				readsBraille:
-					newUser.readsBraille !== undefined
-						? newUser.readsBraille
-						: (old?.readsBraille as boolean),
 				token: old?.token as string,
 				dateTokenCreated: old?.dateTokenCreated as Date,
 			});
@@ -109,9 +97,6 @@ describe("User-related database function tests", () => {
 			_id: new ObjectId(idString),
 			email: "ilovecheese@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			isBlindMode: true,
-			doesNotPreferHelp: false,
-			readsBraille: true,
 			token: createToken(),
 			dateTokenCreated: new Date(),
 		};
@@ -208,15 +193,12 @@ describe("User-related database function tests", () => {
 		};
 		mockCollection.push(mockUser2);
 
-		const editedUser = await editUserInDb(mockUser2._id, { isBlindMode: false });
+		const editedUser = await editUserInDb(mockUser2._id, { email: "ilovegouda@hotmail.com" });
 
 		const expectedUser2: User = {
 			_id: new ObjectId("617cacca81bc431f3dcde5bd"),
-			email: "ilovecheese@hotmail.com",
+			email: "ilovegouda@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			isBlindMode: false,
-			doesNotPreferHelp: false,
-			readsBraille: true,
 			token: mockUser2.token,
 			dateTokenCreated: mockUser2.dateTokenCreated,
 		};
@@ -237,7 +219,7 @@ describe("User-related database function tests", () => {
 		mockUpdateOne.mockReturnValueOnce({ acknowledged: false });
 
 		expect.assertions(2);
-		editUserInDb(mockUser2._id, { isBlindMode: false }).catch(e => {
+		editUserInDb(mockUser2._id, { email: "ilovegouda@hotmail.com" }).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
