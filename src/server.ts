@@ -1,7 +1,8 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
+import { Passport } from "passport";
 
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
 import { searchPlaces } from "./rest/searchPlaces";
@@ -9,14 +10,14 @@ import { getPlacePhoto } from "./rest/getPlacePhoto";
 import { getPlaceDetails } from "./rest/getPlaceDetails";
 import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
 import { getPlace } from "./rest/Places/getPlaces";
-import { getUser } from "./rest/Users/getUsers";
 import { addRatingToPlace } from "./rest/Ratings/addRatingToPlace";
 import { addUser } from "./rest/Users/addUser";
 import { addPlaceToDb } from "./rest/Places/addPlace";
 import { editRating } from "./rest/Ratings/editRating";
 import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
-import { login } from "./rest/login";
+import { handleError, strategy } from "./rest/util";
+import StatusCode from "./rest/status";
 
 dotenv.config();
 
@@ -29,10 +30,14 @@ const limiter = {
 		"The API is rate limited to a maximum of 1000 requests per 15 minutes, please lower your request rate",
 };
 
+const auth = new Passport();
+auth.use(strategy);
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimit(limiter));
+app.use(auth.initialize());
 
 app.get("/getNearbyPlaces", getNearbyPlaces);
 app.get("/searchPlaces", searchPlaces);
@@ -52,10 +57,6 @@ app.get("/getRatingsFromUser/:id", getRatingsFromUser);
 // get Place, will responsd with avgs per metric that we are collecting since that's how we defined the type
 app.get("/getPlace/:id", getPlace);
 
-// get information on the User
-// we might want to think this one over in a later refactor of this for security purposes
-app.get("/getUser/:id", getUser);
-
 // add rating
 app.post("/addRatingToPlace", addRatingToPlace);
 
@@ -74,7 +75,17 @@ app.patch("/editUser", editUser);
 // delete rating
 app.delete("/deleteRating/:id", deleteRating);
 
-app.post("/login", login);
+app.post(
+	"/login",
+	auth.authenticate(strategy, { session: false }),
+	(req: Request, res: Response): void => {
+		const token = req.user;
+		res.status(StatusCode.OK).send(token);
+	}
+);
+
+// error handler
+app.use(handleError);
 
 export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);

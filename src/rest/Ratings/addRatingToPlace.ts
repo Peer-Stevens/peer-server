@@ -12,13 +12,45 @@ import {
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
 	WrongParamatersErrorJSON,
-	handleError,
 } from "../util";
 import { DbOperationError } from "../../errorClasses";
-import { userExists } from "../Users/util";
-import { placeExists } from "../Places/util";
+import { getPlaceByID } from "../../db/Place/place";
+import { getUserByID } from "../../db/User/user";
 
-const endPointName = "addRatingToPlace";
+/**
+ * Checks if the passed user exists. Calls `getUserByID`.
+ * @param userID the user's bson ID as a string
+ * @returns true if the user exists in the database
+ */
+const userExists = async (userID: string): Promise<boolean> => {
+	try {
+		await getUserByID(new ObjectId(userID));
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return false;
+		} else {
+			throw e;
+		}
+	}
+	return true;
+};
+
+/**
+ * Checks if the passed place exists. Calls `getPlaceByID`.
+ * @param placeID the place's Google Places ID as a string
+ * @returns true if the place exists
+ */
+const placeExists = async (placeID: string): Promise<boolean> => {
+	try {
+		await getPlaceByID(placeID);
+	} catch (e) {
+		if (e instanceof DbOperationError) {
+			return false;
+		}
+		throw e;
+	}
+	return true;
+};
 
 type AddRatingRequestBody = Partial<
 	Omit<
@@ -70,7 +102,7 @@ export const addRatingToPlace = async (
 	}
 
 	// check that user exists
-	if (!(await userExists<AddRatingRequestBody>(userID, endPointName, req, res))) {
+	if (!(await userExists(userID))) {
 		console.warn(
 			"addRatingToPlace: request made where user ID provided does not match an existing user"
 		);
@@ -79,11 +111,12 @@ export const addRatingToPlace = async (
 	}
 
 	// check that place exists
-	if (!(await placeExists<AddRatingRequestBody>(placeID, endPointName, req, res))) {
+	if (!(await placeExists(placeID))) {
 		console.warn(
 			"addRatingToPlace: request made where place ID provided does not match a place in the database"
 		);
 		res.status(StatusCode.BAD_REQUEST).json(PlaceDoesNotExistErrorJSON);
+		return;
 	}
 
 	// request body starts as strings, convert to float if present
@@ -136,6 +169,6 @@ export const addRatingToPlace = async (
 			res.status(StatusCode.BAD_REQUEST).json(RatingAlreadyExistsErrorJSON);
 			return;
 		}
-		handleError<AddRatingRequestBody>(e, endPointName, req, res);
+		throw e;
 	}
 };

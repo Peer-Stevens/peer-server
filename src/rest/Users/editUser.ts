@@ -22,18 +22,6 @@ export const editUser = async (
 		return;
 	}
 
-	if (
-		(editedUser.email && typeof editedUser.email !== "string") ||
-		(editedUser.isBlindMode && typeof editedUser.isBlindMode !== "boolean") ||
-		(editedUser.readsBraille && typeof editedUser.readsBraille !== "boolean") ||
-		(editedUser.doesNotPreferHelp && typeof editedUser.doesNotPreferHelp !== "boolean")
-	) {
-		res.status(StatusCode.BAD_REQUEST).json({
-			error: "username must be a string and isBlindMode, readsBraille, and doesNotPreferHelp must be booleans",
-		});
-		return;
-	}
-
 	// get old User object
 	let oldUserObj: User;
 	try {
@@ -48,18 +36,6 @@ export const editUser = async (
 
 	if (editedUser.email && editedUser.email !== oldUserObj.email) {
 		newUserObj.email = editedUser.email;
-	}
-	if (editedUser.isBlindMode && editedUser.isBlindMode !== oldUserObj.isBlindMode) {
-		newUserObj.isBlindMode = editedUser.isBlindMode;
-	}
-	if (editedUser.readsBraille && editedUser.readsBraille !== oldUserObj.readsBraille) {
-		newUserObj.readsBraille = editedUser.readsBraille;
-	}
-	if (
-		editedUser.doesNotPreferHelp &&
-		editedUser.doesNotPreferHelp !== oldUserObj.doesNotPreferHelp
-	) {
-		newUserObj.doesNotPreferHelp = editedUser.doesNotPreferHelp;
 	}
 
 	if (Object.keys(newUserObj).length === 0) {

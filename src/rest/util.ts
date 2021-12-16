@@ -2,28 +2,35 @@ import { createHash } from "crypto";
 import { ObjectId } from "bson";
 import { MongoServerError } from "mongodb";
 import type { Request, Response } from "express";
-import { getUserByID } from "../db/User/user";
+import { Strategy } from "passport-local";
+import { editUserInDb, getUserByEmailAndHash, getUserByID } from "../db/User/user";
 import StatusCode from "./status";
+import { User } from "../db/types";
+import { AuthenticationError } from "../errorClasses";
 
 // Functions
 
 /**
- * Prints an error for a REST endpoint that processes data
- * sent to the body.
+ * Handles a generic error thrown by a REST endpoint. Logs the content of the body
+ * of the request.
  * @param e The error to be printed
- * @param name the name of the endpoint
- * @param req The request of the addUser endpoint
- * @param res The response of the addUser endpoint
+ * @param req The request of the endpoint
+ * @param res The response of the endpoint
  */
-export const handleError = <T>(
+export const handleError = (
 	e: Error | unknown,
-	name: string,
-	req: Request<unknown, unknown, T>,
-	res: Response
+	req: Request,
+	res: Response,
+	next: (err: Error | unknown) => void
 ): void => {
+	if (res.headersSent) {
+		next(e);
+	}
 	// do not send error `e` as a response for security reasons
 	console.error(
-		`${name}: The following error was thrown with the request body: ${JSON.stringify(req.body)}`
+		`${req.url}: The following error was thrown with the request body: ${JSON.stringify(
+			req.body
+		)}`
 	);
 	console.error(e);
 	res.status(StatusCode.INTERNAL_SERVER_ERROR).json(ServerErrorJSON);
@@ -96,3 +103,41 @@ export const RatingAlreadyExistsErrorJSON = {
 export const PlaceDoesNotExistErrorJSON = {
 	error: "There is no place with the provided place ID.",
 };
+
+/**
+ * Strategy for the server to use for logging in.
+ * Assumes that the `AUTH_SEED` environment variable
+ * is set to call `createToken()`.
+ */
+export const strategy = new Strategy(
+	{ usernameField: "email", passwordField: "hash" },
+	async (email, hash, done) => {
+		let user: User;
+		try {
+			user = await getUserByEmailAndHash(email, hash);
+		} catch (e) {
+			if (e instanceof AuthenticationError) {
+				return done(null, false, {
+					message: "Account with that email and/or password not found.",
+				});
+			} else {
+				return done(e);
+			}
+		}
+
+		const token = createToken();
+
+		try {
+			await editUserInDb(user._id as ObjectId, {
+				token: token,
+				dateTokenCreated: new Date(),
+			});
+		} catch (e) {
+			return done(e);
+		}
+
+		console.log(`Successfully signed in ${email}`);
+
+		return done(null, token);
+	}
+);

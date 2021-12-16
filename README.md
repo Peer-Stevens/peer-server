@@ -1,3 +1,8 @@
+[![CI Lint](https://github.com/Peer-Stevens/peer-server/actions/workflows/lint.yml/badge.svg)](https://github.com/Peer-Stevens/peer-server/actions/workflows/lint.yml)
+[![CI Unit Tests](https://github.com/Peer-Stevens/peer-server/actions/workflows/unit-test.yml/badge.svg)](https://github.com/Peer-Stevens/peer-server/actions/workflows/unit-test.yml)
+[![CodeQL](https://github.com/Peer-Stevens/peer-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Peer-Stevens/peer-server/actions/workflows/codeql-analysis.yml)
+[![codecov](https://codecov.io/gh/Peer-Stevens/peer-server/branch/main/graph/badge.svg?token=HQWZN0SNVS)](https://codecov.io/gh/Peer-Stevens/peer-server)
+
 # Peer-server
 
 Node server for Peer
