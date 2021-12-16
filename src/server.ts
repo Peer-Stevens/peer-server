@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
+import { searchPlaces } from "./rest/searchPlaces";
 import { getPlacePhoto } from "./rest/getPlacePhoto";
 import { getPlaceDetails } from "./rest/getPlaceDetails";
 import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
@@ -16,6 +18,8 @@ import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
 import { login } from "./rest/login";
 
+dotenv.config();
+
 export const app = express();
 const port = Number(process.env.PORT) || 3030;
 const limiter = {
@@ -26,12 +30,12 @@ const limiter = {
 };
 
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimit(limiter));
 
-dotenv.config();
-
 app.get("/getNearbyPlaces", getNearbyPlaces);
+app.get("/searchPlaces", searchPlaces);
 app.get("/getPlacePhoto/:ref", getPlacePhoto);
 
 app.get("/getPlaceDetails/:id", getPlaceDetails);

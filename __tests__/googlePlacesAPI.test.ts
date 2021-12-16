@@ -12,6 +12,12 @@ describe("Google Places API", () => {
 			.expect("Content-Type", /json/)
 			.expect(200);
 	});
+	it("/searchPlaces returns places", async () => {
+		await request(app)
+			.get("/searchPlaces?search=paris+spa")
+			.expect("Content-Type", /json/)
+			.expect(200);
+	});
 	it("/getPlacePhoto returns an image", async () => {
 		await request(app)
 			.get(
