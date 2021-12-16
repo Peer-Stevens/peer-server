@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import { Passport } from "passport";
@@ -71,17 +71,20 @@ app.patch("/editUser", editUser);
 // delete rating
 app.delete("/deleteRating/:id", deleteRating);
 
-app.post(
-	"/login",
-	auth.authenticate(strategy, { session: false }),
-	(req: Request, res: Response): void => {
-		const token = req.user;
-		res.status(StatusCode.OK).send(token);
-	}
-);
-
 // error handler
 app.use(handleError);
+
+app.post("/login", (req: Request, res: Response, next: NextFunction) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+	auth.authenticate(strategy, (err, user: string, info: { message: string }) => {
+		if (err) return next(err);
+		if (user) {
+			res.status(StatusCode.OK).json({ token: user });
+		} else {
+			res.status(StatusCode.UNAUTHORIZED).json({ error: info.message });
+		}
+	})(req, res, next);
+});
 
 export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);
