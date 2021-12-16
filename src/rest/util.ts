@@ -138,6 +138,6 @@ export const strategy = new Strategy(
 
 		console.log(`Successfully signed in ${email}`);
 
-		return done(null, token);
+		return done(null, { token: token });
 	}
 );
