@@ -51,7 +51,6 @@ describe("Utility function tests", () => {
 				});
 			});
 			mockTokens.push(await createToken());
-			jest.advanceTimersByTime(10); // since time is an input to the hash, too fast and they'll be the same
 
 			const token = await createToken();
 

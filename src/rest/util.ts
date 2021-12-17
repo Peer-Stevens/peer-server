@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { ObjectId } from "bson";
 import { MongoServerError } from "mongodb";
 import type { Request, Response } from "express";
@@ -38,9 +38,7 @@ export const handleError = (
 };
 
 /**
- * Create a unique new token for authentication. Requires the
- * `AUTH_SEED` environment variable to be set to obfuscate
- * the values of the tokens generated. Connects to the remote
+ * Create a unique new token for authentication. Connects to the remote
  * database.
  * @returns the token.
  */
@@ -49,9 +47,7 @@ export const createToken = async (): Promise<string> => {
 
 	let token: string;
 	do {
-		token = createHash("sha256")
-			.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
-			.digest("hex");
+		token = createHash("sha256").update(`${randomUUID()}`).digest("hex");
 	} while ((await _col.findOne({ token: token })) !== null); // loop until token is unique
 	await _connection.close();
 	return token;
@@ -115,8 +111,6 @@ export const PlaceDoesNotExistErrorJSON = {
 
 /**
  * Strategy for the server to use for logging in.
- * Assumes that the `AUTH_SEED` environment variable
- * is set to call `createToken()`.
  */
 export const strategy = new Strategy(
 	{ usernameField: "email", passwordField: "hash" },
