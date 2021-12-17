@@ -58,7 +58,7 @@ export const addUser = async (
 		return;
 	}
 
-	const token = createToken();
+	const token = await createToken();
 	await addUserToDb({
 		email: email,
 		hash: hash,
