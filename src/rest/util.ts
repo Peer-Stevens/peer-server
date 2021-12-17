@@ -7,6 +7,7 @@ import { editUserInDb, getUserByEmailAndHash, getUserByID } from "../db/User/use
 import StatusCode from "./status";
 import { User } from "../db/types";
 import { AuthenticationError } from "../errorClasses";
+import { getCollection } from "../db/mongoCollections";
 
 // Functions
 
@@ -37,15 +38,23 @@ export const handleError = (
 };
 
 /**
- * Create a new token for authentication. Requires the
+ * Create a unique new token for authentication. Requires the
  * `AUTH_SEED` environment variable to be set to obfuscate
- * the values of the tokens generated.
+ * the values of the tokens generated. Connects to the remote
+ * database.
  * @returns the token.
  */
-export const createToken = (): string => {
-	return createHash("sha256")
-		.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
-		.digest("hex");
+export const createToken = async (): Promise<string> => {
+	const { _col, _connection } = await getCollection<User>("user");
+
+	let token: string;
+	do {
+		token = createHash("sha256")
+			.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
+			.digest("hex");
+	} while ((await _col.findOne({ token: token })) !== null); // loop until token is unique
+	await _connection.close();
+	return token;
 };
 
 /**
@@ -125,7 +134,7 @@ export const strategy = new Strategy(
 			}
 		}
 
-		const token = createToken();
+		const token = await createToken();
 
 		try {
 			await editUserInDb(user._id as ObjectId, {
