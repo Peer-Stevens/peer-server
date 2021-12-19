@@ -45,7 +45,7 @@ describe("Search places endpoint tests", () => {
 		const mockStatus = jest.fn().mockReturnValue({ json: mockJSON });
 
 		await searchPlaces(
-			{ query: { search: "Andrew's+House" } } as unknown as Request,
+			{ query: { search: "Andrew's+House", includeRatings: true } } as unknown as Request,
 			{ status: mockStatus, json: mockJSON } as unknown as Response
 		);
 
