@@ -38,7 +38,7 @@ beforeEach(() => {
 
 describe("Search places endpoint tests", () => {
 	it("returns an OK response when asked to get a searched place with accessibility data", async () => {
-		mockPlacesFromText.mockResolvedValueOnce({ data: { results: [mockPlace] } });
+		mockPlacesFromText.mockResolvedValueOnce({ data: { candidates: [mockPlace] } });
 		mockGetPlaceByID.mockResolvedValue(mockPlaceA11yData);
 
 		const mockJSON = jest.fn();
