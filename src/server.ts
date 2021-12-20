@@ -1,9 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 import { Passport } from "passport";
 
 import { getNearbyPlaces } from "./rest/getNearbyPlaces";
+import { searchPlaces } from "./rest/searchPlaces";
 import { getPlacePhoto } from "./rest/getPlacePhoto";
 import { getPlaceDetails } from "./rest/getPlaceDetails";
 import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
@@ -16,6 +18,8 @@ import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
 import { handleError, strategy } from "./rest/util";
 import StatusCode from "./rest/status";
+
+dotenv.config();
 
 export const app = express();
 const port = Number(process.env.PORT) || 3030;
@@ -30,13 +34,13 @@ const auth = new Passport();
 auth.use(strategy);
 
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(rateLimit(limiter));
 app.use(auth.initialize());
 
-dotenv.config();
-
 app.get("/getNearbyPlaces", getNearbyPlaces);
+app.get("/searchPlaces", searchPlaces);
 app.get("/getPlacePhoto/:ref", getPlacePhoto);
 
 app.get("/getPlaceDetails/:id", getPlaceDetails);
