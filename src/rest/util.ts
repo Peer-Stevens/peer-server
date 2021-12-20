@@ -43,12 +43,14 @@ export const handleError = (
  * @returns the token.
  */
 export const createToken = async (): Promise<string> => {
+	const generateHash = () => createHash("sha256").update(`${randomUUID()}`).digest("hex");
 	const { _col, _connection } = await getCollection<User>("user");
 
-	let token: string;
-	do {
-		token = createHash("sha256").update(`${randomUUID()}`).digest("hex");
-	} while ((await _col.findOne({ token: token })) !== null); // loop until token is unique
+	let token = generateHash();
+	while ((await _col.findOne({ token: token })) !== null) {
+		// loop until token is unique
+		token = generateHash();
+	}
 	await _connection.close();
 	return token;
 };
