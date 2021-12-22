@@ -4,6 +4,7 @@ import type { Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
 import { DbOperationError } from "../../errorClasses";
+import { getUserByEmailOnly } from "../User/user";
 
 /**
  * Adds a rating to a place. Checks that the user has not already added
@@ -87,6 +88,27 @@ export async function getRatingById(id: ObjectId): Promise<Rating> {
 	if (ratingReturned === null) throw new DbOperationError("Sorry, no rating exists with that ID");
 
 	return ratingReturned;
+}
+
+/**
+ * Determines whether or not a user has already rated a place.
+ * @param email the email address associated with the user (obtained via local storage)
+ * @param placeID the id of the place user wants to rate
+ * @returns true if rating exists, false if rating does not
+ */
+export async function doesRatingFromUserExist(
+	email: string,
+	placeID: GooglePlaceID["place_id"]
+): Promise<boolean> {
+	const { _col, _connection } = await getCollection<Rating>("rating");
+
+	// needed to get user's id
+	const user = await getUserByEmailOnly(email);
+
+	const ratingReturned = await _col.findOne({ userID: user._id, placeID: placeID });
+	await _connection.close();
+	if (ratingReturned === null) return false;
+	return true;
 }
 
 /**
