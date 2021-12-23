@@ -337,4 +337,34 @@ describe("Rating-related database function tests", () => {
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundRating).toEqual(true);
 	});
+	it("returns false if a user has not already submitted a rating on a place", async () => {
+		const mockUser: User = {
+			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			token: "abc123",
+			dateTokenCreated: new Date(),
+		};
+
+		mockFindOne.mockImplementation(
+			({ email: email, placeID: placeID }: { email: string; placeID: GooglePlaceID }) => {
+				if (email) {
+					return new Promise(resolve => resolve(mockUser));
+				}
+
+				const got = placeID ? new Promise(resolve => resolve(null)) : null;
+
+				return new Promise(resolve => {
+					got ? resolve(got) : resolve(null);
+				});
+			}
+		);
+
+		let foundRating!: boolean;
+		if (mockRating1._id) {
+			foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
+		}
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundRating).toEqual(false);
+	});
 });
