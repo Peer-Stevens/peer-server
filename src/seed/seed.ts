@@ -35,7 +35,7 @@ async function main() {
 			email: "julioisfred@onedrive.com",
 			hash: "bd160cd097a48e6601402411225cefca8a15ec9ab4f817adf985bee5708a1bdc",
 			dateTokenCreated: new Date(),
-			token: createToken(),
+			token: await createToken(),
 		});
 	} catch (e) {
 		console.log(e);
@@ -47,7 +47,7 @@ async function main() {
 			email: "davidscookies@sugar.com",
 			hash: "c69814fdb253b36420a6f3e55a5a2964079ded32d4801e2c3eeea9ce4bb1ddf4",
 			dateTokenCreated: new Date(),
-			token: createToken(),
+			token: await createToken(),
 		});
 	} catch (e) {
 		console.log(e);
@@ -58,7 +58,7 @@ async function main() {
 		user3 = await addUserToDb({
 			email: "andrewsteashop@goat.org",
 			hash: "dbb9b59cfe329fe6bad35f5821adb322007e9c2c7e97241fb5b24fe0fc43ab78",
-			token: createToken(),
+			token: await createToken(),
 			dateTokenCreated: new Date(),
 		});
 	} catch (e) {
