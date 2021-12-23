@@ -6,7 +6,6 @@ declare global {
 			DB_NAME: "production" | "eleni-dev" | "andrew-dev" | "julio-dev" | "david-dev";
 			DB_ENV: "atlas" | "local";
 			PLACES_API_KEY: string;
-			AUTH_SEED: string;
 		}
 	}
 }

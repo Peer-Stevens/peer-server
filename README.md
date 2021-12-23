@@ -16,7 +16,6 @@ DB_PASSWORD - your password for the connected MongoDB database
 DB_NAME - the name of the MongoDB database you are using to run Peer  
 DB_ENV - the environment that MongoDB will connect to (local or atlas)  
 PLACES_API_KEY - the Google Places API key
-AUTH_SEED - a phrase to ensure the integrity of auth tokens
 
 ### Detailed Prerequisite
 

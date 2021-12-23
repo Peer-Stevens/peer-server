@@ -56,7 +56,7 @@ const mockUser = {
 	isBlindMode: true,
 	doesNotPreferHelp: false,
 	readsBraille: true,
-	token: "abc123",
+	token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 	dateTokenCreated: new Date(),
 };
 
@@ -96,7 +96,7 @@ describe("User-related database function tests", () => {
 			_id: new ObjectId(idString),
 			email: "ilovecheese@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			token: "abc123",
+			token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			dateTokenCreated: new Date(),
 		};
 		mockCollection.push(mockUser2);
@@ -187,7 +187,7 @@ describe("User-related database function tests", () => {
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
-			token: "abc123",
+			token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			dateTokenCreated: new Date(),
 		};
 		mockCollection.push(mockUser2);
