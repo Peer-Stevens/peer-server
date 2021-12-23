@@ -1,6 +1,6 @@
 import { Collection, MongoClient, ObjectId } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
-import { Rating } from "../src/db/types";
+import { Rating, User } from "../src/db/types";
 import { getCollection } from "../src/db/mongoCollections";
 import {
 	addRating,
@@ -9,6 +9,7 @@ import {
 	getAllRatingsForPlace,
 	getAllRatingsFromUser,
 	getRatingById,
+	doesRatingFromUserExist,
 } from "../src/db/Rating/rating";
 import { updatePlace } from "../src/db/Place/place";
 import { DbOperationError } from "../src/errorClasses";
@@ -305,5 +306,35 @@ describe("Rating-related database function tests", () => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
+	});
+	it("returns true if a user has already submitted a rating on a place", async () => {
+		const mockUser: User = {
+			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
+			email: "ilovecheese@hotmail.com",
+			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+			token: "abc123",
+			dateTokenCreated: new Date(),
+		};
+
+		mockFindOne.mockImplementation(
+			({ email: email, placeID: placeID }: { email: string; placeID: GooglePlaceID }) => {
+				if (email) {
+					return new Promise(resolve => resolve(mockUser));
+				}
+
+				const got = placeID ? new Promise(resolve => resolve(mockRating1)) : null;
+
+				return new Promise(resolve => {
+					got ? resolve(got) : resolve(null);
+				});
+			}
+		);
+
+		let foundRating!: boolean;
+		if (mockRating1._id) {
+			foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
+		}
+		expect(mockClose).toHaveBeenCalled();
+		expect(foundRating).toEqual(true);
 	});
 });
