@@ -62,6 +62,11 @@ const mockUpdateOne = jest
 					newPlace.avgGuideDogFriendly !== undefined
 						? newPlace.avgGuideDogFriendly
 						: old?.avgGuideDogFriendly || null,
+				promotion: {
+					monthly_budget:
+						newPlace.promotion?.monthly_budget || old?.promotion?.monthly_budget || 0,
+					max_cpc: newPlace.promotion?.max_cpc || old?.promotion?.max_cpc || 0,
+				},
 			});
 			return { acknowledged: true };
 		}
@@ -89,6 +94,10 @@ const mockPlace1: Place = {
 	avgGuideDogFriendly: null,
 	avgNavigability: null,
 	avgStaffHelpfulness: null,
+	promotion: {
+		monthly_budget: 0,
+		max_cpc: 0,
+	},
 };
 
 const mockPlace2: Place = {
@@ -98,6 +107,10 @@ const mockPlace2: Place = {
 	avgGuideDogFriendly: 5,
 	avgNavigability: 5,
 	avgStaffHelpfulness: 5,
+	promotion: {
+		monthly_budget: 0,
+		max_cpc: 0,
+	},
 };
 
 beforeEach(() => {

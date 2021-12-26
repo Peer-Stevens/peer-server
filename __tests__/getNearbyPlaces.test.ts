@@ -2,7 +2,7 @@ import { Client, Place as GooglePlace } from "@googlemaps/google-maps-services-j
 import { Request, Response } from "express";
 import { getNearbyPlaces } from "../src/rest/getNearbyPlaces";
 import { getPlaceByID } from "../src/db/Place/place";
-import { Place } from "../src/db/types";
+import { Place, PlaceWithA11yAndPromo } from "../src/db/types";
 import StatusCode from "../src/rest/status";
 
 jest.mock("@googlemaps/google-maps-services-js");
@@ -29,6 +29,18 @@ const mockPlaceA11yData: Place = {
 	avgGuideDogFriendly: 5,
 	avgNavigability: 5,
 	avgStaffHelpfulness: 5,
+	promotion: {
+		monthly_budget: 100,
+		max_cpc: 1,
+	},
+};
+
+const combinedMock: PlaceWithA11yAndPromo = {
+	...mockPlace,
+	accessibilityData: mockPlaceA11yData,
+	isValidPromo: true,
+	isPromoted: true,
+	spend_amount: 0.01,
 };
 
 beforeEach(() => {
@@ -51,7 +63,7 @@ describe("Get nearby places endpoint tests", () => {
 
 		expect(mockStatus).toHaveBeenCalledWith(StatusCode.OK);
 		expect(mockJSON).toHaveBeenCalledWith({
-			places: [{ ...mockPlace, accessibilityData: mockPlaceA11yData }],
+			places: [combinedMock],
 		});
 	});
 });

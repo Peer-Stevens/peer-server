@@ -29,6 +29,10 @@ const mockPlaceA11yData: Place = {
 	avgGuideDogFriendly: 5,
 	avgNavigability: 5,
 	avgStaffHelpfulness: 5,
+	promotion: {
+		monthly_budget: 100,
+		max_cpc: 1,
+	},
 };
 
 beforeEach(() => {

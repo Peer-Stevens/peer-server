@@ -18,6 +18,8 @@ import { editUser } from "./rest/Users/editUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
 import { handleError, strategy } from "./rest/util";
 import StatusCode from "./rest/status";
+import { promotePlace } from "./rest/Places/promotePlace";
+import { clickPromo } from "./rest/Places/clickPromo";
 
 dotenv.config();
 
@@ -39,41 +41,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(rateLimit(limiter));
 app.use(auth.initialize());
 
-app.get("/getNearbyPlaces", getNearbyPlaces);
-app.get("/searchPlaces", searchPlaces);
-app.get("/getPlacePhoto/:ref", getPlacePhoto);
-
-app.get("/getPlaceDetails/:id", getPlaceDetails);
-
-// get all ratings for certain place
-app.get("/getAllPlaceRatings/:id", getAllPlaceRatings);
-
-// get rating from database
-app.get("/getRating/:id", getRating);
-
-// get all the ratings that a user has given
-app.get("/getRatingsFromUser/:id", getRatingsFromUser);
+app.post("/addRatingToPlace", addRatingToPlace);
+app.get("/getAllPlaceRatings/:id", getAllPlaceRatings); // get all ratings for certain place
+app.get("/getRating/:id", getRating); // get rating from database
+app.get("/getRatingsFromUser/:id", getRatingsFromUser); // get all the ratings that a user has given
+app.patch("/editRating", editRating);
+app.delete("/deleteRating/:id", deleteRating);
 
 // get Place, will responsd with avgs per metric that we are collecting since that's how we defined the type
 app.get("/getPlace/:id", getPlace);
-
-// add rating
-app.post("/addRatingToPlace", addRatingToPlace);
-
-// add user
-app.post("/addUser", addUser);
-
-// add place
+app.get("/getPlaceDetails/:id", getPlaceDetails);
+app.get("/getNearbyPlaces", getNearbyPlaces);
 app.post("/addPlace", addPlaceToDb);
+app.get("/searchPlaces", searchPlaces);
+app.get("/getPlacePhoto/:ref", getPlacePhoto);
+app.post("/promotePlace", promotePlace);
+app.post("/clickPromo", clickPromo);
 
-// edit rating
-app.patch("/editRating", editRating);
-
-// edit user
+app.post("/addUser", addUser);
 app.patch("/editUser", editUser);
-
-// delete rating
-app.delete("/deleteRating/:id", deleteRating);
 
 app.post(
 	"/login",
