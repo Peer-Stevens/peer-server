@@ -318,7 +318,7 @@ describe("Rating-related database function tests", () => {
 
 		mockFindOne.mockImplementation(
 			({ email: email, placeID: placeID }: { email: string; placeID: GooglePlaceID }) => {
-				if (email) {
+				if (email && !placeID) {
 					return new Promise(resolve => resolve(mockUser));
 				}
 
@@ -330,10 +330,7 @@ describe("Rating-related database function tests", () => {
 			}
 		);
 
-		let foundRating!: boolean;
-		if (mockRating1._id) {
-			foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
-		}
+		const foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundRating).toEqual(true);
 	});
@@ -348,7 +345,7 @@ describe("Rating-related database function tests", () => {
 
 		mockFindOne.mockImplementation(
 			({ email: email, placeID: placeID }: { email: string; placeID: GooglePlaceID }) => {
-				if (email) {
+				if (email && !placeID) {
 					return new Promise(resolve => resolve(mockUser));
 				}
 
@@ -360,10 +357,7 @@ describe("Rating-related database function tests", () => {
 			}
 		);
 
-		let foundRating!: boolean;
-		if (mockRating1._id) {
-			foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
-		}
+		const foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
 		expect(mockClose).toHaveBeenCalled();
 		expect(foundRating).toEqual(false);
 	});
