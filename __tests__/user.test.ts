@@ -9,7 +9,6 @@ import {
 import { getCollection } from "../src/db/mongoCollections";
 import { User } from "../src/db/types";
 import { AuthenticationError, DbOperationError } from "../src/errorClasses";
-import { createToken } from "../src/rest/util";
 
 // getCollection mock
 jest.mock("../src/db/mongoCollections");
@@ -57,7 +56,7 @@ const mockUser = {
 	isBlindMode: true,
 	doesNotPreferHelp: false,
 	readsBraille: true,
-	token: createToken(),
+	token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 	dateTokenCreated: new Date(),
 };
 
@@ -97,7 +96,7 @@ describe("User-related database function tests", () => {
 			_id: new ObjectId(idString),
 			email: "ilovecheese@hotmail.com",
 			hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
-			token: createToken(),
+			token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			dateTokenCreated: new Date(),
 		};
 		mockCollection.push(mockUser2);
@@ -188,7 +187,7 @@ describe("User-related database function tests", () => {
 			isBlindMode: true,
 			doesNotPreferHelp: false,
 			readsBraille: true,
-			token: createToken(),
+			token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			dateTokenCreated: new Date(),
 		};
 		mockCollection.push(mockUser2);

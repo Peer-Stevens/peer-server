@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
@@ -8,7 +8,12 @@ import { getNearbyPlaces } from "./rest/getNearbyPlaces";
 import { searchPlaces } from "./rest/searchPlaces";
 import { getPlacePhoto } from "./rest/getPlacePhoto";
 import { getPlaceDetails } from "./rest/getPlaceDetails";
-import { getAllPlaceRatings, getRating, getRatingsFromUser } from "./rest/Ratings/getRatings";
+import {
+	doesRatingExist,
+	getAllPlaceRatings,
+	getRating,
+	getRatingsFromUser,
+} from "./rest/Ratings/getRatings";
 import { getPlace } from "./rest/Places/getPlaces";
 import { addRatingToPlace } from "./rest/Ratings/addRatingToPlace";
 import { addUser } from "./rest/Users/addUser";
@@ -48,6 +53,9 @@ app.get("/getRatingsFromUser/:id", getRatingsFromUser); // get all the ratings t
 app.patch("/editRating", editRating);
 app.delete("/deleteRating/:id", deleteRating);
 
+// gets whether or not a user has already submitted a rating for a particular place
+app.get("/doesRatingFromUserExist/:email/:placeID", doesRatingExist);
+
 // get Place, will responsd with avgs per metric that we are collecting since that's how we defined the type
 app.get("/getPlace/:id", getPlace);
 app.get("/getPlaceDetails/:id", getPlaceDetails);
@@ -61,17 +69,23 @@ app.post("/clickPromo", clickPromo);
 app.post("/addUser", addUser);
 app.patch("/editUser", editUser);
 
-app.post(
-	"/login",
-	auth.authenticate(strategy, { session: false }),
-	(req: Request, res: Response): void => {
-		const token = req.user;
-		res.status(StatusCode.OK).send(token);
-	}
-);
+// delete rating
+app.delete("/deleteRating/:id", deleteRating);
 
 // error handler
 app.use(handleError);
+
+app.post("/login", (req: Request, res: Response, next: NextFunction) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+	auth.authenticate(strategy, (err, user: string, info: { message: string }) => {
+		if (err) return next(err);
+		if (user) {
+			res.status(StatusCode.OK).json({ token: user });
+		} else {
+			res.status(StatusCode.UNAUTHORIZED).json({ error: info.message });
+		}
+	})(req, res, next);
+});
 
 export const server = app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);

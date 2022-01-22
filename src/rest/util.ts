@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { ObjectId } from "bson";
 import { MongoServerError } from "mongodb";
 import type { Request, Response } from "express";
@@ -7,6 +7,7 @@ import { editUserInDb, getUserByEmailAndHash, getUserByID } from "../db/User/use
 import StatusCode from "./status";
 import { User } from "../db/types";
 import { AuthenticationError } from "../errorClasses";
+import { getCollection } from "../db/mongoCollections";
 
 // Functions
 
@@ -37,15 +38,21 @@ export const handleError = (
 };
 
 /**
- * Create a new token for authentication. Requires the
- * `AUTH_SEED` environment variable to be set to obfuscate
- * the values of the tokens generated.
+ * Create a unique new token for authentication. Connects to the remote
+ * database.
  * @returns the token.
  */
-export const createToken = (): string => {
-	return createHash("sha256")
-		.update(`${new Date().toISOString()}${process.env.AUTH_SEED}`)
-		.digest("hex");
+export const createToken = async (): Promise<string> => {
+	const generateHash = () => createHash("sha256").update(`${randomUUID()}`).digest("hex");
+	const { _col, _connection } = await getCollection<User>("user");
+
+	let token = generateHash();
+	while ((await _col.findOne({ token: token })) !== null) {
+		// loop until token is unique
+		token = generateHash();
+	}
+	await _connection.close();
+	return token;
 };
 
 /**
@@ -109,8 +116,6 @@ export const InvalidPlaceIDErrorJSON = {
 
 /**
  * Strategy for the server to use for logging in.
- * Assumes that the `AUTH_SEED` environment variable
- * is set to call `createToken()`.
  */
 export const strategy = new Strategy(
 	{ usernameField: "email", passwordField: "hash" },
@@ -128,7 +133,7 @@ export const strategy = new Strategy(
 			}
 		}
 
-		const token = createToken();
+		const token = await createToken();
 
 		try {
 			await editUserInDb(user._id as ObjectId, {
