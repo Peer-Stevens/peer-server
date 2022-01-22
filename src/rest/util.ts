@@ -103,6 +103,9 @@ export const RatingAlreadyExistsErrorJSON = {
 export const PlaceDoesNotExistErrorJSON = {
 	error: "There is no place with the provided place ID.",
 };
+export const InvalidPlaceIDErrorJSON = {
+	error: "You must provide a valid place ID.",
+};
 
 /**
  * Strategy for the server to use for logging in.

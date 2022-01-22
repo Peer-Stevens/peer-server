@@ -26,5 +26,6 @@ export async function getPromoMonth({
 
 	await _connection.close();
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- promo month actually can't be null because of the upsert
 	return promoMonth.value!;
 }

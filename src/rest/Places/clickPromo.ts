@@ -3,7 +3,7 @@ import { isPlaceInDb } from "../../db/Place/place";
 import type { Place, PromotionMonth } from "../../db/types";
 import { getCollection } from "../../db/mongoCollections";
 import StatusCode from "../status";
-import { PlaceDoesNotExistErrorJSON } from "../../rest/util";
+import { InvalidPlaceIDErrorJSON, PlaceDoesNotExistErrorJSON } from "../../rest/util";
 
 export const clickPromo = async (
 	req: Request<unknown, unknown, Partial<Place>>,
@@ -19,7 +19,7 @@ export const clickPromo = async (
 	};
 
 	if (!place_id || typeof place_id !== "string") {
-		res.status(StatusCode.BAD_REQUEST).json({ error: "You must provide a valid placeId" });
+		res.status(StatusCode.BAD_REQUEST).json(InvalidPlaceIDErrorJSON);
 		return;
 	}
 
