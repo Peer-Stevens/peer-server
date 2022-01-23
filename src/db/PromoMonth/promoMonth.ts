@@ -1,7 +1,7 @@
 import { DbOperationError } from "../../errorClasses";
 import { getCollection } from "../../db/mongoCollections";
 import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
-import { PromotionMonth } from "../../db/types";
+import type { PromotionMonth } from "../../db/types";
 
 export type GetPromoMonthArgs = {
 	placeID: GooglePlace["place_id"];
