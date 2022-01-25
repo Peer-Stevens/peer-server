@@ -9,7 +9,7 @@ import {
 	getAllRatingsForPlace,
 	getAllRatingsFromUser,
 	getRatingById,
-	doesRatingFromUserExist,
+	accessPotentialRating,
 } from "../src/db/Rating/rating";
 import { updatePlace } from "../src/db/Place/place";
 import { DbOperationError } from "../src/errorClasses";
@@ -307,7 +307,7 @@ describe("Rating-related database function tests", () => {
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
 	});
-	it("returns true if a user has already submitted a rating on a place", async () => {
+	it("returns the rating if a user has already submitted a rating on a place", async () => {
 		const mockUser: User = {
 			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
 			email: "ilovecheese@hotmail.com",
@@ -330,11 +330,11 @@ describe("Rating-related database function tests", () => {
 			}
 		);
 
-		const foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
+		const foundRating = await accessPotentialRating(mockUser.email, mockRating1.placeID);
 		expect(mockClose).toHaveBeenCalled();
-		expect(foundRating).toEqual(true);
+		expect(foundRating).toEqual(mockRating1);
 	});
-	it("returns false if a user has not already submitted a rating on a place", async () => {
+	it("returns null if a user has not already submitted a rating on a place", async () => {
 		const mockUser: User = {
 			_id: new ObjectId("617ccccc81bc431f3dcde5bd"),
 			email: "ilovecheese@hotmail.com",
@@ -357,8 +357,8 @@ describe("Rating-related database function tests", () => {
 			}
 		);
 
-		const foundRating = await doesRatingFromUserExist(mockUser.email, mockRating1.placeID);
+		const foundRating = await accessPotentialRating(mockUser.email, mockRating1.placeID);
 		expect(mockClose).toHaveBeenCalled();
-		expect(foundRating).toEqual(false);
+		expect(foundRating).toEqual(null);
 	});
 });

@@ -9,7 +9,7 @@ import { searchPlaces } from "./rest/searchPlaces";
 import { getPlacePhoto } from "./rest/getPlacePhoto";
 import { getPlaceDetails } from "./rest/getPlaceDetails";
 import {
-	doesRatingExist,
+	getPotentialRating,
 	getAllPlaceRatings,
 	getRating,
 	getRatingsFromUser,
@@ -60,7 +60,7 @@ app.get("/getRating/:id", getRating);
 app.get("/getRatingsFromUser/:id", getRatingsFromUser);
 
 // gets whether or not a user has already submitted a rating for a particular place
-app.get("/doesRatingFromUserExist/:email/:placeID", doesRatingExist);
+app.get("/getPotentialRating/:email/:placeID", getPotentialRating);
 
 // get Place, will responsd with avgs per metric that we are collecting since that's how we defined the type
 app.get("/getPlace/:id", getPlace);

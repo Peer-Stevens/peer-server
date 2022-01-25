@@ -4,7 +4,7 @@ import {
 	getRatingById,
 	getAllRatingsForPlace,
 	getAllRatingsFromUser,
-	doesRatingFromUserExist,
+	accessPotentialRating,
 } from "../../db/Rating/rating";
 import StatusCode from "../status";
 
@@ -35,9 +35,9 @@ export const getRatingsFromUser = async (req: Request, res: Response): Promise<v
 	}
 };
 
-export const doesRatingExist = async (req: Request, res: Response): Promise<void> => {
+export const getPotentialRating = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const ratingExists = await doesRatingFromUserExist(req.params.email, req.params.placeID);
+		const ratingExists = await accessPotentialRating(req.params.email, req.params.placeID);
 		res.status(StatusCode.OK).json(ratingExists);
 	} catch (e) {
 		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
