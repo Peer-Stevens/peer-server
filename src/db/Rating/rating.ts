@@ -1,5 +1,5 @@
 import { getCollection } from "../mongoCollections";
-import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
+import { InsertOneResult, ObjectId, UpdateResult, WithId } from "mongodb";
 import type { Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
@@ -96,10 +96,10 @@ export async function getRatingById(id: ObjectId): Promise<Rating> {
  * @param placeID the id of the place user wants to rate
  * @returns true if rating exists, false if rating does not
  */
-export async function doesRatingFromUserExist(
+export async function accessPotentialRating(
 	email: string,
 	placeID: GooglePlaceID["place_id"]
-): Promise<boolean> {
+): Promise<WithId<Rating> | null> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
 	// needed to get user's id
@@ -107,8 +107,7 @@ export async function doesRatingFromUserExist(
 
 	const ratingReturned = await _col.findOne({ userID: user._id, placeID: placeID });
 	await _connection.close();
-	if (ratingReturned === null) return false;
-	return true;
+	return ratingReturned;
 }
 
 /**
