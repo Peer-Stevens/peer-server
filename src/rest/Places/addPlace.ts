@@ -44,6 +44,10 @@ export const addPlaceToDb = async (
 			avgGuideDogFriendly: null,
 			avgNavigability: null,
 			avgStaffHelpfulness: null,
+			promotion: {
+				monthly_budget: 0,
+				max_cpc: 0,
+			},
 		});
 		res.status(StatusCode.OK).json(newRating);
 	} catch (e) {

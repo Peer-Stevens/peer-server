@@ -1,5 +1,5 @@
 import type { ObjectId } from "mongodb";
-import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
+import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
 
 /*
  Note: _id is optional because _id of type ObjectId is automatically 
@@ -17,7 +17,7 @@ export interface User {
 export interface Rating {
 	_id?: ObjectId;
 	userID: ObjectId;
-	placeID: GooglePlaceID["place_id"];
+	placeID: GooglePlace["place_id"];
 	braille: number | null;
 	fontReadability: number | null;
 	staffHelpfulness: number | null;
@@ -29,10 +29,30 @@ export interface Rating {
 }
 
 export interface Place {
-	_id: GooglePlaceID["place_id"];
+	_id: GooglePlace["place_id"];
 	avgBraille: number | null;
 	avgFontReadability: number | null;
 	avgStaffHelpfulness: number | null;
 	avgNavigability: number | null;
 	avgGuideDogFriendly: number | null;
+	promotion: {
+		monthly_budget: number;
+		max_cpc: number;
+	};
+}
+
+export type PlaceWithA11yAndPromo = GooglePlace & {
+	accessibilityData: Place;
+	promoMonth?: PromotionMonth;
+	isValidPromo?: boolean;
+	isPromoted?: boolean;
+	spend_amount?: number;
+};
+
+export interface PromotionMonth {
+	_id?: ObjectId;
+	placeID: GooglePlace["place_id"];
+	month: number;
+	year: number;
+	totalSpent: number;
 }

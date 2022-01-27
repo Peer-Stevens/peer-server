@@ -2,7 +2,7 @@ import { dbConnection } from "./mongoConnection";
 import type { Collection, MongoClient } from "mongodb";
 
 export async function getCollection<T>(
-	collection: "rating" | "user" | "place"
+	collection: "rating" | "user" | "place" | "promotionMonth"
 ): Promise<{ _col: Collection<T>; _connection: MongoClient }> {
 	const { _db: db, _connection } = await dbConnection();
 

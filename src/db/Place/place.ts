@@ -60,6 +60,10 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 			avgStaffHelpfulness: null,
 			avgNavigability: null,
 			avgGuideDogFriendly: null,
+			promotion: {
+				monthly_budget: 0,
+				max_cpc: 0,
+			},
 		});
 
 		// this is a dirty typecast, but it's only for a temporary feature
@@ -190,7 +194,7 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 		}
 	>(pipeline);
 
-	const avgsObj: Place = {
+	const avgsObj: Partial<Place> = {
 		_id: id,
 		avgBraille: null,
 		avgFontReadability: null,
