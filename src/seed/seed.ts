@@ -13,7 +13,7 @@ dotenv.config();
 async function main() {
 	if (process.env.DB_NAME === "production") {
 		console.log("You should not be running this command on the production database.");
-		console.log("Please change your DB_NAME enviornment variable.");
+		console.log("Please change your DB_NAME environment variable.");
 		process.exit();
 	}
 
@@ -76,6 +76,10 @@ async function main() {
 			avgNavigability: null,
 			avgStaffHelpfulness: null,
 			avgGuideDogFriendly: null,
+			promotion: {
+				monthly_budget: 0,
+				max_cpc: 0,
+			},
 		});
 	} catch (e) {
 		console.log(e);
@@ -89,6 +93,10 @@ async function main() {
 			avgNavigability: null,
 			avgStaffHelpfulness: null,
 			avgGuideDogFriendly: null,
+			promotion: {
+				monthly_budget: 0,
+				max_cpc: 0,
+			},
 		});
 	} catch (e) {
 		console.log(e);
@@ -102,6 +110,10 @@ async function main() {
 			avgNavigability: null,
 			avgStaffHelpfulness: null,
 			avgGuideDogFriendly: null,
+			promotion: {
+				monthly_budget: 0,
+				max_cpc: 0,
+			},
 		});
 	} catch (e) {
 		console.log(e);
