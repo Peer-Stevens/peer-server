@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import { dbConnection } from "../db/mongoConnection";
 import { addPlace, getAllPlaces } from "../db/Place/place";
 import { addUserToDb } from "../db/User/user";
