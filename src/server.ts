@@ -67,7 +67,7 @@ app.get("/getPlacePhoto/:ref", getPlacePhoto);
 app.post("/promotePlace", promotePlace);
 app.post("/clickPromo", clickPromo);
 
-app.get("/getUser/:email", getUser);
+app.get("/getUser", getUser);
 app.post("/addUser", addUser);
 app.patch("/editUser", editUser);
 
