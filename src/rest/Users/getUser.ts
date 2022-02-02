@@ -10,11 +10,8 @@ export const getUser = async (
 ): Promise<void> => {
 	const { email } = req.body;
 	try {
-		if (email) {
-			//This is wrapped in an if statement due to an error stating that the email (or req.body) could be undefined
-			const user = await getUserByEmailOnly(email.toString());
-			res.status(StatusCode.OK).json({ id: user._id?.toString() });
-		}
+		const user = await getUserByEmailOnly(email);
+		res.status(StatusCode.OK).json({ id: user._id?.toString() });
 	} catch (e) {
 		res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
 	}
