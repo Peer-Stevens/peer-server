@@ -25,7 +25,7 @@ export interface Rating {
 	isStaffHelpful: boolean | null;
 	isBathroomOnEntranceFloor: boolean | null;
 	isContactlessPaymentOffered: boolean | null;
-	areThereStairs: boolean | null;
+	isStairsRequired: boolean | null;
 	spacing: number | null;
 	comment: string | null;
 	dateCreated: Date;
