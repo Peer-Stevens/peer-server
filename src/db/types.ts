@@ -18,11 +18,15 @@ export interface Rating {
 	_id?: ObjectId;
 	userID: ObjectId;
 	placeID: GooglePlace["place_id"];
-	braille: number | null;
-	fontReadability: number | null;
-	staffHelpfulness: number | null;
-	navigability: number | null;
 	guideDogFriendly: number | null;
+	isMenuAccessible: boolean | null; // null bc they may not be able to give a yes/no answer
+	noiseLevel: number | null;
+	lighting: number | null;
+	isStaffHelpful: boolean | null;
+	isBathroomOnEntranceFloor: boolean | null;
+	isContactlessPaymentOffered: boolean | null;
+	areThereStairs: boolean | null;
+	spacing: number | null;
 	comment: string | null;
 	dateCreated: Date;
 	dateEdited?: Date;
