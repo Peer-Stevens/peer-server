@@ -19,13 +19,13 @@ export interface Rating {
 	userID: ObjectId;
 	placeID: GooglePlace["place_id"];
 	guideDogFriendly: number | null;
-	isMenuAccessible: boolean | null; // null bc they may not be able to give a yes/no answer
+	isMenuAccessible: 0 | 1 | null; // null bc they may not be able to give a yes/no answer
 	noiseLevel: number | null;
 	lighting: number | null;
-	isStaffHelpful: boolean | null;
-	isBathroomOnEntranceFloor: boolean | null;
-	isContactlessPaymentOffered: boolean | null;
-	isStairsRequired: boolean | null;
+	isStaffHelpful: 0 | 1 | null;
+	isBathroomOnEntranceFloor: 0 | 1 | null;
+	isContactlessPaymentOffered: 0 | 1 | null;
+	isStairsRequired: 0 | 1 | null;
 	spacing: number | null;
 	comment: string | null;
 	dateCreated: Date;
