@@ -1,5 +1,7 @@
-import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+dotenv.config();
+import "newrelic";
+import express, { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import { Passport } from "passport";
@@ -25,8 +27,6 @@ import { handleError, strategy } from "./rest/util";
 import StatusCode from "./rest/status";
 import { promotePlace } from "./rest/Places/promotePlace";
 import { clickPromo } from "./rest/Places/clickPromo";
-
-dotenv.config();
 
 export const app = express();
 const port = Number(process.env.PORT) || 3030;
