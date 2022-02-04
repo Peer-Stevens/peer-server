@@ -8,25 +8,35 @@ import {
 	MissingParametersErrorJSON,
 	RatingUpdatedJSON,
 	UnauthorizedErrorJSON,
-	WrongParamatersErrorJSON,
+	WrongParametersErrorJSON,
+	convertToNum,
 } from "../util";
 
 type EditRatingRequestBody = Partial<
 	Omit<
 		Rating,
 		| "userID"
-		| "braille"
-		| "fontReadability"
-		| "staffHelpfulness"
-		| "navigability"
+		| "isMenuAccessible"
+		| "noiseLevel"
+		| "isStaffHelpful"
+		| "lighting"
 		| "guideDogFriendly"
+		| "isBathroomOnEntranceFloor"
+		| "isContactlessPaymentOffered"
+		| "isStairsRequired"
+		| "spacing"
 	> & {
 		token: string;
-		braille: string;
-		fontReadability: string;
-		staffHelpfulness: string;
-		navigability: string;
+		userID: string;
 		guideDogFriendly: string;
+		isMenuAccessible: string;
+		noiseLevel: string;
+		isStaffHelpful: string;
+		lighting: string;
+		isBathroomOnEntranceFloor: string;
+		isContactlessPaymentOffered: string;
+		isStairsRequired: string;
+		spacing: string;
 	}
 >;
 
@@ -37,11 +47,15 @@ export const editRating = async (
 	const {
 		_id,
 		token,
-		braille,
-		fontReadability,
-		staffHelpfulness,
-		navigability,
 		guideDogFriendly,
+		isMenuAccessible,
+		noiseLevel,
+		lighting,
+		isStaffHelpful,
+		isBathroomOnEntranceFloor,
+		isContactlessPaymentOffered,
+		isStairsRequired,
+		spacing,
 		comment,
 	} = req.body;
 
@@ -51,23 +65,25 @@ export const editRating = async (
 	}
 
 	// request body starts as strings, convert to float if present
-	const brailleAsNum = braille ? parseFloat(braille) : null;
-	const fontReadabilityAsNum = fontReadability ? parseFloat(fontReadability) : null;
-	const staffHelpfulnessAsNum = staffHelpfulness ? parseFloat(staffHelpfulness) : null;
-	const navigabilityAsNum = navigability ? parseFloat(navigability) : null;
 	const guideDogFriendlyAsNum = guideDogFriendly ? parseFloat(guideDogFriendly) : null;
+	const isMenuAccessibleAsNum = isMenuAccessible ? convertToNum(isMenuAccessible) : null;
+	const noiseLevelAsNum = noiseLevel ? parseFloat(noiseLevel) : null;
+	const lightingAsNum = lighting ? parseFloat(lighting) : null;
+	const isStaffHelpfulAsNum = isStaffHelpful ? convertToNum(isStaffHelpful) : null;
+	const isBathroomOnEntranceFloorAsNum = isBathroomOnEntranceFloor
+		? convertToNum(isBathroomOnEntranceFloor)
+		: null;
+	const isContactlessPaymentOfferedAsNum = isContactlessPaymentOffered
+		? convertToNum(isContactlessPaymentOffered)
+		: null;
+	const isStairsRequiredAsNum = isStairsRequired ? convertToNum(isStairsRequired) : null;
+	const spacingAsNum = spacing ? parseFloat(spacing) : null;
 
 	// if can't convert to float, there is a problem
-	for (const field of [
-		brailleAsNum,
-		fontReadabilityAsNum,
-		staffHelpfulnessAsNum,
-		navigabilityAsNum,
-		guideDogFriendlyAsNum,
-	]) {
+	for (const field of [guideDogFriendlyAsNum, noiseLevelAsNum, lightingAsNum, spacingAsNum]) {
 		if (field === NaN) {
 			console.warn("editRating: request made with non-numeric field");
-			res.status(StatusCode.BAD_REQUEST).json(WrongParamatersErrorJSON);
+			res.status(StatusCode.BAD_REQUEST).json(WrongParametersErrorJSON);
 			return;
 		}
 	}
@@ -85,11 +101,14 @@ export const editRating = async (
 	}
 
 	const newRatingObj: Partial<Rating> = {
-		braille: brailleAsNum,
-		fontReadability: fontReadabilityAsNum,
-		staffHelpfulness: staffHelpfulnessAsNum,
-		navigability: navigabilityAsNum,
-		guideDogFriendly: guideDogFriendlyAsNum,
+		isMenuAccessible: isMenuAccessibleAsNum,
+		noiseLevel: noiseLevelAsNum,
+		lighting: lightingAsNum,
+		isStaffHelpful: isStaffHelpfulAsNum,
+		isBathroomOnEntranceFloor: isBathroomOnEntranceFloorAsNum,
+		isContactlessPaymentOffered: isContactlessPaymentOfferedAsNum,
+		isStairsRequired: isStairsRequiredAsNum,
+		spacing: spacingAsNum,
 		comment: comment,
 		dateEdited: new Date(),
 	};
