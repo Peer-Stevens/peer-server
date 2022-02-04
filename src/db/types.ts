@@ -34,11 +34,15 @@ export interface Rating {
 
 export interface Place {
 	_id: GooglePlace["place_id"];
-	avgBraille: number | null;
-	avgFontReadability: number | null;
-	avgStaffHelpfulness: number | null;
-	avgNavigability: number | null;
-	avgGuideDogFriendly: number | null;
+	guideDogAvg: number | null;
+	isMenuAccessibleAvg: number | null;
+	noiseLevelAvg: number | null;
+	lightingAvg: number | null;
+	isStaffHelpfulAvg: number | null;
+	isBathroomOnEntranceFloorAvg: number | null;
+	isContactlessPaymentOfferedAvg: number | null;
+	isStairsRequiredAvg: number | null;
+	spacingAvg: number | null;
 	promotion: {
 		monthly_budget: number;
 		max_cpc: number;
