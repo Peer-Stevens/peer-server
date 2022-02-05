@@ -31,13 +31,13 @@ const mockPlace: GooglePlace = {
 const mockPlaceA11yData: Place = {
 	_id: mockPlace.place_id,
 	guideDogAvg: 5,
-	isMenuAccessibleAvg: 5,
+	isMenuAccessibleAvg: 1,
 	noiseLevelAvg: 5,
 	lightingAvg: 5,
-	isStaffHelpfulAvg: 5,
-	isBathroomOnEntranceFloorAvg: 5,
-	isContactlessPaymentOfferedAvg: 5,
-	isStairsRequiredAvg: 5,
+	isStaffHelpfulAvg: 1,
+	isBathroomOnEntranceFloorAvg: 1,
+	isContactlessPaymentOfferedAvg: 0,
+	isStairsRequiredAvg: 0,
 	spacingAvg: 5,
 	promotion: {
 		monthly_budget: 100,
