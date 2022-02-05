@@ -89,7 +89,7 @@ export const isAuthenticated = async (
  * @param val
  * @returns numerical representation of a boolean value or null
  */
-export const convertToNum = (val: string): 0 | 1 | null => {
+export const convertToBinNum = (val: string): 0 | 1 | null => {
 	if (val === "0") {
 		return 0;
 	} else if (val === "1") {
