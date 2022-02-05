@@ -74,11 +74,15 @@ const mockRating1: Rating = {
 	_id: new ObjectId("617cacca81bc431f3dcde5be"),
 	userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
 	placeID: "fakeplace123",
-	braille: 4,
-	fontReadability: null,
 	guideDogFriendly: 5,
-	navigability: 2,
-	staffHelpfulness: 1,
+	isMenuAccessible: null,
+	noiseLevel: 4,
+	lighting: 2,
+	isStaffHelpful: 1,
+	isBathroomOnEntranceFloor: 0,
+	isContactlessPaymentOffered: 1,
+	isStairsRequired: 0,
+	spacing: 3,
 	comment: null,
 	dateCreated: new Date(),
 };
@@ -87,11 +91,15 @@ const mockRating2: Rating = {
 	_id: new ObjectId("617cacca81bc431f3dcde5be"),
 	userID: new ObjectId("617cacca8123431f3dcde5bd"),
 	placeID: "fakeplace123",
-	braille: 3.5,
-	fontReadability: null,
 	guideDogFriendly: 1,
-	navigability: 2,
-	staffHelpfulness: 2.5,
+	isMenuAccessible: null,
+	noiseLevel: 3.5,
+	lighting: 2,
+	isStaffHelpful: 0,
+	isBathroomOnEntranceFloor: 1,
+	isContactlessPaymentOffered: 1,
+	isStairsRequired: 0,
+	spacing: 2.5,
 	comment: null,
 	dateCreated: new Date(),
 };
@@ -100,11 +108,15 @@ const mockRating3: Rating = {
 	_id: new ObjectId("617cacca81bc431f3dcde5be"),
 	userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
 	placeID: "fakeplace456",
-	braille: 2,
-	fontReadability: null,
 	guideDogFriendly: 3,
-	navigability: 2,
-	staffHelpfulness: 1,
+	isMenuAccessible: null,
+	noiseLevel: 2,
+	lighting: 3,
+	isStaffHelpful: 1,
+	isBathroomOnEntranceFloor: 1,
+	isContactlessPaymentOffered: 1,
+	isStairsRequired: 1,
+	spacing: 3,
 	comment: null,
 	dateCreated: new Date(),
 };
@@ -121,15 +133,19 @@ beforeEach(() => {
 describe("Rating-related database function tests", () => {
 	it("gets a rating by its ID successfully", async () => {
 		const idString = "617cacca81bc431f3ccde5be";
-		const mockRating2 = {
+		const mockRating2: Rating = {
 			_id: new ObjectId(idString),
 			userID: new ObjectId("617ccccc81bc431f3dcde5bd"),
 			placeID: "fakeplace456",
-			braille: null,
-			fontReadability: 3,
 			guideDogFriendly: 1,
-			navigability: 3,
-			staffHelpfulness: 1,
+			isMenuAccessible: null,
+			noiseLevel: 3.5,
+			lighting: 2,
+			isStaffHelpful: 0,
+			isBathroomOnEntranceFloor: 1,
+			isContactlessPaymentOffered: 1,
+			isStairsRequired: 0,
+			spacing: 2.5,
 			comment: null,
 			dateCreated: new Date(),
 		};
@@ -230,7 +246,7 @@ describe("Rating-related database function tests", () => {
 		mockCollection.push(mockRating1);
 		mockUpdateOne.mockResolvedValueOnce({ acknowledged: true });
 
-		await editRatingInDb(mockRating1._id as ObjectId, { braille: 0 });
+		await editRatingInDb(mockRating1._id as ObjectId, { isMenuAccessible: 0 });
 
 		expect(mockClose).toHaveBeenCalled();
 		expect(mockUpdateOne).toHaveBeenCalled();
@@ -241,7 +257,7 @@ describe("Rating-related database function tests", () => {
 		mockUpdateOne.mockResolvedValueOnce({ acknowledged: false });
 
 		expect.assertions(2);
-		editRatingInDb(mockRating1._id as ObjectId, { braille: 0 }).catch(e => {
+		editRatingInDb(mockRating1._id as ObjectId, { isMenuAccessible: 0 }).catch(e => {
 			expect(mockClose).toHaveBeenCalled();
 			expect(e).toBeInstanceOf(DbOperationError);
 		});
