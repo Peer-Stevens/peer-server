@@ -30,11 +30,15 @@ const mockPlace: GooglePlace = {
 
 const mockPlaceA11yData: Place = {
 	_id: mockPlace.place_id,
-	avgBraille: 5,
-	avgFontReadability: 5,
-	avgGuideDogFriendly: 5,
-	avgNavigability: 5,
-	avgStaffHelpfulness: 5,
+	guideDogAvg: 5,
+	isMenuAccessibleAvg: 5,
+	noiseLevelAvg: 5,
+	lightingAvg: 5,
+	isStaffHelpfulAvg: 5,
+	isBathroomOnEntranceFloorAvg: 5,
+	isContactlessPaymentOfferedAvg: 5,
+	isStairsRequiredAvg: 5,
+	spacingAvg: 5,
 	promotion: {
 		monthly_budget: 100,
 		max_cpc: 1,
