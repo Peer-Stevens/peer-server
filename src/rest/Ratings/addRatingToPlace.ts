@@ -12,7 +12,7 @@ import {
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
 	WrongParametersErrorJSON,
-	convertToNum,
+	convertToBinNum,
 } from "../util";
 import { DbOperationError } from "../../errorClasses";
 import { getPlaceByID } from "../../db/Place/place";
@@ -137,19 +137,21 @@ export const addRatingToPlace = async (
 		? parseFloat(guideDogFriendly)
 		: null;
 	const isMenuAccessibleAsNum: 0 | 1 | null = isMenuAccessible
-		? convertToNum(isMenuAccessible)
+		? convertToBinNum(isMenuAccessible)
 		: null;
 	const noiseLevelAsNum: number | null = noiseLevel ? parseFloat(noiseLevel) : null;
 	const lightingAsNum: number | null = lighting ? parseFloat(lighting) : null;
-	const isStaffHelpfulAsNum: 0 | 1 | null = isStaffHelpful ? convertToNum(isStaffHelpful) : null;
+	const isStaffHelpfulAsNum: 0 | 1 | null = isStaffHelpful
+		? convertToBinNum(isStaffHelpful)
+		: null;
 	const isBathroomOnEntranceFloorAsNum: 0 | 1 | null = isBathroomOnEntranceFloor
-		? convertToNum(isBathroomOnEntranceFloor)
+		? convertToBinNum(isBathroomOnEntranceFloor)
 		: null;
 	const isContactlessPaymentOfferedAsNum: 0 | 1 | null = isContactlessPaymentOffered
-		? convertToNum(isContactlessPaymentOffered)
+		? convertToBinNum(isContactlessPaymentOffered)
 		: null;
 	const isStairsRequiredAsNum: 0 | 1 | null = isStairsRequired
-		? convertToNum(isStairsRequired)
+		? convertToBinNum(isStairsRequired)
 		: null;
 	const spacingAsNum: number | null = spacing ? parseFloat(spacing) : null;
 

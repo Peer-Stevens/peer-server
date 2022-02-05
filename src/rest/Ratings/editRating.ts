@@ -9,7 +9,7 @@ import {
 	RatingUpdatedJSON,
 	UnauthorizedErrorJSON,
 	WrongParametersErrorJSON,
-	convertToNum,
+	convertToBinNum,
 } from "../util";
 
 type EditRatingRequestBody = Partial<
@@ -65,19 +65,27 @@ export const editRating = async (
 	}
 
 	// request body starts as strings, convert to float if present
-	const guideDogFriendlyAsNum = guideDogFriendly ? parseFloat(guideDogFriendly) : null;
-	const isMenuAccessibleAsNum = isMenuAccessible ? convertToNum(isMenuAccessible) : null;
-	const noiseLevelAsNum = noiseLevel ? parseFloat(noiseLevel) : null;
-	const lightingAsNum = lighting ? parseFloat(lighting) : null;
-	const isStaffHelpfulAsNum = isStaffHelpful ? convertToNum(isStaffHelpful) : null;
-	const isBathroomOnEntranceFloorAsNum = isBathroomOnEntranceFloor
-		? convertToNum(isBathroomOnEntranceFloor)
+	const guideDogFriendlyAsNum: number | null = guideDogFriendly
+		? parseFloat(guideDogFriendly)
 		: null;
-	const isContactlessPaymentOfferedAsNum = isContactlessPaymentOffered
-		? convertToNum(isContactlessPaymentOffered)
+	const isMenuAccessibleAsNum: 0 | 1 | null = isMenuAccessible
+		? convertToBinNum(isMenuAccessible)
 		: null;
-	const isStairsRequiredAsNum = isStairsRequired ? convertToNum(isStairsRequired) : null;
-	const spacingAsNum = spacing ? parseFloat(spacing) : null;
+	const noiseLevelAsNum: number | null = noiseLevel ? parseFloat(noiseLevel) : null;
+	const lightingAsNum: number | null = lighting ? parseFloat(lighting) : null;
+	const isStaffHelpfulAsNum: 0 | 1 | null = isStaffHelpful
+		? convertToBinNum(isStaffHelpful)
+		: null;
+	const isBathroomOnEntranceFloorAsNum: 0 | 1 | null = isBathroomOnEntranceFloor
+		? convertToBinNum(isBathroomOnEntranceFloor)
+		: null;
+	const isContactlessPaymentOfferedAsNum: 0 | 1 | null = isContactlessPaymentOffered
+		? convertToBinNum(isContactlessPaymentOffered)
+		: null;
+	const isStairsRequiredAsNum: 0 | 1 | null = isStairsRequired
+		? convertToBinNum(isStairsRequired)
+		: null;
+	const spacingAsNum: number | null = spacing ? parseFloat(spacing) : null;
 
 	// if can't convert to float, there is a problem
 	for (const field of [guideDogFriendlyAsNum, noiseLevelAsNum, lightingAsNum, spacingAsNum]) {
