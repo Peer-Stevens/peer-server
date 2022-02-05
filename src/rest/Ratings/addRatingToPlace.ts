@@ -133,19 +133,25 @@ export const addRatingToPlace = async (
 	}
 
 	// request body starts as strings, convert to float if present
-	const guideDogFriendlyAsNum = guideDogFriendly ? parseFloat(guideDogFriendly) : null;
-	const isMenuAccessibleAsNum = isMenuAccessible ? convertToNum(isMenuAccessible) : null;
-	const noiseLevelAsNum = noiseLevel ? parseFloat(noiseLevel) : null;
-	const lightingAsNum = lighting ? parseFloat(lighting) : null;
-	const isStaffHelpfulAsNum = isStaffHelpful ? convertToNum(isStaffHelpful) : null;
-	const isBathroomOnEntranceFloorAsNum = isBathroomOnEntranceFloor
+	const guideDogFriendlyAsNum: number | null = guideDogFriendly
+		? parseFloat(guideDogFriendly)
+		: null;
+	const isMenuAccessibleAsNum: 0 | 1 | null = isMenuAccessible
+		? convertToNum(isMenuAccessible)
+		: null;
+	const noiseLevelAsNum: number | null = noiseLevel ? parseFloat(noiseLevel) : null;
+	const lightingAsNum: number | null = lighting ? parseFloat(lighting) : null;
+	const isStaffHelpfulAsNum: 0 | 1 | null = isStaffHelpful ? convertToNum(isStaffHelpful) : null;
+	const isBathroomOnEntranceFloorAsNum: 0 | 1 | null = isBathroomOnEntranceFloor
 		? convertToNum(isBathroomOnEntranceFloor)
 		: null;
-	const isContactlessPaymentOfferedAsNum = isContactlessPaymentOffered
+	const isContactlessPaymentOfferedAsNum: 0 | 1 | null = isContactlessPaymentOffered
 		? convertToNum(isContactlessPaymentOffered)
 		: null;
-	const isStairsRequiredAsNum = isStairsRequired ? convertToNum(isStairsRequired) : null;
-	const spacingAsNum = spacing ? parseFloat(spacing) : null;
+	const isStairsRequiredAsNum: 0 | 1 | null = isStairsRequired
+		? convertToNum(isStairsRequired)
+		: null;
+	const spacingAsNum: number | null = spacing ? parseFloat(spacing) : null;
 
 	// if can't convert to float, there is a problem
 	for (const field of [guideDogFriendlyAsNum, noiseLevelAsNum, lightingAsNum, spacingAsNum]) {
