@@ -4,19 +4,13 @@ import { Place, Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { addRating } from "../Rating/rating";
 import { DbOperationError } from "../../errorClasses";
+import { randomBooleanResponse, randomNumericRating } from "../util";
 
 // generate a new rating object with the given id and random ratings from 0 to 5 in increments of 0.5
 // as well as random boolean responses for yes/no questions
 // internal function, no need to export
 const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
-	//TODO: update design
-	const randomNumericRating = () => Math.floor(Math.random() * 12) / 2;
-	const randomBooleanResponse = (): 0 | 1 => {
-		if (Math.round(Math.random()) === 1.0) {
-			return 1;
-		}
-		return 0;
-	};
+	//TODO: update design to not use user data
 
 	return {
 		userID: userId,
