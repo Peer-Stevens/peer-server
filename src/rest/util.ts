@@ -8,6 +8,7 @@ import StatusCode from "./status";
 import { User } from "../db/types";
 import { AuthenticationError } from "../errorClasses";
 import { getCollection } from "../db/mongoCollections";
+import { YesNoRating } from "types";
 
 // Functions
 
@@ -89,14 +90,9 @@ export const isAuthenticated = async (
  * @param val
  * @returns numerical representation of a boolean value or null
  */
-export const convertToBinNum = (val: string): 0 | 1 | null => {
-	if (val === "0") {
-		return 0;
-	} else if (val === "1") {
-		return 1;
-	} else {
-		return null;
-	}
+export const convertToYesNoRating = (val: string): YesNoRating => {
+	if (!["0", "1", "null"].includes(val)) return null;
+	return (Number(val) === NaN ? null : Number(val)) as YesNoRating;
 };
 
 // Constants

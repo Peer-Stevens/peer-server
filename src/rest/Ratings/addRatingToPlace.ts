@@ -12,11 +12,12 @@ import {
 	RatingCreatedJSON,
 	UnauthorizedErrorJSON,
 	WrongParametersErrorJSON,
-	convertToBinNum,
+	convertToYesNoRating,
 } from "../util";
 import { DbOperationError } from "../../errorClasses";
 import { getPlaceByID } from "../../db/Place/place";
 import { getUserByID } from "../../db/User/user";
+import { YesNoRating } from "../../types";
 
 /**
  * Checks if the passed user exists. Calls `getUserByID`.
@@ -136,22 +137,22 @@ export const addRatingToPlace = async (
 	const guideDogFriendlyAsNum: number | null = guideDogFriendly
 		? parseFloat(guideDogFriendly)
 		: null;
-	const isMenuAccessibleAsNum: 0 | 1 | null = isMenuAccessible
-		? convertToBinNum(isMenuAccessible)
+	const isMenuAccessibleAsNum: YesNoRating = isMenuAccessible
+		? convertToYesNoRating(isMenuAccessible)
 		: null;
 	const noiseLevelAsNum: number | null = noiseLevel ? parseFloat(noiseLevel) : null;
 	const lightingAsNum: number | null = lighting ? parseFloat(lighting) : null;
-	const isStaffHelpfulAsNum: 0 | 1 | null = isStaffHelpful
-		? convertToBinNum(isStaffHelpful)
+	const isStaffHelpfulAsNum: YesNoRating = isStaffHelpful
+		? convertToYesNoRating(isStaffHelpful)
 		: null;
-	const isBathroomOnEntranceFloorAsNum: 0 | 1 | null = isBathroomOnEntranceFloor
-		? convertToBinNum(isBathroomOnEntranceFloor)
+	const isBathroomOnEntranceFloorAsNum: YesNoRating = isBathroomOnEntranceFloor
+		? convertToYesNoRating(isBathroomOnEntranceFloor)
 		: null;
-	const isContactlessPaymentOfferedAsNum: 0 | 1 | null = isContactlessPaymentOffered
-		? convertToBinNum(isContactlessPaymentOffered)
+	const isContactlessPaymentOfferedAsNum: YesNoRating = isContactlessPaymentOffered
+		? convertToYesNoRating(isContactlessPaymentOffered)
 		: null;
-	const isStairsRequiredAsNum: 0 | 1 | null = isStairsRequired
-		? convertToBinNum(isStairsRequired)
+	const isStairsRequiredAsNum: YesNoRating = isStairsRequired
+		? convertToYesNoRating(isStairsRequired)
 		: null;
 	const spacingAsNum: number | null = spacing ? parseFloat(spacing) : null;
 

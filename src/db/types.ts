@@ -1,5 +1,6 @@
 import type { ObjectId } from "mongodb";
 import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
+import { YesNoRating } from "../types";
 
 /*
  Note: _id is optional because _id of type ObjectId is automatically 
@@ -19,13 +20,13 @@ export interface Rating {
 	userID: ObjectId;
 	placeID: GooglePlace["place_id"];
 	guideDogFriendly: number | null;
-	isMenuAccessible: 0 | 1 | null; // null bc they may not be able to give a yes/no answer
+	isMenuAccessible: YesNoRating;
 	noiseLevel: number | null;
 	lighting: number | null;
-	isStaffHelpful: 0 | 1 | null;
-	isBathroomOnEntranceFloor: 0 | 1 | null;
-	isContactlessPaymentOffered: 0 | 1 | null;
-	isStairsRequired: 0 | 1 | null;
+	isStaffHelpful: YesNoRating;
+	isBathroomOnEntranceFloor: YesNoRating;
+	isContactlessPaymentOffered: YesNoRating;
+	isStairsRequired: YesNoRating;
 	spacing: number | null;
 	comment: string | null;
 	dateCreated: Date;
