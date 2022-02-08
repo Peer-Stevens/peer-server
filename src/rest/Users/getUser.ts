@@ -15,11 +15,11 @@ export const getUser = async (
 	} else {
 		try {
 			const user = await getUserByEmailOnly(email);
-                        if(user._id){
-			    res.status(StatusCode.OK).json({ id: user._id.toString() });
-                        } else {
-                            res.status(StatusCode.NOT_FOUND).json({error: "user id does not exist"}); 
-                        }
+			if (user._id) {
+				res.status(StatusCode.OK).json({ id: user._id.toString() });
+			} else {
+				res.status(StatusCode.NOT_FOUND).json({ error: "user id does not exist" });
+			}
 		} catch (e) {
 			res.status(StatusCode.INTERNAL_SERVER_ERROR).json(e);
 		}
