@@ -12,7 +12,6 @@ export const getUser = async (
 	const { email } = req.body;
 	if (!email) {
 		res.status(StatusCode.BAD_REQUEST).json({ MissingParametersErrorJSON });
-		return;
 	} else {
 		try {
 			const user = await getUserByEmailOnly(email);
