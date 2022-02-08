@@ -42,42 +42,23 @@ const mockUpdateOne = jest
 			mockCollection.pop();
 			mockCollection.push({
 				_id: id,
-				guideDogAvg:
-					newPlace.guideDogAvg !== undefined
-						? newPlace.guideDogAvg
-						: old?.guideDogAvg || null,
+				guideDogAvg: newPlace.guideDogAvg || old?.guideDogAvg || null,
 				isMenuAccessibleAvg:
-					newPlace.isMenuAccessibleAvg !== undefined
-						? newPlace.isMenuAccessibleAvg
-						: old?.isMenuAccessibleAvg || null,
-				noiseLevelAvg:
-					newPlace.noiseLevelAvg !== undefined
-						? newPlace.noiseLevelAvg
-						: old?.noiseLevelAvg || null,
-				lightingAvg:
-					newPlace.lightingAvg !== undefined
-						? newPlace.lightingAvg
-						: old?.lightingAvg || null,
-				isStaffHelpfulAvg:
-					newPlace.isStaffHelpfulAvg !== undefined
-						? newPlace.isStaffHelpfulAvg
-						: old?.isStaffHelpfulAvg || null,
+					newPlace.isMenuAccessibleAvg || old?.isMenuAccessibleAvg || null,
+				noiseLevelAvg: newPlace.noiseLevelAvg || old?.noiseLevelAvg || null,
+				lightingAvg: newPlace.lightingAvg || old?.lightingAvg || null,
+				isStaffHelpfulAvg: newPlace.isStaffHelpfulAvg || old?.isStaffHelpfulAvg || null,
 				isBathroomOnEntranceFloorAvg:
-					newPlace.isBathroomOnEntranceFloorAvg !== undefined
-						? newPlace.isBathroomOnEntranceFloorAvg
-						: old?.isBathroomOnEntranceFloorAvg || null,
+					newPlace.isBathroomOnEntranceFloorAvg ||
+					old?.isBathroomOnEntranceFloorAvg ||
+					null,
 				isContactlessPaymentOfferedAvg:
-					newPlace.isContactlessPaymentOfferedAvg !== undefined
-						? newPlace.isContactlessPaymentOfferedAvg
-						: old?.isContactlessPaymentOfferedAvg || null,
+					newPlace.isContactlessPaymentOfferedAvg ||
+					old?.isContactlessPaymentOfferedAvg ||
+					null,
 				isStairsRequiredAvg:
-					newPlace.isStairsRequiredAvg !== undefined
-						? newPlace.isStairsRequiredAvg
-						: old?.isStairsRequiredAvg || null,
-				spacingAvg:
-					newPlace.spacingAvg !== undefined
-						? newPlace.spacingAvg
-						: old?.spacingAvg || null,
+					newPlace.isStairsRequiredAvg || old?.isStairsRequiredAvg || null,
+				spacingAvg: newPlace.spacingAvg || old?.spacingAvg || null,
 				promotion: {
 					monthly_budget:
 						newPlace.promotion?.monthly_budget || old?.promotion?.monthly_budget || 0,
