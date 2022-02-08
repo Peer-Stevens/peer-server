@@ -70,7 +70,7 @@ const mockUpdateOne = jest
 	);
 const mockClose = jest.fn();
 const mockAgg = jest.fn();
-mockAgg.mockReturnValue({ toArray: () => [mockPlace2] });
+mockAgg.mockReturnValue({ toArray: () => [mockPlace1] });
 mockGetCollection.mockResolvedValue({
 	_col: {
 		insertOne: mockInsertOne,
