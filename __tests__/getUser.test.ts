@@ -18,6 +18,12 @@ const mockUser: User = {
 	dateTokenCreated: new Date(),
 };
 
+const mockUser1: User = {
+	email: "ilovecheese@hotmail.com",
+	hash: "2eb80383e8247580e4397273309c24e0003329427012d5048dcb203e4b280823",
+	token: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+	dateTokenCreated: new Date(),
+};
 mockGetUserByEmailOnly.mockResolvedValue(mockUser);
 
 describe("Get User endpoint tests", () => {
@@ -55,7 +61,7 @@ describe("Get User endpoint tests", () => {
 	it("returns INTERNAL_SERVER_ERROR if an error occurs while getting the user", async () => {
 		const mockJSON = jest.fn();
 		const mockStatus = jest.fn().mockReturnValue({ json: mockJSON });
-		mockGetUserByEmailOnly.mockImplementation(() => {
+		mockGetUserByEmailOnly.mockImplementationOnce(() => {
 			throw new Error();
 		});
 
@@ -69,5 +75,22 @@ describe("Get User endpoint tests", () => {
 		);
 
 		expect(mockStatus).toHaveBeenCalledWith(StatusCode.INTERNAL_SERVER_ERROR);
+	});
+
+	it("returns NOT_FOUND if the user ID is not found", async () => {
+		const mockJSON = jest.fn();
+		const mockStatus = jest.fn().mockReturnValue({ json: mockJSON });
+		mockGetUserByEmailOnly.mockResolvedValueOnce(mockUser1);
+
+		await getUser(
+			{ body: { email: "ilovecheese@hotmail.com" } } as unknown as Request<
+				unknown,
+				unknown,
+				Partial<User>
+			>,
+			{ status: mockStatus, json: mockJSON } as unknown as Response
+		);
+
+		expect(mockStatus).toHaveBeenCalledWith(StatusCode.NOT_FOUND);
 	});
 });
