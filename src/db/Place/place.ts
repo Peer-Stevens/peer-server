@@ -4,18 +4,26 @@ import { Place, Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { addRating } from "../Rating/rating";
 import { DbOperationError } from "../../errorClasses";
+import { randomYesNoRating, randomNumericRating } from "../util";
 
 // generate a new rating object with the given id and random ratings from 0 to 5 in increments of 0.5
+// as well as random boolean responses for yes/no questions
 // internal function, no need to export
 const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
+	//TODO: update design to not use user data
+
 	return {
 		userID: userId,
 		placeID: placeId,
-		braille: Math.floor(Math.random() * 12) / 2,
-		fontReadability: Math.floor(Math.random() * 12) / 2,
-		staffHelpfulness: Math.floor(Math.random() * 12) / 2,
-		navigability: Math.floor(Math.random() * 12) / 2,
-		guideDogFriendly: Math.floor(Math.random() * 12) / 2,
+		guideDogFriendly: randomNumericRating(),
+		isMenuAccessible: randomYesNoRating(),
+		noiseLevel: randomNumericRating(),
+		lighting: randomNumericRating(),
+		isStaffHelpful: randomYesNoRating(),
+		isBathroomOnEntranceFloor: randomYesNoRating(),
+		isContactlessPaymentOffered: randomYesNoRating(),
+		isStairsRequired: randomYesNoRating(),
+		spacing: randomNumericRating(),
 		dateCreated: new Date(),
 		comment: null,
 	};
@@ -55,11 +63,15 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 	if (placeReturned === null) {
 		await addPlace({
 			_id: id,
-			avgBraille: null,
-			avgFontReadability: null,
-			avgStaffHelpfulness: null,
-			avgNavigability: null,
-			avgGuideDogFriendly: null,
+			guideDogAvg: null,
+			isMenuAccessibleAvg: null,
+			noiseLevelAvg: null,
+			lightingAvg: null,
+			isStaffHelpfulAvg: null,
+			isBathroomOnEntranceFloorAvg: null,
+			isContactlessPaymentOfferedAvg: null,
+			isStairsRequiredAvg: null,
+			spacingAvg: null,
 			promotion: {
 				monthly_budget: 0,
 				max_cpc: 0,
@@ -138,81 +150,66 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
  * */
 export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
 	const { _col: placeCol, _connection: placeConn } = await getCollection<Place>("place");
-
 	const { _col: ratingCol, _connection: ratingConn } = await getCollection<Rating>("rating");
 
 	const pipeline = [
 		{
-			$match: {
-				placeID: id,
-				braille: {
-					$exists: 1,
-				},
-				fontReadability: {
-					$exists: 1,
-				},
-				staffHelpfulness: {
-					$exists: 1,
-				},
-				guideDogFriendly: {
-					$exists: 1,
-				},
-				navigability: {
-					$exists: 1,
-				},
-			},
-		},
-		{
 			$group: {
 				_id: id,
-				brailleAvg: {
-					$avg: "$braille",
-				},
-				navigAvg: {
-					$avg: "$navigability",
-				},
-				fontAvg: {
-					$avg: "$fontReadability",
-				},
-				staffAvg: {
-					$avg: "$staffHelpfulness",
-				},
 				guideDogAvg: {
 					$avg: "$guideDogFriendly",
 				},
+				isMenuAccessibleAvg: {
+					$avg: "$isMenuAccessible",
+				},
+				noiseLevelAvg: {
+					$avg: "$noiseLevel",
+				},
+				lightingAvg: {
+					$avg: "$lighting",
+				},
+				isStaffHelpfulAvg: {
+					$avg: "$isStaffHelpful",
+				},
+				isBathroomOnEntranceFloorAvg: {
+					$avg: "$isBathroomOnEntranceFloor",
+				},
+				isContactlessPaymentOfferedAvg: { $avg: "$isContactlessPaymentOffered" },
+				isStairsRequiredAvg: { $avg: "$isStairsRequired" },
+				spacingAvg: { $avg: "$spacing" },
 			},
 		},
 	];
 
-	const aggCursor = ratingCol.aggregate<
-		Rating & {
-			brailleAvg: number;
-			navigAvg: number;
-			fontAvg: number;
-			staffAvg: number;
-			guideDogAvg: number;
-		}
-	>(pipeline);
+	const aggCursor = ratingCol.aggregate<Omit<Place, "_id" | "promotion">>(pipeline);
 
-	const avgsObj: Partial<Place> = {
+	const avgs: Partial<Place> = {
 		_id: id,
-		avgBraille: null,
-		avgFontReadability: null,
-		avgStaffHelpfulness: null,
-		avgNavigability: null,
-		avgGuideDogFriendly: null,
+		guideDogAvg: null,
+		isMenuAccessibleAvg: null,
+		noiseLevelAvg: null,
+		lightingAvg: null,
+		isStaffHelpfulAvg: null,
+		isBathroomOnEntranceFloorAvg: null,
+		isContactlessPaymentOfferedAvg: null,
+		isStairsRequiredAvg: null,
+		spacingAvg: null,
 	};
 
-	(await aggCursor.toArray()).forEach(elem => {
-		avgsObj["avgBraille"] = elem.brailleAvg;
-		avgsObj["avgNavigability"] = elem.navigAvg;
-		avgsObj["avgFontReadability"] = elem.fontAvg;
-		avgsObj["avgStaffHelpfulness"] = elem.staffAvg;
-		avgsObj["avgGuideDogFriendly"] = elem.guideDogAvg;
+	(await aggCursor.toArray()).forEach(cursorAvgs => {
+		avgs.guideDogAvg = cursorAvgs.guideDogAvg;
+		avgs.isMenuAccessibleAvg = cursorAvgs.isMenuAccessibleAvg;
+		avgs.noiseLevelAvg = cursorAvgs.noiseLevelAvg;
+		avgs.lightingAvg = cursorAvgs.lightingAvg;
+		avgs.isStaffHelpfulAvg = cursorAvgs.isStaffHelpfulAvg;
+		avgs.isBathroomOnEntranceFloorAvg = cursorAvgs.isBathroomOnEntranceFloorAvg;
+		avgs.isContactlessPaymentOfferedAvg = cursorAvgs.isContactlessPaymentOfferedAvg;
+		avgs.isStairsRequiredAvg = cursorAvgs.isStairsRequiredAvg;
+		avgs.spacingAvg = cursorAvgs.spacingAvg;
 	});
 	await ratingConn.close();
 
-	const placeToUpdate = await placeCol.updateOne({ _id: id }, { $set: avgsObj });
+	const placeToUpdate = await placeCol.updateOne({ _id: id }, { $set: avgs });
 	await placeConn.close();
 	if (placeToUpdate.acknowledged === false) throw new DbOperationError("Could not update Place.");
 

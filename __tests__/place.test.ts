@@ -42,26 +42,23 @@ const mockUpdateOne = jest
 			mockCollection.pop();
 			mockCollection.push({
 				_id: id,
-				avgBraille:
-					newPlace.avgBraille !== undefined
-						? newPlace.avgBraille
-						: old?.avgBraille || null,
-				avgFontReadability:
-					newPlace.avgFontReadability !== undefined
-						? newPlace.avgFontReadability
-						: old?.avgFontReadability || null,
-				avgStaffHelpfulness:
-					newPlace.avgStaffHelpfulness !== undefined
-						? newPlace.avgStaffHelpfulness
-						: old?.avgStaffHelpfulness || null,
-				avgNavigability:
-					newPlace.avgNavigability !== undefined
-						? newPlace.avgNavigability
-						: old?.avgNavigability || null,
-				avgGuideDogFriendly:
-					newPlace.avgGuideDogFriendly !== undefined
-						? newPlace.avgGuideDogFriendly
-						: old?.avgGuideDogFriendly || null,
+				guideDogAvg: newPlace.guideDogAvg || old?.guideDogAvg || null,
+				isMenuAccessibleAvg:
+					newPlace.isMenuAccessibleAvg || old?.isMenuAccessibleAvg || null,
+				noiseLevelAvg: newPlace.noiseLevelAvg || old?.noiseLevelAvg || null,
+				lightingAvg: newPlace.lightingAvg || old?.lightingAvg || null,
+				isStaffHelpfulAvg: newPlace.isStaffHelpfulAvg || old?.isStaffHelpfulAvg || null,
+				isBathroomOnEntranceFloorAvg:
+					newPlace.isBathroomOnEntranceFloorAvg ||
+					old?.isBathroomOnEntranceFloorAvg ||
+					null,
+				isContactlessPaymentOfferedAvg:
+					newPlace.isContactlessPaymentOfferedAvg ||
+					old?.isContactlessPaymentOfferedAvg ||
+					null,
+				isStairsRequiredAvg:
+					newPlace.isStairsRequiredAvg || old?.isStairsRequiredAvg || null,
+				spacingAvg: newPlace.spacingAvg || old?.spacingAvg || null,
 				promotion: {
 					monthly_budget:
 						newPlace.promotion?.monthly_budget || old?.promotion?.monthly_budget || 0,
@@ -73,7 +70,7 @@ const mockUpdateOne = jest
 	);
 const mockClose = jest.fn();
 const mockAgg = jest.fn();
-mockAgg.mockReturnValue({ toArray: () => [mockPlace2] });
+mockAgg.mockReturnValue({ toArray: () => [mockPlace1] });
 mockGetCollection.mockResolvedValue({
 	_col: {
 		insertOne: mockInsertOne,
@@ -89,11 +86,15 @@ mockGetCollection.mockResolvedValue({
 
 const mockPlace1: Place = {
 	_id: "wumpus",
-	avgBraille: null,
-	avgFontReadability: null,
-	avgGuideDogFriendly: null,
-	avgNavigability: null,
-	avgStaffHelpfulness: null,
+	guideDogAvg: 5,
+	isMenuAccessibleAvg: 0.75,
+	noiseLevelAvg: 3.5,
+	lightingAvg: 3,
+	isStaffHelpfulAvg: 0.5,
+	isBathroomOnEntranceFloorAvg: 1,
+	isContactlessPaymentOfferedAvg: 0.25,
+	isStairsRequiredAvg: 0.5,
+	spacingAvg: 4,
 	promotion: {
 		monthly_budget: 0,
 		max_cpc: 0,
@@ -102,11 +103,15 @@ const mockPlace1: Place = {
 
 const mockPlace2: Place = {
 	_id: "andrewshouse",
-	avgBraille: 5,
-	avgFontReadability: 5,
-	avgGuideDogFriendly: 5,
-	avgNavigability: 5,
-	avgStaffHelpfulness: 5,
+	guideDogAvg: 5,
+	isMenuAccessibleAvg: 1,
+	noiseLevelAvg: 5,
+	lightingAvg: 5,
+	isStaffHelpfulAvg: 1,
+	isBathroomOnEntranceFloorAvg: 1,
+	isContactlessPaymentOfferedAvg: 1,
+	isStairsRequiredAvg: 1,
+	spacingAvg: 5,
 	promotion: {
 		monthly_budget: 0,
 		max_cpc: 0,

@@ -8,6 +8,7 @@ import StatusCode from "./status";
 import { User } from "../db/types";
 import { AuthenticationError } from "../errorClasses";
 import { getCollection } from "../db/mongoCollections";
+import { YesNoRating } from "types";
 
 // Functions
 
@@ -82,13 +83,25 @@ export const isAuthenticated = async (
 	return true;
 };
 
+/**
+ * Used to convert what is supposed to be a numerical representation of a boolean value
+ * since the request body sends everything as a string
+ * Returns 0, 1, or null
+ * @param val
+ * @returns numerical representation of a boolean value or null
+ */
+export const convertToYesNoRating = (val: string): YesNoRating => {
+	if (!["0", "1", "null"].includes(val)) return null;
+	return (Number(val) === NaN ? null : Number(val)) as YesNoRating;
+};
+
 // Constants
 export const UserCreatedJSON = { status: "User successfully created." };
 export const RatingCreatedJSON = { status: "Rating successfully created." };
 export const RatingUpdatedJSON = { status: "Rating successfully updated." };
 export const RatingDeletedJSON = { status: "Rating successfully deleted." };
 export const MissingParametersErrorJSON = { error: "This request is missing parameters." };
-export const WrongParamatersErrorJSON = {
+export const WrongParametersErrorJSON = {
 	error: "This request has the wrong data type for a provided field in the body.",
 };
 export const UnauthorizedErrorJSON = {

@@ -39,11 +39,15 @@ export const addPlaceToDb = async (
 	try {
 		const newRating = await addPlace({
 			_id: place._id,
-			avgBraille: null,
-			avgFontReadability: null,
-			avgGuideDogFriendly: null,
-			avgNavigability: null,
-			avgStaffHelpfulness: null,
+			guideDogAvg: null,
+			isMenuAccessibleAvg: null,
+			noiseLevelAvg: null,
+			lightingAvg: null,
+			isStaffHelpfulAvg: null,
+			isBathroomOnEntranceFloorAvg: null,
+			isContactlessPaymentOfferedAvg: null,
+			isStairsRequiredAvg: null,
+			spacingAvg: null,
 			promotion: {
 				monthly_budget: 0,
 				max_cpc: 0,

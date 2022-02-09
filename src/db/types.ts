@@ -1,5 +1,6 @@
 import type { ObjectId } from "mongodb";
 import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
+import { YesNoRating } from "../types";
 
 /*
  Note: _id is optional because _id of type ObjectId is automatically 
@@ -18,11 +19,15 @@ export interface Rating {
 	_id?: ObjectId;
 	userID: ObjectId;
 	placeID: GooglePlace["place_id"];
-	braille: number | null;
-	fontReadability: number | null;
-	staffHelpfulness: number | null;
-	navigability: number | null;
 	guideDogFriendly: number | null;
+	isMenuAccessible: YesNoRating;
+	noiseLevel: number | null;
+	lighting: number | null;
+	isStaffHelpful: YesNoRating;
+	isBathroomOnEntranceFloor: YesNoRating;
+	isContactlessPaymentOffered: YesNoRating;
+	isStairsRequired: YesNoRating;
+	spacing: number | null;
 	comment: string | null;
 	dateCreated: Date;
 	dateEdited?: Date;
@@ -30,11 +35,15 @@ export interface Rating {
 
 export interface Place {
 	_id: GooglePlace["place_id"];
-	avgBraille: number | null;
-	avgFontReadability: number | null;
-	avgStaffHelpfulness: number | null;
-	avgNavigability: number | null;
-	avgGuideDogFriendly: number | null;
+	guideDogAvg: number | null;
+	isMenuAccessibleAvg: number | null;
+	noiseLevelAvg: number | null;
+	lightingAvg: number | null;
+	isStaffHelpfulAvg: number | null;
+	isBathroomOnEntranceFloorAvg: number | null;
+	isContactlessPaymentOfferedAvg: number | null;
+	isStairsRequiredAvg: number | null;
+	spacingAvg: number | null;
 	promotion: {
 		monthly_budget: number;
 		max_cpc: number;
