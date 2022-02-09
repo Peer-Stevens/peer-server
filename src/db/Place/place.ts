@@ -4,7 +4,7 @@ import { Place, Rating } from "../types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { addRating } from "../Rating/rating";
 import { DbOperationError } from "../../errorClasses";
-import { randomBooleanResponse, randomNumericRating } from "../util";
+import { randomYesNoRating, randomNumericRating } from "../util";
 
 // generate a new rating object with the given id and random ratings from 0 to 5 in increments of 0.5
 // as well as random boolean responses for yes/no questions
@@ -16,13 +16,13 @@ const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
 		userID: userId,
 		placeID: placeId,
 		guideDogFriendly: randomNumericRating(),
-		isMenuAccessible: randomBooleanResponse(),
+		isMenuAccessible: randomYesNoRating(),
 		noiseLevel: randomNumericRating(),
 		lighting: randomNumericRating(),
-		isStaffHelpful: randomBooleanResponse(),
-		isBathroomOnEntranceFloor: randomBooleanResponse(),
-		isContactlessPaymentOffered: randomBooleanResponse(),
-		isStairsRequired: randomBooleanResponse(),
+		isStaffHelpful: randomYesNoRating(),
+		isBathroomOnEntranceFloor: randomYesNoRating(),
+		isContactlessPaymentOffered: randomYesNoRating(),
+		isStairsRequired: randomYesNoRating(),
 		spacing: randomNumericRating(),
 		dateCreated: new Date(),
 		comment: null,
