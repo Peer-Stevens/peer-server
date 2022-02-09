@@ -1,12 +1,12 @@
 import { YesNoRating } from "types";
 
 /**
- * Returns a random number between 0.5 and 5 in increments of 0.5, or null.
+ * Returns a random number between 1 and 5 in increments of 0.5, or null.
  * Each result is equally likely.
  */
 export const randomNumericRating = (): number | null => {
-	const numericRating = Math.floor(Math.random() * 11) / 2;
-	return numericRating === 0 ? null : numericRating;
+	const numericRating = (Math.floor(Math.random() * 10) + 1) / 2;
+	return numericRating === 0.5 ? null : numericRating;
 };
 
 /**
