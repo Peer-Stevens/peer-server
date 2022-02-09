@@ -22,6 +22,7 @@ import { addUser } from "./rest/Users/addUser";
 import { addPlaceToDb } from "./rest/Places/addPlace";
 import { editRating } from "./rest/Ratings/editRating";
 import { editUser } from "./rest/Users/editUser";
+import { getUser } from "./rest/Users/getUser";
 import { deleteRating } from "./rest/Ratings/deleteRating";
 import { handleError, strategy } from "./rest/util";
 import StatusCode from "./rest/status";
@@ -66,6 +67,7 @@ app.get("/getPlacePhoto/:ref", getPlacePhoto);
 app.post("/promotePlace", promotePlace);
 app.post("/clickPromo", clickPromo);
 
+app.get("/getUser", getUser);
 app.post("/addUser", addUser);
 app.patch("/editUser", editUser);
 
