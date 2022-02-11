@@ -1,8 +1,8 @@
 import {
 	Client,
-	PlacesNearbyRanking,
 	PlacesNearbyResponse,
 	Place as GooglePlace,
+	PlaceType1,
 } from "@googlemaps/google-maps-services-js";
 import { getPlaceByID } from "../db/Place/place";
 
@@ -12,24 +12,13 @@ import { getPromoMonth } from "../db/PromoMonth/promoMonth";
 
 import type { Place as DbPlace, PlaceWithA11yAndPromo } from "../db/types";
 
+import { placesNearbyByType } from "./util";
+
 export const getNearbyPlaces = async (req: Request, res: Response): Promise<void> => {
 	const client = new Client({});
-	const placesRes = await client
-		.placesNearby({
-			params: {
-				location: {
-					latitude: Number(req.query.latitude),
-					longitude: Number(req.query.longitude),
-				},
-				rankby: PlacesNearbyRanking.distance,
-				key: process.env.PLACES_API_KEY || "",
-				type: req.query.type ? String(req.query.type) : "",
-				keyword: req.query.keyword ? String(req.query.keyword) : "",
-			},
-		})
-		.catch(e => {
-			console.log(e);
-		});
+	const placesRes = await placesNearbyByType(client, req.query, PlaceType1.restaurant).catch(e =>
+		console.log(e)
+	);
 
 	// The response is either an object or void if there is an error, but we catch it anyway, so we can cast to PlacesNearbyResponse safely
 	let placesNearby = (placesRes as PlacesNearbyResponse).data.results;
