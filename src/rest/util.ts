@@ -9,6 +9,8 @@ import { User } from "../db/types";
 import { AuthenticationError } from "../errorClasses";
 import { getCollection } from "../db/mongoCollections";
 import { YesNoRating } from "types";
+import { Client, PlacesNearbyRanking, PlaceType1 } from "@googlemaps/google-maps-services-js";
+import type { ParsedQs } from "qs";
 
 // Functions
 
@@ -93,6 +95,25 @@ export const isAuthenticated = async (
 export const convertToYesNoRating = (val: string): YesNoRating => {
 	if (!["0", "1", "null"].includes(val)) return null;
 	return (Number(val) === NaN ? null : Number(val)) as YesNoRating;
+};
+
+export const placesNearbyByType = async (
+	client: Client,
+	query: ParsedQs,
+	type?: string | PlaceType1
+) => {
+	return client.placesNearby({
+		params: {
+			location: {
+				latitude: Number(query.latitude),
+				longitude: Number(query.longitude),
+			},
+			rankby: PlacesNearbyRanking.distance,
+			key: process.env.PLACES_API_KEY || "",
+			type: type || "",
+			keyword: query.keyword ? String(query.keyword) : "",
+		},
+	});
 };
 
 // Constants
