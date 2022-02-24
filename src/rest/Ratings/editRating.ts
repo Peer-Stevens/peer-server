@@ -29,7 +29,7 @@ type EditRatingRequestBody = Partial<
 		| "spacing"
 	> & {
 		token: string;
-		userID: string;
+		email: string;
 		placeID: string;
 		guideDogFriendly: string;
 		isMenuAccessible: string;
@@ -48,7 +48,7 @@ export const editRating = async (
 	res: Response
 ): Promise<void> => {
 	const {
-		userID,
+		email,
 		placeID,
 		token,
 		guideDogFriendly,
@@ -64,14 +64,14 @@ export const editRating = async (
 	} = req.body;
 
 	// userID and placeId are mandatory fields
-	if (!userID || !placeID) {
+	if (!email || !placeID) {
 		console.warn("editRating: request made without user id and place id");
 		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
 	}
 
 	// get old Rating
-	const oldRatingObj = await getRatingByUserAndPlace(new ObjectId(userID), placeID);
+	const oldRatingObj = await getRatingByUserAndPlace(email, placeID);
 
 	if (!oldRatingObj) {
 		console.warn("editRating: request made to edit non-existant rating");
