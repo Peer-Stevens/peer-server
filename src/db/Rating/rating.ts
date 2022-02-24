@@ -1,6 +1,6 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId, UpdateResult, WithId } from "mongodb";
-import type { Rating } from "../types";
+import type { Rating, User } from "../types";
 import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
 import { DbOperationError } from "../../errorClasses";
@@ -90,14 +90,34 @@ export async function getRatingById(id: ObjectId): Promise<Rating> {
 	return ratingReturned;
 }
 
+/**
+ * Finds a rating in the remote collection by the email of its creator
+ * and some place ID.
+ * @param email the email of the author
+ * @param placeId the Google Place ID of the place
+ * @returns a rating, or null if there is no such rating
+ */
 export async function getRatingByUserAndPlace(
-	userId: ObjectId,
+	email: string,
 	placeId: GooglePlace["place_id"]
 ): Promise<WithId<Rating> | null> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
+	const { _col: _ucol, _connection: _uconnection } = await getCollection<User>("user");
 
-	const rating = await _col.findOne({ userID: userId, placeID: placeId });
+	// find user with that email
+	const user = await _ucol.findOne({ email: email });
+
+	// rating does not exist for sure if the user does not
+	if (!user) {
+		return null;
+	}
+
+	// find rating with that email and place ID
+	const rating = await _col.findOne({ userID: user._id, placeID: placeId });
+
 	await _connection.close();
+	await _uconnection.close();
+
 	return rating;
 }
 
