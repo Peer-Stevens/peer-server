@@ -1,7 +1,7 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId, UpdateResult, WithId } from "mongodb";
 import type { Rating } from "../types";
-import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
+import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
 import { DbOperationError } from "../../errorClasses";
 import { getUserByEmailOnly } from "../User/user";
@@ -90,6 +90,17 @@ export async function getRatingById(id: ObjectId): Promise<Rating> {
 	return ratingReturned;
 }
 
+export async function getRatingByUserAndPlace(
+	userId: ObjectId,
+	placeId: GooglePlace["place_id"]
+): Promise<WithId<Rating> | null> {
+	const { _col, _connection } = await getCollection<Rating>("rating");
+
+	const rating = await _col.findOne({ userID: userId, placeID: placeId });
+	await _connection.close();
+	return rating;
+}
+
 /**
  * Determines whether or not a user has already rated a place.
  * @param email the email address associated with the user (obtained via local storage)
@@ -98,7 +109,7 @@ export async function getRatingById(id: ObjectId): Promise<Rating> {
  */
 export async function accessPotentialRating(
 	email: string,
-	placeID: GooglePlaceID["place_id"]
+	placeID: GooglePlace["place_id"]
 ): Promise<WithId<Rating> | null> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
@@ -116,7 +127,7 @@ export async function accessPotentialRating(
  * @returns an array of all of the ratings for this place
  * @throws if there are no ratings added for this place
  */
-export async function getAllRatingsForPlace(id: GooglePlaceID["place_id"]): Promise<Array<Rating>> {
+export async function getAllRatingsForPlace(id: GooglePlace["place_id"]): Promise<Array<Rating>> {
 	const { _col, _connection } = await getCollection<Rating>("rating");
 
 	const allRatings = await _col.find({ placeID: id }).toArray();
