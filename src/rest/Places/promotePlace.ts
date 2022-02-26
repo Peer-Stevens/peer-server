@@ -50,12 +50,23 @@ export const promotePlace = async (
 
 			// TODO: don't insert if it exists - use findOneAndUpdate instead
 
-			_monthsCol.insertOne({
-				placeID: place_id,
-				month: new Date().getMonth() + 1, // 0 indexed but UIs are 1 indexed (ie. Jan = 1)
-				year: new Date().getFullYear(),
-				totalSpent: 0,
-			}),
+			_monthsCol.updateOne(
+				{
+					placeID: place_id,
+					month: new Date().getMonth() + 1, // 0 indexed but UIs are 1 indexed (ie. Jan = 1)
+					year: new Date().getFullYear(),
+					totalSpent: 0,
+				},
+				{
+					$setOnInsert: {
+						placeID: place_id,
+						month: new Date().getMonth() + 1, // 0 indexed but UIs are 1 indexed (ie. Jan = 1)
+						year: new Date().getFullYear(),
+						totalSpent: 0,
+					},
+				},
+				{ upsert: true }
+			),
 		]);
 
 		await Promise.all([_connection.close(), _monthsConnection.close()]);
