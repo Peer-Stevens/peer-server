@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { isPlaceInDb } from "../../db/Place/place";
-import type { Place, PromotionMonth } from "../../db/types";
+import { Place, PromotionMonth } from "peer-types";
 import { getCollection } from "../../db/mongoCollections";
 import StatusCode from "../status";
 import { InvalidPlaceIDErrorJSON, PlaceDoesNotExistErrorJSON } from "../../rest/util";

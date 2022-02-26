@@ -1,7 +1,7 @@
 import { Collection, MongoClient } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { getCollection } from "../src/db/mongoCollections";
-import type { Place } from "../src/db/types";
+import type { Place } from "peer-types";
 import {
 	addPlace,
 	getAllPlaces,

@@ -2,8 +2,7 @@ import { Client, Place as GooglePlace } from "@googlemaps/google-maps-services-j
 import { Request, Response } from "express";
 import { getNearbyPlaces } from "../src/rest/getNearbyPlaces";
 import { getPlaceByID } from "../src/db/Place/place";
-import { Place, PlaceWithA11yAndPromo } from "../src/db/types";
-import { PromotionMonth } from "../src/db/types";
+import { Place, PlaceWithA11yAndPromo, PromotionMonth } from "peer-types";
 import { getPromoMonth } from "../src/db/PromoMonth/promoMonth";
 import StatusCode from "../src/rest/status";
 import { ObjectId } from "mongodb";
@@ -55,7 +54,7 @@ const mockPromoMonth: PromotionMonth = {
 
 const combinedMock: PlaceWithA11yAndPromo = {
 	...mockPlace,
-	accessibilityData: mockPlaceA11yData,
+	...mockPlaceA11yData,
 	isValidPromo: true, // this place is valid because total spent < monthly budget
 	isPromoted: true,
 	spend_amount: 0.01,
@@ -71,7 +70,7 @@ const mockPromoMonthOverBudget: PromotionMonth = {
 
 const combinedMockOverBudget: PlaceWithA11yAndPromo = {
 	...mockPlace,
-	accessibilityData: mockPlaceA11yData,
+	...mockPlaceA11yData,
 	isValidPromo: false, // this place is valid because total spent < monthly budget
 };
 

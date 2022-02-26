@@ -21,7 +21,7 @@ export const getPlaceDetails = async (req: Request, res: Response): Promise<void
 			.then(placeRatingData => {
 				res.status(StatusCode.OK).json({
 					placeDetails: {
-						...detailRes.data,
+						...detailRes.data.result,
 						accessibilityData: placeRatingData,
 					},
 				});

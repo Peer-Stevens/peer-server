@@ -1,16 +1,11 @@
-import {
-	Client,
-	PlacesNearbyResponse,
-	Place as GooglePlace,
-	PlaceType1,
-} from "@googlemaps/google-maps-services-js";
+import { Client, PlacesNearbyResponse, PlaceType1 } from "@googlemaps/google-maps-services-js";
 import { getPlaceByID } from "../db/Place/place";
 
 import { Request, Response } from "express";
 import StatusCode from "./status";
 import { getPromoMonth } from "../db/PromoMonth/promoMonth";
 
-import type { Place as DbPlace, PlaceWithA11yAndPromo } from "../db/types";
+import { PlaceWithA11yAndPromo } from "peer-types";
 
 import { placesNearbyByType } from "./util";
 
@@ -39,16 +34,13 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 			)
 		);
 
-		const expandedPlaces = placesNearby as Array<GooglePlace & { accessibilityData: DbPlace }>;
+		const expandedPlaces = placesNearby as Array<PlaceWithA11yAndPromo>;
 
 		if (!req.query.omitPromos) {
 			const date = new Date();
 			const placesListWithPromos = (await Promise.all(
 				expandedPlaces.map(place => {
-					if (
-						place.accessibilityData.promotion?.max_cpc > 0 &&
-						place.accessibilityData.promotion?.monthly_budget > 0
-					) {
+					if (place.promotion?.max_cpc > 0 && place.promotion?.monthly_budget > 0) {
 						// if the place has a budget and CPC, we can get or create a promoMonth
 						return getPromoMonth({
 							placeID: place.place_id,
@@ -57,8 +49,8 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 						}).then(promoMonth => ({
 							...place,
 							isValidPromo:
-								promoMonth.totalSpent + place.accessibilityData.promotion.max_cpc <=
-								place.accessibilityData.promotion.monthly_budget,
+								promoMonth.totalSpent + place.promotion.max_cpc <=
+								place.promotion.monthly_budget,
 						}));
 					} else {
 						return place;
@@ -75,10 +67,7 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 					} else if (!a.isValidPromo && b.isValidPromo) {
 						return 1;
 					} else {
-						return (
-							b.accessibilityData.promotion?.max_cpc -
-							a.accessibilityData.promotion?.max_cpc
-						);
+						return b.promotion?.max_cpc - a.promotion?.max_cpc;
 					}
 				});
 
@@ -86,7 +75,7 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 			// if the second element has no valid promo, we set the spend amount to 0.01
 			if (sortedPlaces[0].isValidPromo) {
 				const spend_amount = sortedPlaces[1]?.isValidPromo
-					? sortedPlaces[1].accessibilityData.promotion.max_cpc + 0.01
+					? sortedPlaces[1].promotion.max_cpc + 0.01
 					: 0.01;
 				const originalPlaceIdx = placesListWithPromos.findIndex(
 					place => place.place_id === sortedPlaces[0].place_id

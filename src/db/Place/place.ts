@@ -1,6 +1,6 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId } from "mongodb";
-import { Place, Rating } from "../types";
+import { Place, Rating } from "peer-types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { addRating } from "../Rating/rating";
 import { DbOperationError } from "../../errorClasses";
@@ -30,7 +30,7 @@ const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
 };
 
 // idk if we need this, but here it is in case we do
-// did not create an api endpoinot for this because it might be a lot since returning ALL the places is...a lot
+// did not create an api endpoint for this because it might be a lot since returning ALL the places is...a lot
 
 /**
  * Returns all of the places in the remote collection.

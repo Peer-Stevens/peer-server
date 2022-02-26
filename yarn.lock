@@ -4512,6 +4512,11 @@ pause@0.0.1:
   resolved "https://registry.yarnpkg.com/pause/-/pause-0.0.1.tgz#1d408b3fdb76923b9543d96fb4c9dfd535d9cb5d"
   integrity sha1-HUCLP9t2kjuVQ9lvtMnf1TXZy10=
 
+peer-types@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/peer-types/-/peer-types-1.0.2.tgz#1ec101f5c5e66a8e2180cc658ff91c25a7a77986"
+  integrity sha512-SgY/s0P0iWg6CLZKVWvEhtneFjLfLaMBCuMUKoEL0RV4RG8EAuUSueJAdO7YdMtzzFv1qt3mOWN9mUPIJKvUNA==
+
 picocolors@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.0.0.tgz#cb5bdc74ff3f51892236eaf79d68bc44564ab81c"

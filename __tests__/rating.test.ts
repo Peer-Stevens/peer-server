@@ -1,6 +1,7 @@
 import { Collection, MongoClient, ObjectId } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
-import { Rating, User } from "../src/db/types";
+import { User } from "../src/db/types";
+import { Rating } from "peer-types";
 import { getCollection } from "../src/db/mongoCollections";
 import {
 	addRating,

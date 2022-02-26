@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { editRatingInDb, getRatingById } from "../../db/Rating/rating";
 import { ObjectId } from "mongodb";
-import type { Rating } from "../../db/types";
+import { Rating } from "peer-types";
 import StatusCode from "../status";
 import {
 	isAuthenticated,

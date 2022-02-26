@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { addPlace, isPlaceInDb } from "../../db/Place/place";
-import type { Place } from "../../db/types";
+import { Place } from "peer-types";
 import StatusCode from "../status";
 
 export const addPlaceToDb = async (
