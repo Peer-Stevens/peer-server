@@ -16,7 +16,7 @@ import {
 } from "../util";
 import { DbOperationError } from "../../errorClasses";
 import { getPlaceByID } from "../../db/Place/place";
-import { getUserByID } from "../../db/User/user";
+import { getUserByEmailOnly, getUserByID } from "../../db/User/user";
 import { YesNoRating } from "../../types";
 
 /**
@@ -68,6 +68,7 @@ type AddRatingRequestBody = Partial<
 		| "isStairsRequired"
 		| "spacing"
 	> & {
+		email: string;
 		token: string;
 		userID: string;
 		guideDogFriendly: string;
@@ -93,7 +94,7 @@ export const addRatingToPlace = async (
 	res: Response
 ): Promise<void> => {
 	const {
-		userID,
+		email,
 		token,
 		placeID,
 		guideDogFriendly,
@@ -108,15 +109,24 @@ export const addRatingToPlace = async (
 		comment,
 	} = req.body;
 
-	// userId and placeId are mandatory fields
+	// email is a required field
+	if (!email) {
+		console.warn("addRatingToPlace: request made without email address");
+		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
+		return;
+	}
+
+	const userID = (await getUserByEmailOnly(email))._id;
+
+	// userID and placeId are mandatory fields
 	if (!userID || !placeID) {
-		console.warn("addRatingToPlace: request made without user id or place id");
+		console.warn("addRatingToPlace: request made without user id and place id");
 		res.status(StatusCode.BAD_REQUEST).json(MissingParametersErrorJSON);
 		return;
 	}
 
 	// check that user exists
-	if (!(await userExists(userID))) {
+	if (!(await userExists(userID.toString()))) {
 		console.warn(
 			"addRatingToPlace: request made where user ID provided does not match an existing user"
 		);
@@ -166,7 +176,7 @@ export const addRatingToPlace = async (
 	}
 
 	try {
-		if (!(await isAuthenticated(userID, token))) {
+		if (!(await isAuthenticated(userID.toString(), token))) {
 			console.warn(
 				`addRatingToPlace: logged-in user did not match provided token when trying to add rating`
 			);
@@ -176,7 +186,7 @@ export const addRatingToPlace = async (
 
 		// ready to add to database now
 		await addRating({
-			userID: new ObjectId(userID),
+			userID: userID,
 			placeID: placeID,
 			isMenuAccessible: isMenuAccessibleAsNum,
 			noiseLevel: noiseLevelAsNum,
