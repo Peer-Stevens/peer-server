@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { addPlace, isPlaceInDb } from "../../db/Place/place";
-import { Place } from "peer-types";
+import { PlaceA11yData } from "peer-types";
 import StatusCode from "../status";
 
 export const addPlaceToDb = async (
-	req: Request<unknown, unknown, Partial<Place>>,
+	req: Request<unknown, unknown, Partial<PlaceA11yData>>,
 	res: Response
 ): Promise<void> => {
 	const place = req.body;
@@ -39,15 +39,15 @@ export const addPlaceToDb = async (
 	try {
 		const newRating = await addPlace({
 			_id: place._id,
-			guideDogAvg: null,
-			isMenuAccessibleAvg: null,
-			noiseLevelAvg: null,
-			lightingAvg: null,
-			isStaffHelpfulAvg: null,
-			isBathroomOnEntranceFloorAvg: null,
-			isContactlessPaymentOfferedAvg: null,
-			isStairsRequiredAvg: null,
-			spacingAvg: null,
+			guideDogAvg: 0,
+			isMenuAccessibleAvg: 0,
+			noiseLevelAvg: 0,
+			lightingAvg: 0,
+			isStaffHelpfulAvg: 0,
+			isBathroomOnEntranceFloorAvg: 0,
+			isContactlessPaymentOfferedAvg: 0,
+			isStairsRequiredAvg: 0,
+			spacingAvg: 0,
 			promotion: {
 				monthly_budget: 0,
 				max_cpc: 0,

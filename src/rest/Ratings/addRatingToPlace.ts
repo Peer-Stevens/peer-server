@@ -17,7 +17,7 @@ import {
 import { DbOperationError } from "../../errorClasses";
 import { getPlaceByID } from "../../db/Place/place";
 import { getUserByEmailOnly, getUserByID } from "../../db/User/user";
-import { YesNoRating } from "../../types";
+import { YesNoRating } from "peer-types";
 
 /**
  * Checks if the passed user exists. Calls `getUserByID`.

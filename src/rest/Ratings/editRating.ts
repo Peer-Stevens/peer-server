@@ -12,7 +12,7 @@ import {
 	convertToYesNoRating,
 	RatingDoesNotExistErrorJSON,
 } from "../util";
-import { YesNoRating } from "types";
+import { YesNoRating } from "peer-types";
 
 type EditRatingRequestBody = Partial<
 	Omit<
@@ -74,7 +74,7 @@ export const editRating = async (
 	const oldRatingObj = await getRatingByUserAndPlace(email, placeID);
 
 	if (!oldRatingObj) {
-		console.warn("editRating: request made to edit non-existant rating");
+		console.warn("editRating: request made to edit non-existent rating");
 		res.status(StatusCode.BAD_REQUEST).json(RatingDoesNotExistErrorJSON);
 		return;
 	}

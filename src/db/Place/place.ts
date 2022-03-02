@@ -1,6 +1,6 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId } from "mongodb";
-import { Place, Rating } from "peer-types";
+import { PlaceA11yData, Rating } from "peer-types";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { addRating } from "../Rating/rating";
 import { DbOperationError } from "../../errorClasses";
@@ -36,10 +36,10 @@ const generateNewRating = (placeId: string, userId: ObjectId): Rating => {
  * Returns all of the places in the remote collection.
  * @returns All of the places
  */
-export async function getAllPlaces(): Promise<Place[]> {
-	const { _col, _connection } = await getCollection<Place>("place");
+export async function getAllPlaces(): Promise<PlaceA11yData[]> {
+	const { _col, _connection } = await getCollection<PlaceA11yData>("place");
 
-	const getPlaces: Place[] = await _col.find({}).toArray();
+	const getPlaces: PlaceA11yData[] = await _col.find({}).toArray();
 	await _connection.close();
 
 	return getPlaces;
@@ -53,25 +53,25 @@ export async function getAllPlaces(): Promise<Place[]> {
  * @throws if id is undefined
  * @returns the place
  */
-export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place> {
+export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<PlaceA11yData> {
 	if (!id) throw new DbOperationError("No place id provided");
 
-	const { _col, _connection } = await getCollection<Place>("place");
+	const { _col, _connection } = await getCollection<PlaceA11yData>("place");
 
 	const placeReturned = await _col.findOne({ _id: id });
 	// add the place if not in the remote collection
 	if (placeReturned === null) {
 		await addPlace({
 			_id: id,
-			guideDogAvg: null,
-			isMenuAccessibleAvg: null,
-			noiseLevelAvg: null,
-			lightingAvg: null,
-			isStaffHelpfulAvg: null,
-			isBathroomOnEntranceFloorAvg: null,
-			isContactlessPaymentOfferedAvg: null,
-			isStairsRequiredAvg: null,
-			spacingAvg: null,
+			guideDogAvg: 0,
+			isMenuAccessibleAvg: 0,
+			noiseLevelAvg: 0,
+			lightingAvg: 0,
+			isStaffHelpfulAvg: 0,
+			isBathroomOnEntranceFloorAvg: 0,
+			isContactlessPaymentOfferedAvg: 0,
+			isStairsRequiredAvg: 0,
+			spacingAvg: 0,
 			promotion: {
 				monthly_budget: 0,
 				max_cpc: 0,
@@ -83,7 +83,7 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 
 		await addRating(newRating);
 
-		const newPlaceWithRatings = (await _col.findOne({ _id: id })) as Place; // this is now guaranteed to return a place
+		const newPlaceWithRatings = (await _col.findOne({ _id: id })) as PlaceA11yData; // this is now guaranteed to return a place
 
 		await _connection.close();
 
@@ -100,7 +100,7 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
  * @returns true if the place is in the remote collection, false otherwise
  */
 export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolean> {
-	const { _col, _connection } = await getCollection<Place>("place");
+	const { _col, _connection } = await getCollection<PlaceA11yData>("place");
 
 	const placeReturned = await _col.findOne({ _id: id });
 	await _connection.close();
@@ -116,8 +116,8 @@ export async function isPlaceInDb(id: GooglePlaceID["place_id"]): Promise<boolea
  * @throws when there is a problem with the remote collection adding a place
  * @returns the place that has been added
  */
-export async function addPlace(placeToAdd: Place): Promise<Place> {
-	const { _col, _connection } = await getCollection<Place>("place");
+export async function addPlace(placeToAdd: PlaceA11yData): Promise<PlaceA11yData> {
+	const { _col, _connection } = await getCollection<PlaceA11yData>("place");
 
 	// check to see if the place already exists
 	const doesExist = await isPlaceInDb(placeToAdd._id);
@@ -129,7 +129,7 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
 	}
 
 	// now its safe to add place to db
-	const insertInfo: InsertOneResult<Place> = await _col.insertOne(placeToAdd);
+	const insertInfo: InsertOneResult<PlaceA11yData> = await _col.insertOne(placeToAdd);
 	await _connection.close();
 	if (insertInfo.acknowledged === false) throw new DbOperationError("Error adding place");
 
@@ -148,8 +148,8 @@ export async function addPlace(placeToAdd: Place): Promise<Place> {
  * @throws when there is a problem with the remote collection updating the place
  * @returns the place after its been updated in the database with the averages
  * */
-export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place> {
-	const { _col: placeCol, _connection: placeConn } = await getCollection<Place>("place");
+export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<PlaceA11yData> {
+	const { _col: placeCol, _connection: placeConn } = await getCollection<PlaceA11yData>("place");
 	const { _col: ratingCol, _connection: ratingConn } = await getCollection<Rating>("rating");
 
 	const pipeline = [
@@ -181,19 +181,19 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<Place>
 		},
 	];
 
-	const aggCursor = ratingCol.aggregate<Omit<Place, "_id" | "promotion">>(pipeline);
+	const aggCursor = ratingCol.aggregate<Omit<PlaceA11yData, "_id" | "promotion">>(pipeline);
 
-	const avgs: Partial<Place> = {
+	const avgs: Partial<PlaceA11yData> = {
 		_id: id,
-		guideDogAvg: null,
-		isMenuAccessibleAvg: null,
-		noiseLevelAvg: null,
-		lightingAvg: null,
-		isStaffHelpfulAvg: null,
-		isBathroomOnEntranceFloorAvg: null,
-		isContactlessPaymentOfferedAvg: null,
-		isStairsRequiredAvg: null,
-		spacingAvg: null,
+		guideDogAvg: 0,
+		isMenuAccessibleAvg: 0,
+		noiseLevelAvg: 0,
+		lightingAvg: 0,
+		isStaffHelpfulAvg: 0,
+		isBathroomOnEntranceFloorAvg: 0,
+		isContactlessPaymentOfferedAvg: 0,
+		isStairsRequiredAvg: 0,
+		spacingAvg: 0,
 	};
 
 	(await aggCursor.toArray()).forEach(cursorAvgs => {

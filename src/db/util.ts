@@ -1,4 +1,4 @@
-import { YesNoRating } from "types";
+import { YesNoRating } from "peer-types";
 
 /**
  * Returns a random number between 1 and 5 in increments of 0.5, or null.

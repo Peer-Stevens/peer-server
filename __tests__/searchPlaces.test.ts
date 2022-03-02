@@ -2,7 +2,7 @@ import { Client, Place as GooglePlace } from "@googlemaps/google-maps-services-j
 import { Request, Response } from "express";
 import { searchPlaces } from "../src/rest/searchPlaces";
 import { getPlaceByID } from "../src/db/Place/place";
-import { Place } from "peer-types";
+import { PlaceA11yData } from "peer-types";
 import StatusCode from "../src/rest/status";
 
 jest.mock("@googlemaps/google-maps-services-js");
@@ -22,7 +22,7 @@ const mockPlace: GooglePlace = {
 	place_id: "andhous",
 };
 
-const mockPlaceA11yData: Place = {
+const mockPlaceA11yData: PlaceA11yData = {
 	_id: mockPlace.place_id,
 	guideDogAvg: 5,
 	isMenuAccessibleAvg: 1,

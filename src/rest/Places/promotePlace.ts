@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
 import { isPlaceInDb } from "../../db/Place/place";
-import { Place, PromotionMonth } from "peer-types";
+import { PlaceA11yData, PromotionMonth } from "peer-types";
 import { getCollection } from "../../db/mongoCollections";
 import StatusCode from "../status";
 import { InvalidPlaceIDErrorJSON, PlaceDoesNotExistErrorJSON } from "../../rest/util";
 
 export const promotePlace = async (
-	req: Request<unknown, unknown, Partial<Place>>,
+	req: Request<unknown, unknown, Partial<PlaceA11yData>>,
 	res: Response
 ): Promise<void> => {
 	const { place_id, monthly_budget, max_cpc } = req.body as {
@@ -22,7 +22,7 @@ export const promotePlace = async (
 
 	// get the place from the db
 	try {
-		const { _col, _connection } = await getCollection<Place>("place");
+		const { _col, _connection } = await getCollection<PlaceA11yData>("place");
 		const { _col: _monthsCol, _connection: _monthsConnection } =
 			await getCollection<PromotionMonth>("promotionMonth");
 

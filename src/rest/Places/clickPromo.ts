@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
 import { isPlaceInDb } from "../../db/Place/place";
-import { Place, PromotionMonth } from "peer-types";
+import { PlaceA11yData, PromotionMonth } from "peer-types";
 import { getCollection } from "../../db/mongoCollections";
 import StatusCode from "../status";
 import { InvalidPlaceIDErrorJSON, PlaceDoesNotExistErrorJSON } from "../../rest/util";
 
 export const clickPromo = async (
-	req: Request<unknown, unknown, Partial<Place>>,
+	req: Request<unknown, unknown, Partial<PlaceA11yData>>,
 	res: Response
 ): Promise<void> => {
 	// getPlaces will determine the spend_amount as one cent above

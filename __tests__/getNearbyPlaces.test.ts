@@ -2,7 +2,7 @@ import { Client, Place as GooglePlace } from "@googlemaps/google-maps-services-j
 import { Request, Response } from "express";
 import { getNearbyPlaces } from "../src/rest/getNearbyPlaces";
 import { getPlaceByID } from "../src/db/Place/place";
-import { Place, PlaceWithA11yAndPromo, PromotionMonth } from "peer-types";
+import { PlaceA11yData, PlaceWithA11yAndPromo, PromotionMonth } from "peer-types";
 import { getPromoMonth } from "../src/db/PromoMonth/promoMonth";
 import StatusCode from "../src/rest/status";
 import { ObjectId } from "mongodb";
@@ -27,7 +27,7 @@ const mockPlace: GooglePlace = {
 	place_id: "andhous",
 };
 
-const mockPlaceA11yData: Place = {
+const mockPlaceA11yData: PlaceA11yData = {
 	_id: mockPlace.place_id,
 	guideDogAvg: 5,
 	isMenuAccessibleAvg: 1,
@@ -54,7 +54,7 @@ const mockPromoMonth: PromotionMonth = {
 
 const combinedMock: PlaceWithA11yAndPromo = {
 	...mockPlace,
-	...mockPlaceA11yData,
+	accessibilityData: mockPlaceA11yData,
 	isValidPromo: true, // this place is valid because total spent < monthly budget
 	isPromoted: true,
 	spend_amount: 0.01,
@@ -70,7 +70,7 @@ const mockPromoMonthOverBudget: PromotionMonth = {
 
 const combinedMockOverBudget: PlaceWithA11yAndPromo = {
 	...mockPlace,
-	...mockPlaceA11yData,
+	accessibilityData: mockPlaceA11yData,
 	isValidPromo: false, // this place is valid because total spent < monthly budget
 };
 

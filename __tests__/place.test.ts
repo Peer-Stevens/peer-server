@@ -1,7 +1,7 @@
 import { Collection, MongoClient } from "mongodb";
 import type { Place as GooglePlaceID } from "@googlemaps/google-maps-services-js";
 import { getCollection } from "../src/db/mongoCollections";
-import type { Place } from "peer-types";
+import type { PlaceA11yData } from "peer-types";
 import {
 	addPlace,
 	getAllPlaces,
@@ -19,8 +19,8 @@ type mockGetCollectionSignature = <T>(
 const mockGetCollection = getCollection as jest.MockedFunction<mockGetCollectionSignature>;
 
 // mock adding to a collection
-let mockCollection: Place[];
-const mockInsertOne = jest.fn().mockImplementation((place: Place) => {
+let mockCollection: PlaceA11yData[];
+const mockInsertOne = jest.fn().mockImplementation((place: PlaceA11yData) => {
 	mockCollection.push(place);
 	return { acknowledged: true, insertedId: place._id };
 });
@@ -36,29 +36,25 @@ const mockUpdateOne = jest
 	.mockImplementation(
 		(
 			{ _id: id }: { _id: GooglePlaceID["place_id"] },
-			{ $set: newPlace }: { $set: Partial<Place> }
+			{ $set: newPlace }: { $set: Partial<PlaceA11yData> }
 		) => {
 			const old = mockCollection.find(value => id === value._id);
 			mockCollection.pop();
 			mockCollection.push({
 				_id: id,
-				guideDogAvg: newPlace.guideDogAvg || old?.guideDogAvg || null,
-				isMenuAccessibleAvg:
-					newPlace.isMenuAccessibleAvg || old?.isMenuAccessibleAvg || null,
-				noiseLevelAvg: newPlace.noiseLevelAvg || old?.noiseLevelAvg || null,
-				lightingAvg: newPlace.lightingAvg || old?.lightingAvg || null,
-				isStaffHelpfulAvg: newPlace.isStaffHelpfulAvg || old?.isStaffHelpfulAvg || null,
+				guideDogAvg: newPlace.guideDogAvg || old?.guideDogAvg || 0,
+				isMenuAccessibleAvg: newPlace.isMenuAccessibleAvg || old?.isMenuAccessibleAvg || 0,
+				noiseLevelAvg: newPlace.noiseLevelAvg || old?.noiseLevelAvg || 0,
+				lightingAvg: newPlace.lightingAvg || old?.lightingAvg || 0,
+				isStaffHelpfulAvg: newPlace.isStaffHelpfulAvg || old?.isStaffHelpfulAvg || 0,
 				isBathroomOnEntranceFloorAvg:
-					newPlace.isBathroomOnEntranceFloorAvg ||
-					old?.isBathroomOnEntranceFloorAvg ||
-					null,
+					newPlace.isBathroomOnEntranceFloorAvg || old?.isBathroomOnEntranceFloorAvg || 0,
 				isContactlessPaymentOfferedAvg:
 					newPlace.isContactlessPaymentOfferedAvg ||
 					old?.isContactlessPaymentOfferedAvg ||
-					null,
-				isStairsRequiredAvg:
-					newPlace.isStairsRequiredAvg || old?.isStairsRequiredAvg || null,
-				spacingAvg: newPlace.spacingAvg || old?.spacingAvg || null,
+					0,
+				isStairsRequiredAvg: newPlace.isStairsRequiredAvg || old?.isStairsRequiredAvg || 0,
+				spacingAvg: newPlace.spacingAvg || old?.spacingAvg || 0,
 				promotion: {
 					monthly_budget:
 						newPlace.promotion?.monthly_budget || old?.promotion?.monthly_budget || 0,
@@ -84,7 +80,7 @@ mockGetCollection.mockResolvedValue({
 
 // mock data
 
-const mockPlace1: Place = {
+const mockPlace1: PlaceA11yData = {
 	_id: "wumpus",
 	guideDogAvg: 5,
 	isMenuAccessibleAvg: 0.75,
@@ -101,7 +97,7 @@ const mockPlace1: Place = {
 	},
 };
 
-const mockPlace2: Place = {
+const mockPlace2: PlaceA11yData = {
 	_id: "andrewshouse",
 	guideDogAvg: 5,
 	isMenuAccessibleAvg: 1,
