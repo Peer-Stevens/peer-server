@@ -8,7 +8,7 @@ import StatusCode from "./status";
 import { User } from "../db/types";
 import { AuthenticationError } from "../errorClasses";
 import { getCollection } from "../db/mongoCollections";
-import { YesNoRating } from "types";
+import { YesNoRating } from "peer-types";
 import { Client, PlacesNearbyRanking, PlaceType1 } from "@googlemaps/google-maps-services-js";
 import type { ParsedQs } from "qs";
 

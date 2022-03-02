@@ -1,16 +1,11 @@
-import {
-	Client,
-	PlacesNearbyResponse,
-	Place as GooglePlace,
-	PlaceType1,
-} from "@googlemaps/google-maps-services-js";
+import { Client, PlacesNearbyResponse, PlaceType1 } from "@googlemaps/google-maps-services-js";
 import { getPlaceByID } from "../db/Place/place";
 
 import { Request, Response } from "express";
 import StatusCode from "./status";
 import { getPromoMonth } from "../db/PromoMonth/promoMonth";
 
-import type { Place as DbPlace, PlaceWithA11yAndPromo } from "../db/types";
+import { PlaceWithA11yAndPromo } from "peer-types";
 
 import { placesNearbyByType } from "./util";
 
@@ -39,7 +34,7 @@ export const getNearbyPlaces = async (req: Request, res: Response): Promise<void
 			)
 		);
 
-		const expandedPlaces = placesNearby as Array<GooglePlace & { accessibilityData: DbPlace }>;
+		const expandedPlaces = placesNearby as Array<PlaceWithA11yAndPromo>;
 
 		if (!req.query.omitPromos) {
 			const date = new Date();

@@ -1,6 +1,4 @@
 import type { ObjectId } from "mongodb";
-import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
-import { YesNoRating } from "../types";
 
 /*
  Note: _id is optional because _id of type ObjectId is automatically 
@@ -13,55 +11,4 @@ export interface User {
 	dateEdited?: Date;
 	token: string;
 	dateTokenCreated: Date;
-}
-
-export interface Rating {
-	_id?: ObjectId;
-	userID: ObjectId;
-	placeID: GooglePlace["place_id"];
-	guideDogFriendly: number | null;
-	isMenuAccessible: YesNoRating;
-	noiseLevel: number | null;
-	lighting: number | null;
-	isStaffHelpful: YesNoRating;
-	isBathroomOnEntranceFloor: YesNoRating;
-	isContactlessPaymentOffered: YesNoRating;
-	isStairsRequired: YesNoRating;
-	spacing: number | null;
-	comment: string | null;
-	dateCreated: Date;
-	dateEdited?: Date;
-}
-
-export interface Place {
-	_id: GooglePlace["place_id"];
-	guideDogAvg: number | null;
-	isMenuAccessibleAvg: number | null;
-	noiseLevelAvg: number | null;
-	lightingAvg: number | null;
-	isStaffHelpfulAvg: number | null;
-	isBathroomOnEntranceFloorAvg: number | null;
-	isContactlessPaymentOfferedAvg: number | null;
-	isStairsRequiredAvg: number | null;
-	spacingAvg: number | null;
-	promotion: {
-		monthly_budget: number;
-		max_cpc: number;
-	};
-}
-
-export type PlaceWithA11yAndPromo = GooglePlace & {
-	accessibilityData: Place;
-	promoMonth?: PromotionMonth;
-	isValidPromo?: boolean;
-	isPromoted?: boolean;
-	spend_amount?: number;
-};
-
-export interface PromotionMonth {
-	_id?: ObjectId;
-	placeID: GooglePlace["place_id"];
-	month: number;
-	year: number;
-	totalSpent: number;
 }

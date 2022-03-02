@@ -1,6 +1,7 @@
 import { getCollection } from "../mongoCollections";
 import { InsertOneResult, ObjectId, UpdateResult, WithId } from "mongodb";
-import type { Rating, User } from "../types";
+import { Rating } from "peer-types";
+import type { User } from "../types";
 import type { Place as GooglePlace } from "@googlemaps/google-maps-services-js";
 import { updatePlace } from "../Place/place";
 import { DbOperationError } from "../../errorClasses";
@@ -66,7 +67,7 @@ export async function editRatingInDb(
 	if (ratingToUpdate.acknowledged === false)
 		throw new DbOperationError("Could not update Rating");
 
-	// Every time an update is succesfful, we need to update the averages for the place in the Place collection
+	// Every time an update is successful, we need to update the averages for the place in the Place collection
 	const insertedRating: Rating = await getRatingById(ratingId);
 
 	await updatePlace(insertedRating.placeID);

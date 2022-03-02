@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { addRating } from "../../db/Rating/rating";
-import type { Rating } from "../../db/types";
+import { Rating } from "peer-types";
 import StatusCode from "../status";
 import {
 	AccountNotFoundErrorJSON,
@@ -17,7 +17,7 @@ import {
 import { DbOperationError } from "../../errorClasses";
 import { getPlaceByID } from "../../db/Place/place";
 import { getUserByEmailOnly, getUserByID } from "../../db/User/user";
-import { YesNoRating } from "../../types";
+import { YesNoRating } from "peer-types";
 
 /**
  * Checks if the passed user exists. Calls `getUserByID`.
