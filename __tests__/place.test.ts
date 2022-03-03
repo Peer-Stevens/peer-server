@@ -42,19 +42,23 @@ const mockUpdateOne = jest
 			mockCollection.pop();
 			mockCollection.push({
 				_id: id,
-				guideDogAvg: newPlace.guideDogAvg || old?.guideDogAvg || 0,
-				isMenuAccessibleAvg: newPlace.isMenuAccessibleAvg || old?.isMenuAccessibleAvg || 0,
-				noiseLevelAvg: newPlace.noiseLevelAvg || old?.noiseLevelAvg || 0,
-				lightingAvg: newPlace.lightingAvg || old?.lightingAvg || 0,
-				isStaffHelpfulAvg: newPlace.isStaffHelpfulAvg || old?.isStaffHelpfulAvg || 0,
+				guideDogAvg: newPlace.guideDogAvg || old?.guideDogAvg || null,
+				isMenuAccessibleAvg:
+					newPlace.isMenuAccessibleAvg || old?.isMenuAccessibleAvg || null,
+				noiseLevelAvg: newPlace.noiseLevelAvg || old?.noiseLevelAvg || null,
+				lightingAvg: newPlace.lightingAvg || old?.lightingAvg || null,
+				isStaffHelpfulAvg: newPlace.isStaffHelpfulAvg || old?.isStaffHelpfulAvg || null,
 				isBathroomOnEntranceFloorAvg:
-					newPlace.isBathroomOnEntranceFloorAvg || old?.isBathroomOnEntranceFloorAvg || 0,
+					newPlace.isBathroomOnEntranceFloorAvg ||
+					old?.isBathroomOnEntranceFloorAvg ||
+					null,
 				isContactlessPaymentOfferedAvg:
 					newPlace.isContactlessPaymentOfferedAvg ||
 					old?.isContactlessPaymentOfferedAvg ||
-					0,
-				isStairsRequiredAvg: newPlace.isStairsRequiredAvg || old?.isStairsRequiredAvg || 0,
-				spacingAvg: newPlace.spacingAvg || old?.spacingAvg || 0,
+					null,
+				isStairsRequiredAvg:
+					newPlace.isStairsRequiredAvg || old?.isStairsRequiredAvg || null,
+				spacingAvg: newPlace.spacingAvg || old?.spacingAvg || null,
 				promotion: {
 					monthly_budget:
 						newPlace.promotion?.monthly_budget || old?.promotion?.monthly_budget || 0,

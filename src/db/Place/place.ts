@@ -63,15 +63,15 @@ export async function getPlaceByID(id: GooglePlaceID["place_id"]): Promise<Place
 	if (placeReturned === null) {
 		await addPlace({
 			_id: id,
-			guideDogAvg: 0,
-			isMenuAccessibleAvg: 0,
-			noiseLevelAvg: 0,
-			lightingAvg: 0,
-			isStaffHelpfulAvg: 0,
-			isBathroomOnEntranceFloorAvg: 0,
-			isContactlessPaymentOfferedAvg: 0,
-			isStairsRequiredAvg: 0,
-			spacingAvg: 0,
+			guideDogAvg: null,
+			isMenuAccessibleAvg: null,
+			noiseLevelAvg: null,
+			lightingAvg: null,
+			isStaffHelpfulAvg: null,
+			isBathroomOnEntranceFloorAvg: null,
+			isContactlessPaymentOfferedAvg: null,
+			isStairsRequiredAvg: null,
+			spacingAvg: null,
 			promotion: {
 				monthly_budget: 0,
 				max_cpc: 0,
@@ -185,15 +185,15 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<PlaceA
 
 	const avgs: Partial<PlaceA11yData> = {
 		_id: id,
-		guideDogAvg: 0,
-		isMenuAccessibleAvg: 0,
-		noiseLevelAvg: 0,
-		lightingAvg: 0,
-		isStaffHelpfulAvg: 0,
-		isBathroomOnEntranceFloorAvg: 0,
-		isContactlessPaymentOfferedAvg: 0,
-		isStairsRequiredAvg: 0,
-		spacingAvg: 0,
+		guideDogAvg: null,
+		isMenuAccessibleAvg: null,
+		noiseLevelAvg: null,
+		lightingAvg: null,
+		isStaffHelpfulAvg: null,
+		isBathroomOnEntranceFloorAvg: null,
+		isContactlessPaymentOfferedAvg: null,
+		isStairsRequiredAvg: null,
+		spacingAvg: null,
 	};
 
 	(await aggCursor.toArray()).forEach(cursorAvgs => {
