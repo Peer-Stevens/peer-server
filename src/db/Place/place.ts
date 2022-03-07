@@ -154,6 +154,11 @@ export async function updatePlace(id: GooglePlaceID["place_id"]): Promise<PlaceA
 
 	const pipeline = [
 		{
+			$match: {
+				placeID: id,
+			},
+		},
+		{
 			$group: {
 				_id: id,
 				guideDogAvg: {
